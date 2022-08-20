@@ -1,4 +1,4 @@
-import { eP5 } from "../type/eP5";
+import p5 from "p5";
 import * as Tone from "tone";
 import { Pane, TabApi } from "tweakpane";
 
@@ -13,13 +13,13 @@ type controllerType = typeof controllers;
 
 const setController = () => controllers;
 
-const updateController = (s: eP5, controllers: controllerType) => {
+const updateController = (s: p5, controllers: controllerType) => {
   controllers.frameRate = s.frameRate();
   controllers.frameCount += 1;
 };
 
 const activate = (
-  s: eP5,
+  s: p5,
   controllers: controllerType,
   audio: boolean,
   seq: boolean
@@ -29,12 +29,12 @@ const activate = (
   controllers.isPlay = true;
   s.loop();
 };
-const inactivate = (s: eP5, controllers: controllerType, seq: boolean) => {
+const inactivate = (s: p5, controllers: controllerType, seq: boolean) => {
   if (seq === true) Tone.Transport.stop();
   controllers.isPlay = false;
   s.noLoop();
 };
-const reactivate = (s: eP5, controllers: controllerType, seq: boolean) => {
+const reactivate = (s: p5, controllers: controllerType, seq: boolean) => {
   if (seq === true) Tone.Transport.start();
   controllers.isPlay = true;
   s.loop();
@@ -63,7 +63,7 @@ const startAudio = () => {
 };
 
 const setGui = (
-  s: eP5,
+  s: p5,
   controllers: controllerType,
   audio = false,
   seq = false

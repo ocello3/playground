@@ -1,6 +1,5 @@
 import p5 from "p5";
 import { TabApi } from "tweakpane";
-import { eP5 } from "../type/eP5";
 import { tools } from "../util/tools";
 
 const setParams = () => {
@@ -13,9 +12,9 @@ const setParams = () => {
     g: 0.4,
     sizeRate: 5,
     color: [
-      tools.setColor(188, 150, 230),
-      tools.setColor(216, 180, 226),
-      tools.setColor(174, 117, 159),
+      [188, 150, 230],
+      [216, 180, 226],
+      [174, 117, 159],
     ],
   };
 };
@@ -107,7 +106,7 @@ const updateData = (
   return newData;
 };
 
-const draw = (data: dataType, params: paramsType, s: eP5) => {
+const draw = (data: dataType, params: paramsType, s: p5) => {
   const { attractors } = data;
   const { sizeRate } = params;
   s.push();
@@ -115,7 +114,7 @@ const draw = (data: dataType, params: paramsType, s: eP5) => {
   for (const attractor of attractors) {
     s.push();
     const { pos, m, color } = attractor;
-    s.fill(color);
+    s.fill(color[0], color[1], color[2]);
     s.circle(pos.x, pos.y, m * sizeRate);
     s.pop();
   }

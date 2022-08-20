@@ -18,7 +18,13 @@ const setColor = (r: number, g: number, b: number) => {
   return color;
 };
 
+const setSize = (div: string) => {
+  const canvasDiv = document.getElementById(div)!;
+  return canvasDiv.clientWidth;
+};
+
 export const tools = {
   map,
   setColor,
+  setSize,
 };
