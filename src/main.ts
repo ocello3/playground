@@ -1,6 +1,6 @@
 import "./style.css";
 import p5 from "p5";
-import { sketch } from "./20220622/sketch";
+// import { sketch } from "./20220622/sketch";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="row">
@@ -8,7 +8,24 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 		<div class="one-third column" id="pane"></div>
   </div>
 `;
-new p5(sketch, document.getElementById("sketch")!);
+
+const getLatestDate = async (): Promise<string> => {
+  const response = await fetch("./src/latest.txt");
+  const rawText = await response.text();
+  return rawText.replace(/(\r\n|\n|\r)/gm, ""); // remove line feed code
+};
+
+(async () => {
+  const latestDate = await getLatestDate();
+  const paramsString = location.search;
+  const searchParams = new URLSearchParams(paramsString);
+  const hasDate = searchParams.has("date");
+  console.log(paramsString);
+  const date = hasDate ? searchParams.get("date") : latestDate;
+  await import(/* @vite-ignore */ `./${date}/sketch.ts`).then((res) => {
+    new p5(res.sketch, document.getElementById("sketch")!);
+  });
+})();
 
 /*
 import typescriptLogo from './typescript.svg'

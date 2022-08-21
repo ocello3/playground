@@ -19,6 +19,7 @@ export const sketch = (s: p5) => {
     // tab.pages[0].addInput(params, 'margin');
     // synth = setSynth(params, tab);
     s.noLoop();
+    // s.pixelDensity(1);
     // s.frameRate(10);
   };
   s.draw = () => {
