@@ -23,7 +23,7 @@ const setData = (params: paramsType, size: number) => {
   };
 };
 const thisData = setData(thisParams, 100);
-type dataType = typeof thisData;
+export type dataType = typeof thisData;
 
 const updateData = (
   preData: dataType,
@@ -32,7 +32,7 @@ const updateData = (
 ): dataType => {
   const { rate } = params;
   const newData = { ...preData };
-  newData.radius = preData.radius * rate;
+  newData.radius = size * 0.5 * rate;
   return newData;
 };
 
