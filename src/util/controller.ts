@@ -18,24 +18,39 @@ const updateController = (s: p5, controllers: controllerType) => {
   controllers.frameCount += 1;
 };
 
-const activate = (
+const activate = async (
   s: p5,
   controllers: controllerType,
   audio: boolean,
   seq: boolean
 ) => {
-  if (audio === true) Tone.Destination.mute = controllers.mute;
+  if (audio === true) {
+    await Tone.start();
+    Tone.Destination.mute = controllers.mute;
+  }
   if (seq === true) Tone.Transport.start();
   controllers.isPlay = true;
   s.loop();
 };
-const inactivate = (s: p5, controllers: controllerType, seq: boolean) => {
+const inactivate = (
+  s: p5,
+  controllers: controllerType,
+  audio: boolean,
+  seq: boolean
+) => {
   if (seq === true) Tone.Transport.stop();
+  if (audio === true) Tone.Destination.mute = true;
   controllers.isPlay = false;
   s.noLoop();
 };
-const reactivate = (s: p5, controllers: controllerType, seq: boolean) => {
+const reactivate = (
+  s: p5,
+  controllers: controllerType,
+  audio: boolean,
+  seq: boolean
+) => {
   if (seq === true) Tone.Transport.start();
+  if (audio === true) Tone.Destination.mute = controllers.mute;
   controllers.isPlay = true;
   s.loop();
 };
@@ -53,6 +68,18 @@ const go_scroll = () => {
 const notscroll = (e: Event) => {
   e.preventDefault();
 };
+
+/*
+const startAudio = () => {
+  const eventName =
+    typeof document.ontouchend !== "undefined" ? "touchend" : "mouseup";
+  const initAudioContext = async () => {
+    document.removeEventListener(eventName, initAudioContext);
+    await Tone.start();
+  };
+  document.addEventListener(eventName, initAudioContext);
+};
+*/
 
 const setGui = (
   s: p5,
@@ -73,8 +100,8 @@ const setGui = (
       const isPlay = s.isLooping();
       const isPause = !s.isLooping() && controllers.isPlay;
       if (isInit) activate(s, controllers, audio, seq);
-      if (isPlay) inactivate(s, controllers, seq);
-      if (isPause) reactivate(s, controllers, seq);
+      if (isPlay) inactivate(s, controllers, audio, seq);
+      if (isPause) reactivate(s, controllers, audio, seq);
     });
   tab.pages[0].addMonitor(controllers, "isPlay");
   tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
@@ -86,6 +113,7 @@ const setGui = (
     if (event.value === false) go_scroll();
   });
   if (audio === true) {
+    // startAudio();
     tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
       Tone.Destination.mute = event.value;
     });

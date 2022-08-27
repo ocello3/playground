@@ -1,6 +1,16 @@
 import "./style.css";
 import p5 from "p5";
-// import { sketch } from "./20220622/sketch";
+import * as Tone from "tone";
+
+/*
+const eventName =
+  typeof document.ontouchend != "undefined" ? "touchend" : "mouseup";
+const initAudioContext = async () => {
+  document.removeEventListener(eventName, initAudioContext);
+  await Tone.start();
+};
+document.addEventListener(eventName, initAudioContext);
+*/
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="row">
