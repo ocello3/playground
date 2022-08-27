@@ -20,7 +20,9 @@ const setColor = (r: number, g: number, b: number) => {
 
 const setSize = (div: string) => {
   const canvasDiv = document.getElementById(div)!;
-  return canvasDiv.clientWidth;
+  const divSize = canvasDiv.clientWidth;
+  const maxSize = 550;
+  return divSize > maxSize ? maxSize : divSize;
 };
 
 export const tools = {

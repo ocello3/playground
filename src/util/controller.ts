@@ -1,6 +1,6 @@
 import p5 from "p5";
-import * as Tone from "tone";
 import { Pane, TabApi } from "tweakpane";
+import * as Tone from "tone";
 
 const controllers = {
   isPlay: false,
@@ -54,14 +54,6 @@ const notscroll = (e: Event) => {
   e.preventDefault();
 };
 
-const startAudio = () => {
-  const initAudioContext = () => {
-    document.removeEventListener("touchstart", initAudioContext);
-    Tone.start();
-  };
-  document.addEventListener("touchstart", initAudioContext);
-};
-
 const setGui = (
   s: p5,
   controllers: controllerType,
@@ -74,14 +66,16 @@ const setGui = (
   const tab = pane.addTab({
     pages: [{ title: "default" }, { title: "sketch" }, { title: "sound" }],
   });
-  tab.pages[0].addButton({ title: "on/off", label: "play" }).on("click", () => {
-    const isInit = !s.isLooping() && !controllers.isPlay;
-    const isPlay = s.isLooping();
-    const isPause = !s.isLooping() && controllers.isPlay;
-    if (isInit) activate(s, controllers, audio, seq);
-    if (isPlay) inactivate(s, controllers, seq);
-    if (isPause) reactivate(s, controllers, seq);
-  });
+  tab.pages[0]
+    .addButton({ title: "on/off", label: "play" })
+    .on("click", async () => {
+      const isInit = !s.isLooping() && !controllers.isPlay;
+      const isPlay = s.isLooping();
+      const isPause = !s.isLooping() && controllers.isPlay;
+      if (isInit) activate(s, controllers, audio, seq);
+      if (isPlay) inactivate(s, controllers, seq);
+      if (isPause) reactivate(s, controllers, seq);
+    });
   tab.pages[0].addMonitor(controllers, "isPlay");
   tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
   ban_scroll();
@@ -92,7 +86,6 @@ const setGui = (
     if (event.value === false) go_scroll();
   });
   if (audio === true) {
-    startAudio();
     tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
       Tone.Destination.mute = event.value;
     });
