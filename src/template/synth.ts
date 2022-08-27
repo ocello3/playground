@@ -5,7 +5,7 @@ import { tools } from "../util/tools";
 
 const setParams = () => {
   return {
-    maxVolume: -5,
+    maxVolume: -10,
   };
 };
 const thisParams = setParams();
@@ -17,13 +17,9 @@ const setGui = (params: paramsType, tab: TabApi) => {
 };
 
 const setOcillator = () => {
-  const oscillator = new Tone.AMOscillator(
-    400,
-    "sine",
-    "square"
-  ).toDestination();
-  oscillator.volume.value = -60;
-  oscillator.start(0);
+  const oscillator = new Tone.AMOscillator(400, "sine", "square");
+  oscillator.mute = true;
+  oscillator.toDestination().start();
   Tone.Destination.mute = true;
   return oscillator;
 };
