@@ -69,18 +69,6 @@ const notscroll = (e: Event) => {
   e.preventDefault();
 };
 
-/*
-const startAudio = () => {
-  const eventName =
-    typeof document.ontouchend !== "undefined" ? "touchend" : "mouseup";
-  const initAudioContext = async () => {
-    document.removeEventListener(eventName, initAudioContext);
-    await Tone.start();
-  };
-  document.addEventListener(eventName, initAudioContext);
-};
-*/
-
 const setGui = (
   s: p5,
   controllers: controllerType,
@@ -113,9 +101,8 @@ const setGui = (
     if (event.value === false) go_scroll();
   });
   if (audio === true) {
-    // startAudio();
     tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
-      Tone.Destination.mute = event.value;
+      if (s.isLooping()) Tone.Destination.mute = event.value;
     });
   }
   return tab;
