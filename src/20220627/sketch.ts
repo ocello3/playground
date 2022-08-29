@@ -1,0 +1,47 @@
+import p5 from "p5";
+import { controller } from "../util/controller";
+import { drawFrame } from "../util/drawFrame";
+import { tools } from "../util/tools";
+import { flooder } from "./flooder";
+import { bubble } from "./bubble";
+// import { synth } from "./synth.js";
+
+export const sketch = async (s: p5) => {
+  const size = tools.setSize("sketch");
+  let font: p5.Font;
+  let controllers = controller.setController();
+  const flooderParams = flooder.setParams();
+  const bubbleParams = bubble.setParams();
+  // const synthParams = synth.setParams();
+  let flooderData = flooder.setData(flooderParams, size);
+  let bubbleData = bubble.setData(flooderData);
+  // let synthData = synth.setSynth();
+  s.preload = () => {
+    font = s.loadFont("../../src/font/Fascinate-Regular.ttf");
+  };
+  s.setup = () => {
+    s.createCanvas(size, size);
+    const tab = controller.setGui(s, controllers, false, false);
+    flooder.setGui(flooderParams, tab);
+    bubble.setGui(bubbleParams, tab);
+    // synth.setGui(synthParams, tab);
+    s.noLoop();
+    // s.frameRate(10);
+  };
+  s.draw = () => {
+    s.background(255);
+    controller.updateController(s, controllers);
+    flooderData = flooder.updateData(flooderData, flooderParams, size, s);
+    bubbleData = bubble.updateData(
+      flooderData,
+      bubbleData,
+      bubbleParams,
+      size,
+      s
+    );
+    flooder.draw(flooderData, flooderParams, size, font, s);
+    bubble.draw(bubbleData, bubbleParams, s);
+    drawFrame(s, size);
+    // synth.playSynth(libData, synthData, synthParams, size);
+  };
+};
