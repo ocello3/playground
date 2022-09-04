@@ -42,6 +42,7 @@ export const setData = (params: paramsType, size: number) => {
     flooders: Array.from(Array(num), (_, index) => {
       return {
         isInWater: false,
+        isAttached: false,
         m: 0,
         v: new p5.Vector().set(0, 0),
         a: new p5.Vector().set(0, 0),
@@ -139,6 +140,7 @@ const updateData = (
       return 0;
     });
     newFlooder.isInWater = newFlooder.pos.y > surfaceYPos;
+    newFlooder.isAttached = !preFlooder.isInWater && newFlooder.isInWater;
     newFlooder.isOver =
       newFlooder.pos.y > size * (1 + initPosMaxRate) ||
       newFlooder.pos.y < -1 * initPosMaxRate * size;
@@ -153,13 +155,7 @@ const updateData = (
   return newData;
 };
 
-const draw = (
-  data: dataType,
-  params: paramsType,
-  size: number,
-  font: p5.Font,
-  s: p5
-) => {
+const draw = (data: dataType, size: number, font: p5.Font, s: p5) => {
   const { surfaceYPos } = data;
   // draw water
   s.push();

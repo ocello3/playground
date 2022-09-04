@@ -1,7 +1,6 @@
 import * as Tone from "tone";
 import { TabApi } from "tweakpane";
-import { dataType as libDataType } from "./lib";
-import { tools } from "../util/tools";
+import { dataType as flooderDataType } from "./flooder";
 
 const setParams = () => {
   return {
@@ -16,38 +15,30 @@ const setGui = (params: paramsType, tab: TabApi) => {
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
-const setOcillator = () => {
-  const oscillator = new Tone.AMOscillator(400, "sine", "square");
-  oscillator.mute = true;
-  oscillator.toDestination().start();
-  Tone.Destination.mute = true;
-  return oscillator;
+const setTapSampler = () => {
+  const tapSampler = new Tone.Sampler({
+    urls: {
+      A1: "../src/20220627/sound/toggle_on.wav",
+      A2: "../src/20220627/sound/toggle_off.wav",
+    },
+  }).toDestination();
+  return tapSampler;
 };
 
 const setSynth = () => {
   return {
-    oscillator: setOcillator(),
+    tapSampler: setTapSampler(),
   };
 };
 const thisSynth = setSynth();
 type synthType = typeof thisSynth;
 
-const playSynth = (
-  libData: libDataType,
-  synth: synthType,
-  params: paramsType,
-  size: number
-) => {
-  const volume = tools.map(
-    libData.radius,
-    0,
-    size * 0.5,
-    -30,
-    params.maxVolume
-  );
-  const freq = tools.map(libData.radius, 0, size * 0.5, 100, 600);
-  synth.oscillator.volume.value = volume;
-  synth.oscillator.frequency.value = freq;
+const playSynth = (flooderData: flooderDataType, synth: synthType) => {
+  flooderData.flooders.forEach((flooder) => {
+    if (flooder.isAttached) {
+      synth.tapSampler.triggerAttackRelease("A1", 0.5);
+    }
+  });
 };
 
 export const synth = { setParams, setGui, setSynth, playSynth };

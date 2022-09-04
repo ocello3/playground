@@ -1,6 +1,5 @@
 import p5 from "p5";
 import { TabApi } from "tweakpane";
-import { tools } from "../util/tools";
 import {
   dataType as flooderDataType,
   thisParams as flooderParams,
@@ -106,7 +105,7 @@ const updateData = (
   return newData;
 };
 
-const draw = (data: dataType, params: paramsType, s: p5) => {
+const draw = (data: dataType, s: p5) => {
   s.push();
   s.noStroke();
   for (const bubbleLine of data.bubbleLines) {
