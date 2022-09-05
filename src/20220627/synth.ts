@@ -1,10 +1,13 @@
 import * as Tone from "tone";
 import { TabApi } from "tweakpane";
+import { paramsType as flooderParamsType } from "./flooder";
 import { dataType as flooderDataType } from "./flooder";
+import { tools } from "../util/tools";
 
 const setParams = () => {
   return {
     maxVolume: -10,
+    minVolume: -40,
   };
 };
 const thisParams = setParams();
@@ -16,27 +19,44 @@ const setGui = (params: paramsType, tab: TabApi) => {
 };
 
 const setTapSampler = () => {
+  const pitchShift = new Tone.PitchShift().toDestination();
   const tapSampler = new Tone.Sampler({
     urls: {
       A1: "../src/20220627/sound/toggle_on.wav",
       A2: "../src/20220627/sound/toggle_off.wav",
     },
-  }).toDestination();
-  return tapSampler;
+  }).connect(pitchShift);
+  return {
+    pitchShift: pitchShift,
+    tapSampler: tapSampler,
+  };
 };
 
 const setSynth = () => {
-  return {
-    tapSampler: setTapSampler(),
-  };
+  const tapSampler = setTapSampler();
+  return { ...tapSampler };
 };
 const thisSynth = setSynth();
 type synthType = typeof thisSynth;
 
-const playSynth = (flooderData: flooderDataType, synth: synthType) => {
-  flooderData.flooders.forEach((flooder) => {
+const playSynth = (
+  flooderData: flooderDataType,
+  flooderParams: flooderParamsType,
+  synthParams: paramsType,
+  synth: synthType
+) => {
+  flooderData.flooders.forEach((flooder, index) => {
     if (flooder.isAttached) {
-      synth.tapSampler.triggerAttackRelease("A1", 0.5);
+      const volume = tools.map(
+        flooder.m,
+        flooderParams.mMin,
+        flooderParams.mMax,
+        synthParams.minVolume,
+        synthParams.maxVolume
+      );
+      synth.pitchShift.pitch = index * 2;
+      synth.tapSampler.volume.value = volume;
+      synth.tapSampler.triggerAttackRelease("A1", 0.1);
     }
   });
 };

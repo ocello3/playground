@@ -18,7 +18,7 @@ const setParams = () => {
   };
 };
 export const thisParams = setParams();
-type paramsType = typeof thisParams;
+export type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
@@ -40,7 +40,7 @@ export const setData = (params: paramsType, size: number) => {
     surfaceYPos: size * surfaceYPosRate,
     isReset: true,
     flooders: Array.from(Array(num), (_, index) => {
-      return {
+      const flooder = {
         isInWater: false,
         isAttached: false,
         m: 0,
@@ -54,6 +54,7 @@ export const setData = (params: paramsType, size: number) => {
           (_, index) => index * fontAvatorAngleGap * Math.PI
         ),
       };
+      return flooder;
     }),
   };
 };
