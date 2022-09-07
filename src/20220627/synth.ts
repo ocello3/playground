@@ -8,6 +8,8 @@ const setParams = () => {
   return {
     maxVolume: -10,
     minVolume: -40,
+    minPitch: -20,
+    maxPitch: 20,
   };
 };
 const thisParams = setParams();
@@ -51,12 +53,20 @@ const playSynth = (
         flooder.m,
         flooderParams.mMin,
         flooderParams.mMax,
-        synthParams.minVolume,
-        synthParams.maxVolume
+        synthParams.maxVolume,
+        synthParams.minVolume
       );
-      synth.pitchShift.pitch = index * 2;
+      const pitch = tools.map(
+        flooderParams.mMax - flooder.m,
+        flooderParams.mMin,
+        flooderParams.mMax,
+        synthParams.minPitch,
+        synthParams.maxPitch
+      );
+      const sound = index % 2 === 0 ? "A1" : "A2";
+      synth.pitchShift.pitch = pitch;
       synth.tapSampler.volume.value = volume;
-      synth.tapSampler.triggerAttackRelease("A1", 0.1);
+      synth.tapSampler.triggerAttackRelease(sound, 0.1);
     }
   });
 };
