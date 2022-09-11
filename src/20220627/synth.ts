@@ -22,7 +22,8 @@ const setGui = (params: paramsType, tab: TabApi) => {
 };
 
 const setTapSampler = () => {
-  const pitchShift = new Tone.PitchShift().toDestination();
+  const panner = new Tone.Panner(0.5).toDestination();
+  const pitchShift = new Tone.PitchShift().connect(panner);
   const tapSampler = new Tone.Sampler({
     urls: {
       A1: "../src/20220627/sound/toggle_on.wav",
@@ -30,12 +31,14 @@ const setTapSampler = () => {
     },
   }).connect(pitchShift);
   return {
+    panner: panner,
     pitchShift: pitchShift,
     instrument: tapSampler,
   };
 };
 
 const setGrainPlayer = () => {
+  const panner = new Tone.Panner(0.5).toDestination();
   const grainPlayer = new Tone.GrainPlayer({
     url: "../src/20220627/sound/toggle_off.wav",
     loop: true,
@@ -44,10 +47,12 @@ const setGrainPlayer = () => {
     playbackRate: 2.5,
     onload: () => {
       grainPlayer.volume.value = -60;
-      grainPlayer.toDestination().start();
+      grainPlayer.connect(panner);
+      grainPlayer.start();
     },
   });
   return {
+    panner: panner,
     source: grainPlayer,
   };
 };
@@ -65,11 +70,16 @@ const playTapSampler = (
   flooderData: flooderDataType,
   flooderParams: flooderParamsType,
   synthParams: paramsType,
-  synth: synthType
+  synth: synthType,
+  size: number
 ) => {
   flooderData.flooders.forEach((flooder, index) => {
     if (flooder.isAttached) {
-      // for tapSampler
+      const pan = tools.constrain(
+        tools.map(flooder.pos.x, 0, size, -1, 1),
+        -1,
+        1
+      );
       const volume = tools.map(
         flooder.m,
         flooderParams.mMin,
@@ -85,6 +95,7 @@ const playTapSampler = (
         synthParams.maxPitch
       );
       const sound = index % 2 === 0 ? "A1" : "A2";
+      synth.tapSampler.panner.pan.value = pan;
       synth.tapSampler.pitchShift.pitch = pitch;
       synth.tapSampler.instrument.volume.value = volume;
       synth.tapSampler.instrument.triggerAttackRelease(sound, 0.1);
@@ -116,9 +127,10 @@ const playSynth = (
   flooderData: flooderDataType,
   flooderParams: flooderParamsType,
   synthParams: paramsType,
-  synth: synthType
+  synth: synthType,
+  size: number
 ) => {
-  playTapSampler(flooderData, flooderParams, synthParams, synth);
+  playTapSampler(flooderData, flooderParams, synthParams, synth, size);
   playGrainPlayer(flooderData, synthParams, synth);
 };
 

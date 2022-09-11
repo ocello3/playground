@@ -10,6 +10,10 @@ const map = (
   return ((value - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
 };
 
+const constrain = (value: number, low: number, high: number): number => {
+  return Math.max(Math.min(value, high), low);
+};
+
 const setColor = (r: number, g: number, b: number) => {
   const color = new p5.Color();
   color.setRed(r);
@@ -27,6 +31,7 @@ const setSize = (div: string) => {
 
 export const tools = {
   map,
+  constrain,
   setColor,
   setSize,
 };

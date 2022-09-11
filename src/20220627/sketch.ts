@@ -43,7 +43,7 @@ export const sketch = async (s: p5) => {
     flooder.draw(flooderData, size, font, s);
     bubble.draw(bubbleData, s);
     drawFrame(s, size);
-    synth.playSynth(flooderData, flooderParams, synthParams, synthData);
+    synth.playSynth(flooderData, flooderParams, synthParams, synthData, size);
     debug(flooderData);
   };
 };
