@@ -42,7 +42,7 @@ const setTapSampler = () => {
 const setGrainPlayer = () => {
   const panner = new Tone.Panner(0.5).toDestination();
   const grainPlayer = new Tone.GrainPlayer({
-    url: "../src/20220627/sound/toggle_off.wav",
+    url: toggle_off,
     loop: true,
     grainSize: 0.06,
     overlap: 0.1,
