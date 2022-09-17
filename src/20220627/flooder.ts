@@ -41,6 +41,7 @@ export const setData = (params: paramsType, size: number) => {
     isReset: true,
     isWaiting: true,
     progressRateInWater: 0,
+    nearestXPos: 0,
     flooders: Array.from(Array(num), (_, index) => {
       const flooder = {
         isInWater: false,
@@ -161,14 +162,14 @@ const updateData = (
     }
     return true;
   })();
-  newData.progressRateInWater = (() => {
+  const dists = newData.flooders.map((flooder) => {
+    const y = flooder.pos.y;
+    return y - surfaceYPos;
+  });
+  const shortestDistFromWater = (() => {
     if (newData.isWaiting || newData.isReset) return 0;
     // calc longest distance from waterline
-    const dists = newData.flooders.map((flooder) => {
-      const y = flooder.pos.y;
-      return y - surfaceYPos;
-    });
-    const shortestDist = dists.reduce((prev, current) => {
+    return dists.reduce((prev, current) => {
       // return prev < current ? prev : current;
       if (prev < current || current < 0) {
         return prev;
@@ -176,7 +177,15 @@ const updateData = (
         return current;
       }
     }, size);
-    const progress = shortestDist / (size - surfaceYPos);
+  })();
+  newData.nearestXPos = (() => {
+    const nearestIndex = dists.indexOf(shortestDistFromWater);
+    const posYs = newData.flooders.map((flooder) => flooder.pos.x);
+    const result = posYs[nearestIndex];
+    return typeof result === "number" ? result : size * 0.5;
+  })();
+  newData.progressRateInWater = (() => {
+    const progress = shortestDistFromWater / (size - surfaceYPos);
     return progress > 1 ? 1 : progress;
   })();
   return newData;

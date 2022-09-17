@@ -2,7 +2,7 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
-import { debug } from "../util/debug";
+// import { debug } from "../util/debug";
 import { flooder } from "./flooder";
 import { bubble } from "./bubble";
 import { synth } from "./synth.js";
@@ -43,7 +43,7 @@ export const sketch = async (s: p5) => {
     flooder.draw(flooderData, size, font, s);
     bubble.draw(bubbleData, s);
     drawFrame(s, size);
+    // debug(flooderData);
     synth.playSynth(flooderData, flooderParams, synthParams, synthData, size);
-    debug(flooderData);
   };
 };

@@ -106,9 +106,10 @@ const playTapSampler = (
 const playGrainPlayer = (
   flooderData: flooderDataType,
   synthParams: paramsType,
-  synth: synthType
+  synth: synthType,
+  size: number
 ) => {
-  const { progressRateInWater } = flooderData;
+  const { progressRateInWater, nearestXPos } = flooderData;
   const volume = tools.map(
     1 - progressRateInWater,
     0,
@@ -116,10 +117,12 @@ const playGrainPlayer = (
     -35,
     synthParams.grainMaxVolume
   );
+  const pan = tools.constrain(tools.map(nearestXPos, 0, size, -1, 1), -1, 1);
   if (progressRateInWater === 0) {
     synth.grainPlayer.source.mute = true;
   } else {
     synth.grainPlayer.source.volume.value = volume;
+    synth.grainPlayer.panner.pan.value = pan;
   }
 };
 
@@ -131,7 +134,7 @@ const playSynth = (
   size: number
 ) => {
   playTapSampler(flooderData, flooderParams, synthParams, synth, size);
-  playGrainPlayer(flooderData, synthParams, synth);
+  playGrainPlayer(flooderData, synthParams, synth, size);
 };
 
 export const synth = { setParams, setGui, setSynth, playSynth };

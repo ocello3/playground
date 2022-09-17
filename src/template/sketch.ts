@@ -24,7 +24,7 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     libData = lib.updateData(libData, libParams, size);
-    lib.draw(libData, libParams, s);
+    lib.draw(libData, s);
     drawFrame(s, size);
     synth.playSynth(libData, synthData, synthParams, size);
   };

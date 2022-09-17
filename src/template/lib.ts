@@ -36,7 +36,7 @@ const updateData = (
   return newData;
 };
 
-const draw = (data: dataType, params: paramsType, s: p5) => {
+const draw = (data: dataType, s: p5) => {
   const { radius, center } = data;
   s.push();
   s.circle(center.x, center.y, radius);
