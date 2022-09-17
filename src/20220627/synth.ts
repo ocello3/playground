@@ -3,6 +3,8 @@ import { TabApi } from "tweakpane";
 import { paramsType as flooderParamsType } from "./flooder";
 import { dataType as flooderDataType } from "./flooder";
 import { tools } from "../util/tools";
+import toggle_on from "./sound/toggle_on.wav";
+import toggle_off from "./sound/toggle_off.wav";
 
 const setParams = () => {
   return {
@@ -26,8 +28,8 @@ const setTapSampler = () => {
   const pitchShift = new Tone.PitchShift().connect(panner);
   const tapSampler = new Tone.Sampler({
     urls: {
-      A1: "../src/20220627/sound/toggle_on.wav",
-      A2: "../src/20220627/sound/toggle_off.wav",
+      A1: toggle_on,
+      A2: toggle_off,
     },
   }).connect(pitchShift);
   return {

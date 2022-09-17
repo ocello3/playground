@@ -1,5 +1,6 @@
 import "./style.css";
 import p5 from "p5";
+import latest from "./latest.txt";
 // import * as Tone from "tone";
 
 /*
@@ -21,7 +22,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 `;
 
 const getLatestDate = async (): Promise<string> => {
-  const response = await fetch("./src/latest.txt");
+  const response = await fetch(latest);
   const rawText = await response.text();
   return rawText.replace(/(\r\n|\n|\r)/gm, ""); // remove line feed code
 };

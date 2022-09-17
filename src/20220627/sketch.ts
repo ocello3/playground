@@ -6,6 +6,7 @@ import { tools } from "../util/tools";
 import { flooder } from "./flooder";
 import { bubble } from "./bubble";
 import { synth } from "./synth.js";
+import fontData from "../font/Fascinate-Regular.ttf";
 
 export const sketch = async (s: p5) => {
   const size = tools.setSize("sketch");
@@ -18,7 +19,7 @@ export const sketch = async (s: p5) => {
   let bubbleData = bubble.setData(flooderData);
   let synthData = synth.setSynth();
   s.preload = () => {
-    font = s.loadFont("../../src/font/Fascinate-Regular.ttf");
+    font = s.loadFont(fontData);
   };
   s.setup = () => {
     s.createCanvas(size, size);
