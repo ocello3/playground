@@ -2,6 +2,7 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
+import { debug } from "../util/debug";
 import { lib } from "./lib";
 import { synth } from "./synth.js";
 
@@ -21,6 +22,7 @@ export const sketch = (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
+    debug(libData);
     s.background(255);
     controller.updateController(s, controllers);
     libData = lib.updateData(libData, libParams, size);

@@ -4,8 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "tsc": "tsc",
+    "dev": "tsc && vite --host",
     "build": "tsc && vite build",
+    "test": "tsc && vitest",
     "preview": "vite preview --host",
     "deploy": "gh-pages -d dist"
   },
@@ -14,7 +16,8 @@
     "@types/p5": "^1.4.2",
     "gh-pages": "^4.0.0",
     "typescript": "^4.6.4",
-    "vite": "^3.0.7"
+    "vite": "^3.0.7",
+    "vitest": "^0.23.2"
   },
   "dependencies": {
     "p5": "^1.4.2",
