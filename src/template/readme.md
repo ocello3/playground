@@ -1,17 +1,19 @@
-# template $B$N2~A1E@(B
+# template の改善点
 
-- sound $B$r(B default $B$G(B off $B$K$7$F$$$k$,!"$$$A$$$A@_Dj$rJQ99$9$k$N$,LLE]!#(Btemplate $B$GHFMQE*$J(B sound $B$r(B on $B$K$7$F$*$/!#(B
+- sound を default で off にしているが、いちいち設定を変更するのが面倒。template で汎用的な sound を on にしておく。
 
-# $B:n6H%a%b(B
+# 作業メモ
 
-- $BHFMQE*$J(B sound $B$H$O!)(B
-  - defalut $B$N(B gui $B$rA`:n$7$?:]$K2;$,$J$l$P$$$$!#(B
-  - play $B$G(B on $B$K$7$?$H$-!"(Boff $B$K$7$?$H$-$K$=$l$>$l0[$J$k2;$rLD$i$9!#(B
-    - $B$I$N2;$K$9$k$+!)(B -> toggle_on/off
-    - $B%U%)%k%@$O$I$3$K$9$k$+!)(B -> sound $B%U%)%k%@$r:n@.$7$?!#(B
-- $B<BAu(B
-  - synth.ts $B$GFI$_9~$`%3!<%I$r=q$$$F$k(B
+日本語
 
-# $B40N;8e(B
+- 汎用的な sound とは？
+  - defalut の gui を操作した際に音がなればいい。
+  - play で on にしたとき、off にしたときにそれぞれ異なる音を鳴らす。
+    - どの音にするか？ -> toggle_on/off
+    - フォルダはどこにするか？ -> sound フォルダを作成した。
+- 実装
+  - synth.ts で読み込むコードを書いてる
 
-- $B2a5n$N(B sketch $B$N(B setGui $B$r=$@5$9$k!#(B
+# 完了後
+
+- 過去の sketch の setGui を修正する。
