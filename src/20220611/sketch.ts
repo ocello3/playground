@@ -5,23 +5,23 @@ import { tools } from "../util/tools";
 // import { debug } from "../util/debug";
 import { mover } from "./mover";
 import { wind } from "./wind";
-// import { synth } from "./synth.js";
+import { synth } from "./synth.js";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
   let controllers = controller.setController();
   const moverParams = mover.setParams();
   const windParams = wind.setParams(moverParams);
-  // const synthParams = synth.setParams();
+  const synthParams = synth.setParams();
   let moverData = mover.setData(moverParams, size);
   let windData = wind.setData(windParams, size);
-  // let synthData = synth.setSynth();
+  let synthData = synth.setSynth();
   s.setup = () => {
     s.createCanvas(size, size);
-    const tab = controller.setGui(s, controllers, false, false);
+    const tab = controller.setGui(s, controllers, synthData.se, false);
     mover.setGui(moverParams, tab);
     wind.setGui(windParams, tab);
-    // synth.setGui(synthParams, tab);
+    synth.setGui(synthParams, tab);
     s.noLoop();
     // s.frameRate(10);
   };

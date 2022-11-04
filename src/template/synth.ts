@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { TabApi } from "tweakpane";
-import { dataType as libDataType } from "./lib";
-import { tools } from "../util/tools";
+import toggle_on from "../util/toggle_on.wav";
+import toggle_off from "../util/toggle_off.wav";
 
 const setParams = () => {
   return {
@@ -16,38 +16,28 @@ const setGui = (params: paramsType, tab: TabApi) => {
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
-const setOcillator = () => {
-  const oscillator = new Tone.AMOscillator(400, "sine", "square");
-  oscillator.mute = true;
-  oscillator.toDestination().start();
-  Tone.Destination.mute = true;
-  return oscillator;
+const setSe = () => {
+  const se = new Tone.Sampler({
+    urls: {
+      A1: toggle_on,
+      A2: toggle_off,
+    },
+  }).toDestination();
+  return se;
 };
 
 const setSynth = () => {
   return {
-    oscillator: setOcillator(),
+    se: setSe(),
   };
 };
 const thisSynth = setSynth();
 type synthType = typeof thisSynth;
 
-const playSynth = (
-  libData: libDataType,
-  synth: synthType,
-  params: paramsType,
-  size: number
-) => {
-  const volume = tools.map(
-    libData.radius,
-    0,
-    size * 0.5,
-    -30,
-    params.maxVolume
-  );
-  const freq = tools.map(libData.radius, 0, size * 0.5, 100, 600);
-  synth.oscillator.volume.value = volume;
-  synth.oscillator.frequency.value = freq;
+const playSynth = (synth: synthType, params: paramsType) => {
+  console.log(synth.se.get());
+  console.log(params);
+  return;
 };
 
 export const synth = { setParams, setGui, setSynth, playSynth };

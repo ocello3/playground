@@ -23,7 +23,7 @@ export const sketch = async (s: p5) => {
   };
   s.setup = () => {
     s.createCanvas(size, size);
-    const tab = controller.setGui(s, controllers, true, false);
+    const tab = controller.setGui(s, controllers, synthData.se, false);
     flooder.setGui(flooderParams, tab);
     bubble.setGui(bubbleParams, tab);
     synth.setGui(synthParams, tab);

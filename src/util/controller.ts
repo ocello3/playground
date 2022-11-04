@@ -3,6 +3,7 @@ import { Pane, TabApi } from "tweakpane";
 import * as Tone from "tone";
 
 const controllers = {
+  isInit: true,
   isPlay: false,
   scrLk: true,
   frameRate: 0,
@@ -21,38 +22,44 @@ const updateController = (s: p5, controllers: controllerType) => {
 const activate = async (
   s: p5,
   controllers: controllerType,
-  audio: boolean,
+  se: Tone.Sampler,
   seq: boolean
 ) => {
-  if (audio === true) {
-    await Tone.start();
+  await Tone.start();
+  se.triggerAttackRelease("A1", 0.1);
+  setTimeout(() => {
     Tone.Destination.mute = controllers.mute;
-  }
-  if (seq === true) Tone.Transport.start();
-  controllers.isPlay = true;
-  s.loop();
+    if (seq === true) Tone.Transport.start();
+    controllers.isPlay = true;
+    controllers.isInit = false;
+    s.loop();
+  }, 100);
 };
 const inactivate = (
   s: p5,
   controllers: controllerType,
-  audio: boolean,
+  se: Tone.Sampler,
   seq: boolean
 ) => {
-  if (seq === true) Tone.Transport.stop();
-  if (audio === true) Tone.Destination.mute = true;
-  controllers.isPlay = false;
-  s.noLoop();
+  se.triggerAttackRelease("A2", 0.1);
+  setTimeout(() => {
+    if (seq === true) Tone.Transport.stop();
+    Tone.Destination.mute = true;
+    controllers.isPlay = false;
+    s.noLoop();
+  }, 100);
 };
 const reactivate = (
   s: p5,
   controllers: controllerType,
-  audio: boolean,
+  se: Tone.Sampler,
   seq: boolean
 ) => {
   if (seq === true) Tone.Transport.start();
-  if (audio === true) Tone.Destination.mute = controllers.mute;
-  controllers.isPlay = true;
+  Tone.Destination.mute = controllers.mute;
   s.loop();
+  se.triggerAttackRelease("A1", 0.1);
+  controllers.isPlay = true;
 };
 
 const ban_scroll = () => {
@@ -72,7 +79,7 @@ const notscroll = (e: Event) => {
 const setGui = (
   s: p5,
   controllers: controllerType,
-  audio = false,
+  se: Tone.Sampler,
   seq = false
 ): TabApi => {
   const pane = new Pane({
@@ -84,12 +91,32 @@ const setGui = (
   tab.pages[0]
     .addButton({ title: "on/off", label: "play" })
     .on("click", async () => {
-      const isInit = !s.isLooping() && !controllers.isPlay;
+      const isInit = controllers.isInit;
       const isPlay = s.isLooping();
-      const isPause = !s.isLooping() && controllers.isPlay;
-      if (isInit) activate(s, controllers, audio, seq);
-      if (isPlay) inactivate(s, controllers, audio, seq);
-      if (isPause) reactivate(s, controllers, audio, seq);
+      const isPause =
+        !controllers.isInit && !s.isLooping() && !controllers.isPlay;
+      if (isInit) {
+        console.log(
+          `activate, isLooping: ${s.isLooping()}, isPlay: ${controllers.isPlay}`
+        );
+        activate(s, controllers, se, seq);
+      }
+      if (isPlay) {
+        console.log(
+          `inactivate, isLooping: ${s.isLooping()}, isPlay: ${
+            controllers.isPlay
+          }`
+        );
+        inactivate(s, controllers, se, seq);
+      }
+      if (isPause) {
+        console.log(
+          `reactivate, isLooping: ${s.isLooping()}, isPlay: ${
+            controllers.isPlay
+          }`
+        );
+        reactivate(s, controllers, se, seq);
+      }
     });
   tab.pages[0].addMonitor(controllers, "isPlay");
   tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
@@ -100,11 +127,9 @@ const setGui = (
     }
     if (event.value === false) go_scroll();
   });
-  if (audio === true) {
-    tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
-      if (s.isLooping()) Tone.Destination.mute = event.value;
-    });
-  }
+  tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
+    if (s.isLooping()) Tone.Destination.mute = event.value;
+  });
   return tab;
 };
 

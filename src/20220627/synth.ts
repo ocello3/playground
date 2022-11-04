@@ -3,8 +3,8 @@ import { TabApi } from "tweakpane";
 import { paramsType as flooderParamsType } from "./flooder";
 import { dataType as flooderDataType } from "./flooder";
 import { tools } from "../util/tools";
-import toggle_on from "./sound/toggle_on.wav";
-import toggle_off from "./sound/toggle_off.wav";
+import toggle_on from "./toggle_on.wav";
+import toggle_off from "./toggle_off.wav";
 
 const setParams = () => {
   return {
@@ -21,6 +21,16 @@ type paramsType = typeof thisParams;
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[2];
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+};
+
+const setSe = () => {
+  const se = new Tone.Sampler({
+    urls: {
+      A1: toggle_on,
+      A2: toggle_off,
+    },
+  }).toDestination();
+  return se;
 };
 
 const setTapSampler = () => {
@@ -62,8 +72,9 @@ const setGrainPlayer = () => {
 const setSynth = () => {
   const tapSampler = setTapSampler();
   const grainPlayer = setGrainPlayer();
+  const se = setSe();
   Tone.Destination.mute = true;
-  return { tapSampler, grainPlayer };
+  return { tapSampler, grainPlayer, se };
 };
 const thisSynth = setSynth();
 type synthType = typeof thisSynth;

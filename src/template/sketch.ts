@@ -15,7 +15,7 @@ export const sketch = (s: p5) => {
   let synthData = synth.setSynth();
   s.setup = () => {
     s.createCanvas(size, size);
-    const tab = controller.setGui(s, controllers, true, false);
+    const tab = controller.setGui(s, controllers, synthData.se, false);
     lib.setGui(libParams, tab);
     synth.setGui(synthParams, tab);
     s.noLoop();
@@ -28,6 +28,6 @@ export const sketch = (s: p5) => {
     libData = lib.updateData(libData, libParams, size);
     lib.draw(libData, s);
     drawFrame(s, size);
-    synth.playSynth(libData, synthData, synthParams, size);
+    // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
