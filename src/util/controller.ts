@@ -1,6 +1,8 @@
 import p5 from "p5";
 import { Pane, TabApi } from "tweakpane";
 import * as Tone from "tone";
+import toggle_on from "../util/toggle_on.wav";
+import toggle_off from "../util/toggle_off.wav";
 
 const controllers = {
   isInit: true,
@@ -76,12 +78,26 @@ const notscroll = (e: Event) => {
   e.preventDefault();
 };
 
+export const setSe = () => {
+  const se = new Tone.Sampler({
+    urls: {
+      A1: toggle_on,
+      A2: toggle_off,
+    },
+  }).toDestination();
+  se.volume.value = -10;
+  return se;
+};
+
 const setGui = (
   s: p5,
   controllers: controllerType,
   se: Tone.Sampler,
   seq = false
 ): TabApi => {
+  document.getElementById(
+    "indicator"
+  )!.innerHTML = `...waiting. please uncheck "mute" box to play sounds.`;
   const pane = new Pane({
     container: <HTMLInputElement>document.getElementById("pane"),
   });
@@ -96,29 +112,21 @@ const setGui = (
       const isPause =
         !controllers.isInit && !s.isLooping() && !controllers.isPlay;
       if (isInit) {
-        console.log(
-          `activate, isLooping: ${s.isLooping()}, isPlay: ${controllers.isPlay}`
-        );
+        console.log(`activate`);
         activate(s, controllers, se, seq);
+        document.getElementById("indicator")!.innerHTML = "playing";
       }
       if (isPlay) {
-        console.log(
-          `inactivate, isLooping: ${s.isLooping()}, isPlay: ${
-            controllers.isPlay
-          }`
-        );
+        console.log(`inactivate`);
         inactivate(s, controllers, se, seq);
+        document.getElementById("indicator")!.innerHTML = "...waiting";
       }
       if (isPause) {
-        console.log(
-          `reactivate, isLooping: ${s.isLooping()}, isPlay: ${
-            controllers.isPlay
-          }`
-        );
+        console.log(`reactivate`);
         reactivate(s, controllers, se, seq);
+        document.getElementById("indicator")!.innerHTML = "playing";
       }
     });
-  tab.pages[0].addMonitor(controllers, "isPlay");
   tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
   ban_scroll();
   tab.pages[0].addInput(controllers, "scrLk").on("change", (event) => {

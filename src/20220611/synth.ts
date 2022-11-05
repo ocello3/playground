@@ -1,7 +1,6 @@
 import * as Tone from "tone";
 import { TabApi } from "tweakpane";
-import toggle_on from "../util/toggle_on.wav";
-import toggle_off from "../util/toggle_off.wav";
+import { setSe } from "../util/controller";
 
 const setParams = () => {
   return {
@@ -16,17 +15,8 @@ const setGui = (params: paramsType, tab: TabApi) => {
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
-const setSe = () => {
-  const se = new Tone.Sampler({
-    urls: {
-      A1: toggle_on,
-      A2: toggle_off,
-    },
-  }).toDestination();
-  return se;
-};
-
 const setSynth = () => {
+  console.log(Tone.Destination.get());
   return {
     se: setSe(),
   };

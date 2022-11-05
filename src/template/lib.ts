@@ -19,7 +19,6 @@ const setData = (params: paramsType, size: number) => {
   const { rate } = params;
   return {
     radius: size * 0.5 * rate,
-    center: new p5.Vector().set(size * 0.5, size * 0.5),
   };
 };
 const thisData = setData(thisParams, 100);
@@ -37,9 +36,9 @@ const updateData = (
 };
 
 const draw = (data: dataType, s: p5) => {
-  const { radius, center } = data;
+  const { radius } = data;
   s.push();
-  s.circle(center.x, center.y, radius);
+  s.circle(100, 100, radius);
   s.pop();
 };
 
