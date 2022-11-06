@@ -1,6 +1,7 @@
 import p5 from "p5";
 import { Pane, TabApi } from "tweakpane";
 import * as Tone from "tone";
+import { ToneAudioBuffer } from "tone";
 import toggle_on from "../util/toggle_on.wav";
 import toggle_off from "../util/toggle_off.wav";
 
@@ -78,11 +79,15 @@ const notscroll = (e: Event) => {
   e.preventDefault();
 };
 
-export const setSe = () => {
+export const setSe = async () => {
+  const toggle_on_buffer = new ToneAudioBuffer();
+  await toggle_on_buffer.load(toggle_on);
+  const toggle_off_buffer = new ToneAudioBuffer();
+  await toggle_off_buffer.load(toggle_off);
   const se = new Tone.Sampler({
     urls: {
-      A1: toggle_on,
-      A2: toggle_off,
+      A1: toggle_on_buffer,
+      A2: toggle_off_buffer,
     },
   }).toDestination();
   se.volume.value = -10;

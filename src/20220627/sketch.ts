@@ -5,7 +5,7 @@ import { tools } from "../util/tools";
 // import { debug } from "../util/debug";
 import { flooder } from "./flooder";
 import { bubble } from "./bubble";
-import { synth } from "./synth.js";
+import { synth, synthType } from "./synth.js";
 import fontData from "../font/Fascinate-Regular.ttf";
 
 export const sketch = async (s: p5) => {
@@ -17,12 +17,13 @@ export const sketch = async (s: p5) => {
   const synthParams = synth.setParams();
   let flooderData = flooder.setData(flooderParams, size);
   let bubbleData = bubble.setData(flooderData);
-  let synthData = synth.setSynth();
+  let synthData: synthType;
   s.preload = () => {
     font = s.loadFont(fontData);
   };
-  s.setup = () => {
+  s.setup = async () => {
     s.createCanvas(size, size);
+    synthData = await synth.setSynth();
     const tab = controller.setGui(s, controllers, synthData.se, false);
     flooder.setGui(flooderParams, tab);
     bubble.setGui(bubbleParams, tab);
@@ -31,6 +32,7 @@ export const sketch = async (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
+    if (synthData === undefined) return;
     s.background(255);
     controller.updateController(s, controllers);
     flooderData = flooder.updateData(flooderData, flooderParams, size, s);

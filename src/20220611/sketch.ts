@@ -5,7 +5,7 @@ import { tools } from "../util/tools";
 // import { debug } from "../util/debug";
 import { mover } from "./mover";
 import { wind } from "./wind";
-import { synth } from "./synth.js";
+import { synth, synthType } from "./synth.js";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
@@ -15,9 +15,10 @@ export const sketch = (s: p5) => {
   const synthParams = synth.setParams();
   let moverData = mover.setData(moverParams, size);
   let windData = wind.setData(windParams, size);
-  let synthData = synth.setSynth();
-  s.setup = () => {
+  let synthData: synthType;
+  s.setup = async () => {
     s.createCanvas(size, size);
+    synthData = await synth.setSynth();
     const tab = controller.setGui(s, controllers, synthData.se, false);
     mover.setGui(moverParams, tab);
     wind.setGui(windParams, tab);
@@ -26,6 +27,7 @@ export const sketch = (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
+    if (synthData === undefined) return;
     // debug(moverData);
     s.background(255);
     controller.updateController(s, controllers);

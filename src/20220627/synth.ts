@@ -4,8 +4,8 @@ import { paramsType as flooderParamsType } from "./flooder";
 import { dataType as flooderDataType } from "./flooder";
 import { tools } from "../util/tools";
 import { setSe } from "../util/controller";
-import toggle_on from "./toggle_on.wav";
-import toggle_off from "./toggle_off.wav";
+import toggle_on from "./sound/toggle_on.wav";
+import toggle_off from "./sound/toggle_off.wav";
 
 const setParams = () => {
   return {
@@ -60,15 +60,15 @@ const setGrainPlayer = () => {
   };
 };
 
-const setSynth = () => {
+const setSynth = async () => {
   const tapSampler = setTapSampler();
   const grainPlayer = setGrainPlayer();
-  const se = setSe();
+  const se = await setSe();
   Tone.Destination.mute = true;
   return { tapSampler, grainPlayer, se };
 };
-const thisSynth = setSynth();
-type synthType = typeof thisSynth;
+const thisSynth = await setSynth();
+export type synthType = typeof thisSynth;
 
 const playTapSampler = (
   flooderData: flooderDataType,

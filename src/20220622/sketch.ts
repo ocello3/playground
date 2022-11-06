@@ -3,7 +3,7 @@ import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
 import { attractor } from "./attractor";
-import { synth } from "./synth.js";
+import { synth, synthType } from "./synth.js";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
@@ -11,9 +11,10 @@ export const sketch = (s: p5) => {
   const attractorParams = attractor.setParams();
   const synthParams = synth.setParams();
   let attractorData = attractor.setData(attractorParams, size);
-  let synthData = synth.setSynth();
-  s.setup = () => {
+  let synthData: synthType;
+  s.setup = async () => {
     s.createCanvas(size, size);
+    synthData = await synth.setSynth();
     const tab = controller.setGui(s, controllers, synthData.se, false);
     attractor.setGui(attractorParams, tab);
     // s.blendMode(s.OVERLAY);
@@ -24,6 +25,7 @@ export const sketch = (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
+    if (synthData === undefined) return;
     s.background(33, 11, 44, 200);
     controller.updateController(s, controllers);
     attractorData = attractor.updateData(attractorData, attractorParams, size);

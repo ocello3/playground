@@ -3,18 +3,20 @@ import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
-import { lib } from "./lib";
-import { synth } from "./synth.js";
+import { lib, dataType } from "./lib";
+import { synth, synthType } from "./synth.js";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
   let controllers = controller.setController();
   const libParams = lib.setParams();
   const synthParams = synth.setParams();
-  let libData = lib.setData(libParams, size);
-  let synthData = synth.setSynth();
-  s.setup = () => {
+  let libData: dataType;
+  let synthData: synthType;
+  s.setup = async () => {
     s.createCanvas(size, size);
+    libData = lib.setData(libParams, size);
+    synthData = await synth.setSynth();
     const tab = controller.setGui(s, controllers, synthData.se, false);
     lib.setGui(libParams, tab);
     synth.setGui(synthParams, tab);
@@ -22,6 +24,7 @@ export const sketch = (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
+    if (synthData === undefined) return;
     debug(libData);
     s.background(255);
     controller.updateController(s, controllers);

@@ -15,14 +15,15 @@ const setGui = (params: paramsType, tab: TabApi) => {
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
-const setSynth = () => {
+const setSynth = async () => {
+  const se = await setSe();
   console.log(Tone.Destination.get());
   return {
-    se: setSe(),
+    se,
   };
 };
-const thisSynth = setSynth();
-type synthType = typeof thisSynth;
+const thisSynth = await setSynth();
+export type synthType = typeof thisSynth;
 
 const playSynth = (synth: synthType, params: paramsType) => {
   console.log(synth.se.get());
