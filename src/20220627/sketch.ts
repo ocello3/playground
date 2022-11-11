@@ -29,10 +29,11 @@ export const sketch = async (s: p5) => {
     bubble.setGui(bubbleParams, tab);
     synth.setGui(synthParams, tab);
     s.noLoop();
+    drawFrame(s, size);
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) return;
+    if (synthData === undefined) s.noLoop();
     s.background(255);
     controller.updateController(s, controllers);
     flooderData = flooder.updateData(flooderData, flooderParams, size, s);

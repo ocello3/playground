@@ -15,23 +15,24 @@ export const sketch = (s: p5) => {
   let synthData: synthType;
   s.setup = async () => {
     synthData = await synth.setSynth();
+    console.log(synthData.data); // remove later
     libData = lib.setData(libParams, size);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synthData.se, false);
     lib.setGui(libParams, tab);
     synth.setGui(synthParams, tab);
     s.noLoop();
+    drawFrame(s, size);
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) return;
+    if (synthData === undefined) s.noLoop();
     debug(libData);
     s.background(255);
     controller.updateController(s, controllers);
     libData = lib.updateData(libData, libParams, size);
     lib.draw(libData, s);
     drawFrame(s, size);
-    console.log(synthData);
-    if (s.frameCount % 400 === 2) synth.playSynth(synthData, synthParams);
+    if (s.frameCount === 2) synth.playSynth(synthData, synthParams);
   };
 };

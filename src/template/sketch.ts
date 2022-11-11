@@ -21,10 +21,11 @@ export const sketch = (s: p5) => {
     lib.setGui(libParams, tab);
     synth.setGui(synthParams, tab);
     s.noLoop();
+    drawFrame(s, size);
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) return;
+    if (synthData === undefined) s.noLoop();
     debug(libData);
     s.background(255);
     controller.updateController(s, controllers);

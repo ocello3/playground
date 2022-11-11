@@ -21,11 +21,11 @@ export const sketch = (s: p5) => {
     // tab.pages[0].addInput(params, 'margin');
     synth.setGui(synthParams, tab);
     s.noLoop();
-    // s.pixelDensity(1);
+    drawFrame(s, size);
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) return;
+    if (synthData === undefined) s.noLoop();
     s.background(33, 11, 44, 200);
     controller.updateController(s, controllers);
     attractorData = attractor.updateData(attractorData, attractorParams, size);

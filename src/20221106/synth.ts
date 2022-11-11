@@ -3,6 +3,7 @@ import { ToneAudioBuffer } from "tone";
 import { setSe } from "../util/controller";
 import { TabApi } from "tweakpane";
 import track_1 from "./track_1.mp3";
+import track_2 from "./track_2.mp3";
 
 const setParams = () => {
   return {
@@ -17,24 +18,44 @@ const setGui = (params: paramsType, tab: TabApi) => {
   _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
-const setSampler = async () => {
-  const track_1_buffer = new ToneAudioBuffer();
-  await track_1_buffer.load(track_1);
-  const sampler = new Tone.Sampler({
-    urls: {
-      A1: track_1_buffer,
-    },
-  }).toDestination();
-  sampler.volume.value = -5;
-  return sampler;
+const getBuffer = async (url: string) => {
+  const buffer = new ToneAudioBuffer();
+  await buffer.load(url);
+  return buffer;
+};
+
+const getDurations = (buffer: ToneAudioBuffer) => {
+  const duration = buffer.duration;
+  return duration;
+};
+
+const setPlayer = (buffer: ToneAudioBuffer) => {
+  const player = new Tone.Player(buffer).toDestination();
+  player.volume.value = -5;
+  player.loop = true;
+  return player;
 };
 
 const setSynth = async () => {
   const se = await setSe();
-  const sampler = await setSampler();
+  const buffers = {
+    a: await getBuffer(track_1),
+    b: await getBuffer(track_2),
+  };
+  const durations = {
+    a: getDurations(buffers.a),
+    b: getDurations(buffers.b),
+  };
+  const players = {
+    a: setPlayer(buffers.a),
+    b: setPlayer(buffers.b),
+  };
   return {
     se,
-    sampler,
+    players,
+    data: {
+      durations,
+    },
   };
 };
 const thisSynth = await setSynth();
@@ -42,7 +63,8 @@ export type synthType = typeof thisSynth;
 
 const playSynth = (synth: synthType, params: paramsType) => {
   console.log(params);
-  synth.sampler.triggerAttackRelease("A1", 1);
+  synth.players.a.start();
+  synth.players.b.start();
   return;
 };
 
