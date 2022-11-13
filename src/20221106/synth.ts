@@ -29,10 +29,12 @@ const getDurations = (buffer: ToneAudioBuffer) => {
   return duration;
 };
 
-const setPlayer = (buffer: ToneAudioBuffer) => {
-  const player = new Tone.Player(buffer).toDestination();
+const setPlayer = (buffer: ToneAudioBuffer, duration: number) => {
+  const player = new Tone.GrainPlayer(buffer).toDestination();
   player.volume.value = -5;
   player.loop = true;
+  player.loopStart = 0;
+  player.loopEnd = duration;
   return player;
 };
 
@@ -47,8 +49,8 @@ const setSynth = async () => {
     b: getDurations(buffers.b),
   };
   const players = {
-    a: setPlayer(buffers.a),
-    b: setPlayer(buffers.b),
+    a: setPlayer(buffers.a, durations.a),
+    b: setPlayer(buffers.b, durations.b),
   };
   return {
     se,

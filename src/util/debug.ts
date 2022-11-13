@@ -1,64 +1,78 @@
-interface objType {
-  [prop: string]: any;
-}
+import p5 from "p5";
 
-const getArrayObjLogList = (
-  obj: objType,
-  name: string | null = null,
+type dataType = {
+  [prop: string]: string | number | boolean | p5.Vector;
+};
+type objectType = {
+  [prop: string]: object | object[] | dataType | dataType[];
+};
+type arrayType = (dataType | objectType)[];
+
+const divideArrayToString = (
+  arg: arrayType,
   length: number | null,
-  start: number
+  start: number,
+  logList: string[]
 ) => {
-  const logList: string[] = [];
-  const arrayObj = name === null ? obj : obj[name];
-  const limitedStart = start < arrayObj.length ? start : arrayObj.length - 1;
+  const limitedStart = start < arg.length ? start : arg.length - 1;
   const calcLimitedLength = () => {
-    if (length === null) return arrayObj.length;
+    if (length === null) return arg.length;
     const lastId = limitedStart + length;
-    const isOver = lastId > arrayObj.length;
-    return isOver ? arrayObj.length - limitedStart : length;
+    const isOver = lastId > arg.length;
+    return isOver ? arg.length - limitedStart : length;
   };
   const limitedLength = calcLimitedLength();
-  const limitedObjArray = arrayObj.slice(
-    limitedStart,
-    limitedStart + limitedLength
-  );
-  limitedObjArray.forEach((innerObj: objType, index: number) => {
-    const innerObjLog = `- index: ${index + limitedStart} -<br>`;
-    const innerObjLogList = getObjLogList(innerObj, length, start);
-    logList.push(innerObjLog.concat(...innerObjLogList));
+  const limitedObjArray = arg.slice(limitedStart, limitedStart + limitedLength);
+  limitedObjArray.forEach((innerObj, index) => {
+    logList.push(`- index: ${index + limitedStart} -<br>`);
+    divideObjectToString(innerObj, length, start, logList);
   });
   return logList;
 };
 
-const getObjLogList = (obj: objType, length: number | null, start: number) => {
-  const logList = [];
-  for (const name in obj) {
-    if (Array.isArray(obj[name])) {
-      logList.push(`** ${name}: **<br>`);
-      const arrayObjLogList = getArrayObjLogList(obj, name, length, start);
-      logList.push(...arrayObjLogList);
+const divideObjectToString = (
+  arg: objectType | dataType,
+  length: number | null,
+  start: number,
+  logList: string[]
+) => {
+  for (const key in arg) {
+    if (Array.isArray(arg[key])) {
+      divideArrayToString(arg[key] as objectType[], length, start, logList);
+    } else if (
+      typeof arg[key] === "object" &&
+      !(arg[key] instanceof p5.Vector)
+    ) {
+      logList.push(`-- ${key}:<br>`);
+      divideObjectToString(arg[key] as objectType, length, start, logList);
     } else {
-      logList.push(`${name}: ${obj[name]}<br>`);
+      addDataToStringArray(key, arg[key] as dataType, logList);
     }
   }
   return logList;
 };
 
-const getLogList = (obj: objType, length: number | null, start: number) => {
-  const logList = [];
-  if (Array.isArray(obj)) {
-    const arrayObjLogList = getArrayObjLogList(obj, null, length, start);
-    logList.push(...arrayObjLogList);
-    // console.log('array');
-  } else {
-    const objLogList = getObjLogList(obj, length, start);
-    logList.push(...objLogList);
-  }
-  return logList;
+const addDataToStringArray = (
+  key: string,
+  data: dataType,
+  logList: string[]
+) => {
+  logList.push(`${key}: ${data}<br>`);
 };
 
-export const debug = (obj: objType, length = null, start = 0) => {
+export const debug = (
+  arg: dataType | objectType | arrayType,
+  displayArrayLength: null | number = null,
+  startPosition: number = 0
+) => {
+  // header
   const title = "// debug result<br>";
-  const logList = getLogList(obj, length, start);
+  // data
+  const logList: string[] = [];
+  if (Array.isArray(arg)) {
+    divideArrayToString(arg, displayArrayLength, startPosition, logList);
+  } else {
+    divideObjectToString(arg, displayArrayLength, startPosition, logList);
+  }
   document.getElementById("debug")!.innerHTML = title.concat(...logList);
 };

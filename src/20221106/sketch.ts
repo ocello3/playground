@@ -26,8 +26,11 @@ export const sketch = (s: p5) => {
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) s.noLoop();
-    debug(libData);
+    if (synthData === undefined) {
+      s.noLoop();
+      return;
+    }
+    debug(synthData.data);
     s.background(255);
     controller.updateController(s, controllers);
     libData = lib.updateData(libData, libParams, size);
