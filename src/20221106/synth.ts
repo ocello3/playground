@@ -38,20 +38,14 @@ const setPlayer = (buffer: ToneAudioBuffer, duration: number) => {
   return player;
 };
 
-const setSynth = async () => {
+export const setSynth = async () => {
   const se = await setSe();
-  const buffers = {
-    a: await getBuffer(track_1),
-    b: await getBuffer(track_2),
-  };
-  const durations = {
-    a: getDurations(buffers.a),
-    b: getDurations(buffers.b),
-  };
-  const players = {
-    a: setPlayer(buffers.a, durations.a),
-    b: setPlayer(buffers.b, durations.b),
-  };
+  const buffers = [await getBuffer(track_1), await getBuffer(track_2)];
+  const durations = [getDurations(buffers[0]), getDurations(buffers[1])];
+  const players = [
+    setPlayer(buffers[0], durations[0]),
+    setPlayer(buffers[1], durations[1]),
+  ];
   return {
     se,
     players,
@@ -62,11 +56,12 @@ const setSynth = async () => {
 };
 const thisSynth = await setSynth();
 export type synthType = typeof thisSynth;
+export type synthDataType = typeof thisSynth.data;
 
 const playSynth = (synth: synthType, params: paramsType) => {
   console.log(params);
-  synth.players.a.start();
-  synth.players.b.start();
+  synth.players[0].start();
+  synth.players[1].start();
   return;
 };
 

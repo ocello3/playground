@@ -1,12 +1,13 @@
 import p5 from "p5";
 
-type dataType = {
-  [prop: string]: string | number | boolean | p5.Vector;
-};
-type objectType = {
-  [prop: string]: object | object[] | dataType | dataType[];
-};
-type arrayType = (dataType | objectType)[];
+type dataType = { [prop: string]: string | number | boolean | object };
+type deepDataType = { [prop: string]: dataType };
+type objectType =
+  | deepDataType
+  | { [prop: string]: deepDataType[] }
+  | dataType
+  | { [prop: string]: dataType[] };
+type arrayType = dataType[] | deepDataType[] | objectType[];
 
 const divideArrayToString = (
   arg: arrayType,
@@ -24,29 +25,38 @@ const divideArrayToString = (
   const limitedLength = calcLimitedLength();
   const limitedObjArray = arg.slice(limitedStart, limitedStart + limitedLength);
   limitedObjArray.forEach((innerObj, index) => {
-    logList.push(`- index: ${index + limitedStart} -<br>`);
-    divideObjectToString(innerObj, length, start, logList);
+    logList.push(`- index ${index + limitedStart}<br>`);
+    if (innerObj instanceof p5.Vector) {
+      addDataToStringArray(" - ", innerObj, logList);
+    } else {
+      divideObjectToString(innerObj, length, start, logList);
+    }
   });
   return logList;
 };
 
 const divideObjectToString = (
-  arg: objectType | dataType,
+  arg: objectType,
   length: number | null,
   start: number,
   logList: string[]
 ) => {
   for (const key in arg) {
     if (Array.isArray(arg[key])) {
-      divideArrayToString(arg[key] as objectType[], length, start, logList);
+      logList.push(`-- ${key}:<br>`);
+      divideArrayToString(arg[key] as arrayType, length, start, logList);
+    } else if (
+      typeof arg[key] === "string" ||
+      typeof arg[key] === "number" ||
+      typeof arg[key] === "boolean" ||
+      arg[key] instanceof p5.Vector
+    ) {
+      addDataToStringArray(key, arg[key] as dataType, logList);
     } else if (
       typeof arg[key] === "object" &&
       !(arg[key] instanceof p5.Vector)
     ) {
-      logList.push(`-- ${key}:<br>`);
       divideObjectToString(arg[key] as objectType, length, start, logList);
-    } else {
-      addDataToStringArray(key, arg[key] as dataType, logList);
     }
   }
   return logList;

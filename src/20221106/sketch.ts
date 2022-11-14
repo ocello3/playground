@@ -16,7 +16,7 @@ export const sketch = (s: p5) => {
   s.setup = async () => {
     synthData = await synth.setSynth();
     console.log(synthData.data); // remove later
-    libData = lib.setData(libParams, size);
+    libData = lib.setData(libParams, synthData.data, size);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synthData.se, false);
     lib.setGui(libParams, tab);
@@ -30,10 +30,10 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    debug(synthData.data);
+    debug(libData);
     s.background(255);
     controller.updateController(s, controllers);
-    libData = lib.updateData(libData, libParams, size);
+    libData = lib.updateData(libData);
     lib.draw(libData, s);
     drawFrame(s, size);
     if (s.frameCount === 2) synth.playSynth(synthData, synthParams);
