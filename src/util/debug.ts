@@ -1,13 +1,24 @@
 import p5 from "p5";
 
-type dataType = { [prop: string]: string | number | boolean | object };
+type individualDataType = {
+  [prop: string]: string | number | boolean | object;
+};
+type dataType = individualDataType | individualDataType[];
 type deepDataType = { [prop: string]: dataType };
 type objectType =
   | deepDataType
   | { [prop: string]: deepDataType[] }
-  | dataType
   | { [prop: string]: dataType[] };
 type arrayType = dataType[] | deepDataType[] | objectType[];
+
+const isIndividualData = (arg: dataType | objectType | arrayType) =>
+  typeof arg === "string" ||
+  typeof arg === "number" ||
+  typeof arg === "boolean" ||
+  arg instanceof p5.Vector;
+
+const isNeedToDivideObject = (arg: dataType | objectType | arrayType) =>
+  typeof arg === "object" && !(arg instanceof p5.Vector);
 
 const divideArrayToString = (
   arg: arrayType,
@@ -24,14 +35,18 @@ const divideArrayToString = (
   };
   const limitedLength = calcLimitedLength();
   const limitedObjArray = arg.slice(limitedStart, limitedStart + limitedLength);
-  limitedObjArray.forEach((innerObj, index) => {
-    logList.push(`- index ${index + limitedStart}<br>`);
-    if (innerObj instanceof p5.Vector) {
-      addDataToStringArray(" - ", innerObj, logList);
-    } else {
-      divideObjectToString(innerObj, length, start, logList);
-    }
-  });
+  if (isIndividualData(limitedObjArray[0])) {
+    addDataToStringArray(" - ", limitedObjArray as dataType, logList);
+  } else {
+    limitedObjArray.forEach((innerObj, index) => {
+      logList.push(`- index ${index + limitedStart}<br>`);
+      if (innerObj instanceof p5.Vector) {
+        addDataToStringArray(" - ", innerObj, logList);
+      } else {
+        divideObjectToString(innerObj as objectType, length, start, logList);
+      }
+    });
+  }
   return logList;
 };
 
@@ -45,17 +60,9 @@ const divideObjectToString = (
     if (Array.isArray(arg[key])) {
       logList.push(`-- ${key}:<br>`);
       divideArrayToString(arg[key] as arrayType, length, start, logList);
-    } else if (
-      typeof arg[key] === "string" ||
-      typeof arg[key] === "number" ||
-      typeof arg[key] === "boolean" ||
-      arg[key] instanceof p5.Vector
-    ) {
+    } else if (isIndividualData(arg[key])) {
       addDataToStringArray(key, arg[key] as dataType, logList);
-    } else if (
-      typeof arg[key] === "object" &&
-      !(arg[key] instanceof p5.Vector)
-    ) {
+    } else if (isNeedToDivideObject(arg[key])) {
       divideObjectToString(arg[key] as objectType, length, start, logList);
     }
   }
@@ -67,7 +74,32 @@ const addDataToStringArray = (
   data: dataType,
   logList: string[]
 ) => {
-  logList.push(`${key}: ${data}<br>`);
+  if (Array.isArray(data)) {
+    if (data[0] instanceof p5.Vector) {
+      logList.push(`[`);
+      data.forEach((element, index) => {
+        if (index === data.length - 1) {
+          logList.push(`${element}`);
+        } else {
+          logList.push(`${element},<br>`);
+        }
+      });
+      logList.push(`]<br>`);
+    } else {
+      logList.push(`[`);
+      data.forEach((element, index) => {
+        if (index === data.length - 1) {
+          logList.push(`${element}`);
+        } else {
+          logList.push(`${element}, `);
+        }
+      });
+      logList.push(`]<br>`);
+    }
+  } else {
+    // if NOT array
+    logList.push(`${key}: ${data}<br>`);
+  }
 };
 
 export const debug = (
@@ -81,8 +113,15 @@ export const debug = (
   const logList: string[] = [];
   if (Array.isArray(arg)) {
     divideArrayToString(arg, displayArrayLength, startPosition, logList);
+  } else if (isIndividualData(arg)) {
+    addDataToStringArray(" - ", arg, logList);
   } else {
-    divideObjectToString(arg, displayArrayLength, startPosition, logList);
+    divideObjectToString(
+      arg as objectType,
+      displayArrayLength,
+      startPosition,
+      logList
+    );
   }
   document.getElementById("debug")!.innerHTML = title.concat(...logList);
 };
