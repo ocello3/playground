@@ -31,12 +31,12 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    debug(bufferSketch);
+    debug(buffer);
     s.background(255);
     controller.updateController(s, controllers);
-    // update each objects
+    buffer = Buffer.update(buffer);
     BufferSketch.draw(bufferSketch, s);
     drawFrame(s, size);
-    if (s.frameCount === 2) Synth.play(synth);
+    Synth.play(synth, buffer, s.frameCount);
   };
 };
