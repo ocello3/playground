@@ -3,39 +3,40 @@ import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
-import { lib, dataType } from "./lib";
-import { synth, synthType } from "./synth.js";
+import * as Params from "./params";
+import * as Synth from "./synth.js";
+import * as Buffer from "./buffer";
+import * as BufferSketch from "./bufferSketch";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
   let controllers = controller.setController();
-  const libParams = lib.setParams();
-  let libData: dataType;
-  const synthParams = synth.setParams();
-  let synthData: synthType;
+  const params = Params.set();
+  let buffer: Buffer.type;
+  let bufferSketch: BufferSketch.type;
+  let synth: Synth.type;
   s.setup = async () => {
-    synthData = await synth.setSynth();
-    console.log(synthData.data); // remove later
-    libData = lib.setData(libParams, synthData.data, size);
+    synth = await Synth.set();
+    buffer = Buffer.set(synth);
+    bufferSketch = BufferSketch.set(buffer, size, params, synth);
     s.createCanvas(size, size);
-    const tab = controller.setGui(s, controllers, synthData.se, false);
-    lib.setGui(libParams, tab);
-    synth.setGui(synthParams, tab);
+    const tab = controller.setGui(s, controllers, synth.se, false);
+    Params.gui(params, tab);
     s.noLoop();
     drawFrame(s, size);
     // s.frameRate(10);
   };
   s.draw = () => {
-    if (synthData === undefined) {
+    if (synth === undefined) {
       s.noLoop();
       return;
     }
-    debug(libData);
+    debug(bufferSketch);
     s.background(255);
     controller.updateController(s, controllers);
-    libData = lib.updateData(libData);
-    lib.draw(libData, s);
+    // update each objects
+    BufferSketch.draw(bufferSketch, s);
     drawFrame(s, size);
-    if (s.frameCount === 2) synth.playSynth(synthData, synthParams);
+    if (s.frameCount === 2) Synth.play(synth);
   };
 };

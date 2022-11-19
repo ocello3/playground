@@ -20,12 +20,14 @@ const isIndividualData = (arg: dataType | objectType | arrayType) =>
 const isNeedToDivideObject = (arg: dataType | objectType | arrayType) =>
   typeof arg === "object" && !(arg instanceof p5.Vector);
 
+// for any array argument
 const divideArrayToString = (
   arg: arrayType,
   length: number | null,
   start: number,
   logList: string[]
 ) => {
+  // extract a part of array
   const limitedStart = start < arg.length ? start : arg.length - 1;
   const calcLimitedLength = () => {
     if (length === null) return arg.length;
@@ -36,8 +38,10 @@ const divideArrayToString = (
   const limitedLength = calcLimitedLength();
   const limitedObjArray = arg.slice(limitedStart, limitedStart + limitedLength);
   if (isIndividualData(limitedObjArray[0])) {
+    // for indivisual data type, add to array
     addDataToStringArray(" - ", limitedObjArray as dataType, logList);
   } else {
+    // for object, divide and add to array
     limitedObjArray.forEach((innerObj, index) => {
       logList.push(`- index ${index + limitedStart}<br>`);
       if (innerObj instanceof p5.Vector) {
@@ -50,6 +54,7 @@ const divideArrayToString = (
   return logList;
 };
 
+// for non-array argument without individual data type
 const divideObjectToString = (
   arg: objectType,
   length: number | null,
@@ -69,12 +74,14 @@ const divideObjectToString = (
   return logList;
 };
 
+// add display-data to array
 const addDataToStringArray = (
   key: string,
   data: dataType,
   logList: string[]
 ) => {
   if (Array.isArray(data)) {
+    // for p5.Vector: add to new line
     if (data[0] instanceof p5.Vector) {
       logList.push(`[`);
       data.forEach((element, index) => {
@@ -85,10 +92,12 @@ const addDataToStringArray = (
         }
       });
       logList.push(`]<br>`);
+      // for other data (string, number, boolean): add to same line
     } else {
       logList.push(`[`);
       data.forEach((element, index) => {
         if (index === data.length - 1) {
+          // for last element of array
           logList.push(`${element}`);
         } else {
           logList.push(`${element}, `);
