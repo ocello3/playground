@@ -36,7 +36,7 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);
     bufferSketch = BufferSketch.update(bufferSketch, buffer);
-    BufferSketch.draw(bufferSketch, s);
+    BufferSketch.draw(bufferSketch, buffer, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, s.frameCount);
   };

@@ -25,6 +25,37 @@ export const set = (
   const endPositions = startPositions.map((startPosition, index) =>
     p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
   );
+  const arrowLength = size * 0.03; // TODO: might add to params
+  const arrowPositions = {
+    forward: {
+      upperPositions: endPositions.map((originPosition) =>
+        p5.Vector.add(
+          originPosition,
+          p5.Vector.fromAngle((3 / 4) * Math.PI, arrowLength)
+        )
+      ),
+      lowerPositions: endPositions.map((originPosition) =>
+        p5.Vector.add(
+          originPosition,
+          p5.Vector.fromAngle((-3 / 4) * Math.PI, arrowLength)
+        )
+      ),
+    },
+    reverse: {
+      upperPositions: startPositions.map((originPosition) =>
+        p5.Vector.add(
+          originPosition,
+          p5.Vector.fromAngle((1 / 4) * Math.PI, arrowLength)
+        )
+      ),
+      lowerPositions: startPositions.map((originPosition) =>
+        p5.Vector.add(
+          originPosition,
+          p5.Vector.fromAngle((-1 / 4) * Math.PI, arrowLength)
+        )
+      ),
+    },
+  };
   // whole initial data
   return {
     bufferConvertRateToLength,
@@ -35,6 +66,7 @@ export const set = (
     currentPositions: startPositions,
     loopStartPositions: startPositions,
     loopEndPositions: endPositions,
+    arrowPositions,
   };
 };
 export const obj = set(Buffer.obj, 100, Params.obj, Synth.obj);
@@ -68,9 +100,14 @@ export const update = (preBufferSketch: type, buffer: Buffer.type) => {
   return newBufferSketch;
 };
 
-export const draw = (bufferSketch: type, s: p5) => {
-  const { startPositions, endPositions, loopStartPositions, loopEndPositions } =
-    bufferSketch;
+export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
+  const {
+    startPositions,
+    endPositions,
+    loopStartPositions,
+    loopEndPositions,
+    arrowPositions,
+  } = bufferSketch;
   // whole buffer
   s.push();
   startPositions.forEach((startPosition, index) => {
@@ -92,4 +129,50 @@ export const draw = (bufferSketch: type, s: p5) => {
     s.circle(loopEndPosition.x, loopEndPosition.y, 10);
   });
   s.pop();
+  // draw forward arrow
+  s.pop();
+  endPositions.forEach((originPosition, index) => {
+    if (!buffer.loopIsReverse[index]) {
+      s.line(
+        originPosition.x,
+        originPosition.y,
+        arrowPositions.forward.upperPositions[index].x,
+        arrowPositions.forward.upperPositions[index].y
+      );
+    }
+  });
+  endPositions.forEach((originPosition, index) => {
+    if (!buffer.loopIsReverse[index]) {
+      s.line(
+        originPosition.x,
+        originPosition.y,
+        arrowPositions.forward.lowerPositions[index].x,
+        arrowPositions.forward.lowerPositions[index].y
+      );
+    }
+  });
+  s.push();
+  // draw reverse arrow
+  s.pop();
+  startPositions.forEach((originPosition, index) => {
+    if (buffer.loopIsReverse[index]) {
+      s.line(
+        originPosition.x,
+        originPosition.y,
+        arrowPositions.reverse.upperPositions[index].x,
+        arrowPositions.reverse.upperPositions[index].y
+      );
+    }
+  });
+  startPositions.forEach((originPosition, index) => {
+    if (buffer.loopIsReverse[index]) {
+      s.line(
+        originPosition.x,
+        originPosition.y,
+        arrowPositions.reverse.lowerPositions[index].x,
+        arrowPositions.reverse.lowerPositions[index].y
+      );
+    }
+  });
+  s.push();
 };
