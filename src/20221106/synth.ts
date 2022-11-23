@@ -65,6 +65,7 @@ export const play = (synth: type, buffer: Buffer.type, frameCount: number) => {
       synth.players[index].reverse = buffer.loopIsReverses[index];
       synth.players[index].loopStart = buffer.loopStartTimes[index];
       synth.players[index].grainSize = buffer.loopGrainSizes[index];
+      synth.players[index].playbackRate = buffer.playbackRates[index];
     }
   });
   return;

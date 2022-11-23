@@ -1,4 +1,5 @@
 import * as Synth from "./synth";
+import { tools } from "../util/tools";
 
 export const set = (synth: Synth.type) => {
   const durations = synth.data.durations;
@@ -13,6 +14,7 @@ export const set = (synth: Synth.type) => {
   const loopIsSwitches = durations.map(() => false);
   // play immediately after play
   const loopRetentionFrames = durations.map(() => 1);
+  const playbackRates = durations.map(() => 1);
   return {
     durations,
     longestDuration,
@@ -22,6 +24,7 @@ export const set = (synth: Synth.type) => {
     loopIsSwitches,
     loopGrainSizes: loopEndTimes,
     loopRetentionFrames,
+    playbackRates,
   };
 };
 export const obj = set(Synth.obj);
@@ -56,6 +59,12 @@ export const update = (preBuffer: type) => {
   );
   newBuffer.loopGrainSizes = newBuffer.loopEndTimes.map((loopEndTime, index) =>
     Math.abs(loopEndTime - newBuffer.loopStartTimes[index])
+  );
+  newBuffer.playbackRates = preBuffer.playbackRates.map(
+    (prePlaybackRate, index) =>
+      newBuffer.loopIsSwitches[index]
+        ? tools.map(Math.random(), 0, 1, 0.5, 2.5)
+        : prePlaybackRate
   );
   return newBuffer;
 };

@@ -31,8 +31,7 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0)
-      debug({ currentPositions: bufferSketch.currentPositions });
+    if (s.frameCount % 5 === 0) debug({ isReverse: buffer.loopIsReverses });
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);

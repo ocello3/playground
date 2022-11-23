@@ -111,11 +111,18 @@ export const update = (
         ? newBufferSketch.loopStartPositions[index]
         : currentPosition;
       const direction = buffer.loopIsReverses[index] ? -1 : 1;
-      const progressInNomalSpeed =
+      const progressSpeed =
         (loopPositionInterval / buffer.durations[index] / frameRate) *
+        buffer.playbackRates[index] *
         direction;
-      const progress = new p5.Vector().set(progressInNomalSpeed, 0);
-      return p5.Vector.add(prePosition, progress);
+      const progress = new p5.Vector().set(progressSpeed, 0);
+      const newCurrentPosition = p5.Vector.add(prePosition, progress);
+      const isOver = buffer.loopIsReverses[index]
+        ? newCurrentPosition.x < preBufferSketch.loopEndPositions[index].x
+        : newCurrentPosition.x > preBufferSketch.loopEndPositions[index].x;
+      return isOver
+        ? newBufferSketch.loopStartPositions[index]
+        : newCurrentPosition;
     }
   );
   return newBufferSketch;
