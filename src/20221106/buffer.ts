@@ -9,7 +9,8 @@ export const set = (synth: Synth.type) => {
   // same as whole buffer for initial loop
   const loopStartTimes = durations.map(() => 0);
   const loopEndTimes = durations.map((duration) => duration);
-  const loopIsReverse = durations.map(() => false);
+  const loopIsReverses = durations.map(() => false);
+  const loopIsSwitches = durations.map(() => false);
   // play immediately after play
   const loopRetentionFrames = durations.map(() => 1);
   return {
@@ -17,7 +18,8 @@ export const set = (synth: Synth.type) => {
     longestDuration,
     loopStartTimes,
     loopEndTimes,
-    loopIsReverse,
+    loopIsReverses,
+    loopIsSwitches,
     loopGrainSizes: loopEndTimes,
     loopRetentionFrames,
   };
@@ -33,18 +35,24 @@ export const update = (preBuffer: type) => {
       return preBuffer.durations[index] * 60;
     }
   );
+  newBuffer.loopIsSwitches = newBuffer.loopRetentionFrames.map(
+    (loopRetentionFrame) => loopRetentionFrame === 0
+  );
   newBuffer.loopStartTimes = preBuffer.loopStartTimes.map(
     (loopStartTime, index) => {
-      if (newBuffer.loopRetentionFrames[index] > 0) return loopStartTime;
+      if (!newBuffer.loopIsSwitches[index]) return loopStartTime;
       return Math.random() * preBuffer.durations[index];
     }
   );
   newBuffer.loopEndTimes = preBuffer.loopEndTimes.map((loopEndTime, index) => {
-    if (newBuffer.loopRetentionFrames[index] > 0) return loopEndTime;
+    if (!newBuffer.loopIsSwitches[index]) return loopEndTime;
     return Math.random() * preBuffer.durations[index];
   });
-  newBuffer.loopIsReverse = newBuffer.loopStartTimes.map(
-    (loopStartTime, index) => loopStartTime > newBuffer.loopEndTimes[index]
+  newBuffer.loopIsReverses = preBuffer.loopIsReverses.map(
+    (loopIsReverse, index) => {
+      if (!newBuffer.loopIsSwitches[index]) return loopIsReverse;
+      return newBuffer.loopStartTimes[index] > newBuffer.loopEndTimes[index];
+    }
   );
   newBuffer.loopGrainSizes = newBuffer.loopEndTimes.map((loopEndTime, index) =>
     Math.abs(loopEndTime - newBuffer.loopStartTimes[index])

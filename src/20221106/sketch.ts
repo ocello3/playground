@@ -31,11 +31,12 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    debug(buffer);
+    if (s.frameCount % 5 === 0)
+      debug({ currentPositions: bufferSketch.currentPositions });
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);
-    bufferSketch = BufferSketch.update(bufferSketch, buffer);
+    bufferSketch = BufferSketch.update(bufferSketch, buffer, s.frameRate());
     BufferSketch.draw(bufferSketch, buffer, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, s.frameCount);

@@ -48,6 +48,7 @@ export const set = async () => {
   );
   return {
     se,
+    panners,
     players,
     data: {
       durations,
@@ -61,7 +62,7 @@ export const play = (synth: type, buffer: Buffer.type, frameCount: number) => {
   if (frameCount == 2) synth.players.forEach((player) => player.start());
   buffer.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
     if (loopRetentionFrame === 0) {
-      synth.players[index].reverse = buffer.loopIsReverse[index];
+      synth.players[index].reverse = buffer.loopIsReverses[index];
       synth.players[index].loopStart = buffer.loopStartTimes[index];
       synth.players[index].grainSize = buffer.loopGrainSizes[index];
     }
