@@ -16,9 +16,15 @@ export const set = (
   const fullLengths = synth.data.durations.map(
     (duration) => duration * bufferConvertRateToLength
   );
-  const margin = size * marginRate * 0.5;
+  const margins = params.alignments.map((alignment, index) => {
+    const sideMargin = size * marginRate * 0.5;
+    return alignment === "right"
+      ? sideMargin
+      : size - fullLengths[index] - sideMargin;
+  });
   const startPositions = synth.data.durations.map((_, index) => {
-    const x = margin;
+    // for 4th buffer, fit to right end
+    const x = margins[index];
     const y = (size / (synth.data.durations.length + 1)) * (index + 1);
     return new p5.Vector().set(x, y);
   });
@@ -60,7 +66,7 @@ export const set = (
   return {
     bufferConvertRateToLength,
     fullLengths,
-    margin,
+    margins,
     startPositions,
     endPositions,
     loopStartPositions: startPositions,
@@ -75,28 +81,30 @@ export type type = typeof obj;
 export const update = (
   preBufferSketch: type,
   buffer: Buffer.type,
+  size: number,
   frameRate: number
 ) => {
   const newBufferSketch = { ...preBufferSketch };
   newBufferSketch.loopStartPositions = preBufferSketch.loopStartPositions.map(
     (preLoopStartPosition, index) => {
+      if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
         buffer.loopStartTimes[index] / buffer.durations[index];
-      const x =
-        preBufferSketch.fullLengths[index] * positionRate +
-        preBufferSketch.margin;
+      const loopStartPosition =
+        preBufferSketch.fullLengths[index] * positionRate;
+      const x = loopStartPosition + preBufferSketch.margins[index];
       newLoopStartPosition.x = x;
       return newLoopStartPosition;
     }
   );
   newBufferSketch.loopEndPositions = preBufferSketch.loopEndPositions.map(
     (preLoopEndPosition, index) => {
+      if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
       const positionRate = buffer.loopEndTimes[index] / buffer.durations[index];
-      const x =
-        preBufferSketch.fullLengths[index] * positionRate +
-        preBufferSketch.margin;
+      const loopEndPosition = preBufferSketch.fullLengths[index] * positionRate;
+      const x = loopEndPosition + preBufferSketch.margins[index];
       newLoopEndPosition.x = x;
       return newLoopEndPosition;
     }

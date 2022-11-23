@@ -3,6 +3,7 @@ import { TabApi } from "tweakpane";
 export const set = () => {
   return {
     marginRate: 0.2,
+    alignments: ["right", "right", "left", "left"],
   };
 };
 export const obj = set();

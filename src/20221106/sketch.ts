@@ -31,11 +31,16 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ isReverse: buffer.loopIsReverses });
+    if (s.frameCount % 5 === 0) debug(bufferSketch);
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);
-    bufferSketch = BufferSketch.update(bufferSketch, buffer, s.frameRate());
+    bufferSketch = BufferSketch.update(
+      bufferSketch,
+      buffer,
+      size,
+      s.frameRate()
+    );
     BufferSketch.draw(bufferSketch, buffer, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, s.frameCount);
