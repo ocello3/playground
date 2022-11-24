@@ -31,7 +31,7 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug(bufferSketch);
+    // if (s.frameCount % 5 === 0) debug(bufferSketch);
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);
@@ -43,6 +43,6 @@ export const sketch = (s: p5) => {
     );
     BufferSketch.draw(bufferSketch, buffer, s);
     drawFrame(s, size);
-    Synth.play(synth, buffer, s.frameCount);
+    Synth.play(synth, buffer, bufferSketch, s.frameCount);
   };
 };

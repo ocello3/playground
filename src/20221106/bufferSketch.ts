@@ -2,6 +2,7 @@ import p5 from "p5";
 import * as Params from "./params";
 import * as Buffer from "./buffer";
 import * as Synth from "./synth";
+import { tools } from "../util/tools";
 
 export const set = (
   buffer: Buffer.type,
@@ -30,6 +31,9 @@ export const set = (
   });
   const endPositions = startPositions.map((startPosition, index) =>
     p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
+  );
+  const panValues = startPositions.map((startPosition) =>
+    tools.map(startPosition.x, 0, size, -1, 1)
   );
   const arrowLength = size * 0.03; // TODO: might add to params
   const arrowPositions = {
@@ -73,6 +77,7 @@ export const set = (
     loopEndPositions: endPositions,
     currentPositions: startPositions,
     arrowPositions,
+    panValues,
   };
 };
 export const obj = set(Buffer.obj, 100, Params.obj, Synth.obj);
@@ -132,6 +137,9 @@ export const update = (
         ? newBufferSketch.loopStartPositions[index]
         : newCurrentPosition;
     }
+  );
+  newBufferSketch.panValues = newBufferSketch.currentPositions.map(
+    (currentPosition) => tools.map(currentPosition.x, 0, size, -1, 1)
   );
   return newBufferSketch;
 };

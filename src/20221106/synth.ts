@@ -5,6 +5,7 @@ import { setSe } from "../util/controller";
 import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
 import * as Buffer from "./buffer";
+import * as BufferSketch from "./bufferSketch";
 
 const getBuffer = async (url: string) => {
   const buffer = new ToneAudioBuffer();
@@ -58,10 +59,16 @@ export const set = async () => {
 export const obj = await set();
 export type type = typeof obj;
 
-export const play = (synth: type, buffer: Buffer.type, frameCount: number) => {
+export const play = (
+  synth: type,
+  buffer: Buffer.type,
+  bufferSketch: BufferSketch.type,
+  frameCount: number
+) => {
   if (frameCount == 2) synth.players.forEach((player) => player.start());
   buffer.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
     if (loopRetentionFrame === 0) {
+      synth.panners[index].pan.value = bufferSketch.panValues[index];
       synth.players[index].reverse = buffer.loopIsReverses[index];
       synth.players[index].loopStart = buffer.loopStartTimes[index];
       synth.players[index].grainSize = buffer.loopGrainSizes[index];
