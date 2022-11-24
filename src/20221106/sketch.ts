@@ -2,7 +2,7 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
-import { debug } from "../util/debug";
+// import { debug } from "../util/debug";
 import * as Params from "./params";
 import * as Synth from "./synth.js";
 import * as Buffer from "./buffer";
