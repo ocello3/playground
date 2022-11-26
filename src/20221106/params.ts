@@ -1,9 +1,12 @@
 import { TabApi } from "tweakpane";
 
 export const set = () => {
+  const alignments = ["right", "right", "left", "left"];
   return {
     marginRate: 0.2,
-    alignments: ["right", "right", "left", "left"],
+    alignments,
+    boxIntervalRate: 0.015,
+    boxHeightRate: 0.5 / alignments.length,
   };
 };
 export const obj = set();

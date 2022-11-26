@@ -32,6 +32,24 @@ export const set = (
   const endPositions = startPositions.map((startPosition, index) =>
     p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
   );
+  const boxSize = new p5.Vector().set(
+    size * params.boxIntervalRate,
+    size * params.boxHeightRate
+  );
+  const boxNumbers = startPositions.map((startPosition, index) => {
+    const diff = startPosition.x - endPositions[index].x;
+    return Math.ceil(Math.abs(diff / boxSize.x));
+  });
+  const boxLAPositionArrays = boxNumbers.map((boxNumber, trackIndex) =>
+    Array.from(Array(boxNumber), (_, boxIndex) => {
+      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+      const offset = new p5.Vector().set(
+        boxSize.x * boxIndex * direction,
+        boxSize.y * -0.5
+      );
+      return p5.Vector.add(startPositions[trackIndex], offset);
+    })
+  );
   const isOvers = startPositions.map(() => false);
   const volumePositionArrays = startPositions.map((startPosition) => [
     startPosition,
@@ -80,6 +98,9 @@ export const set = (
     loopStartPositions: startPositions,
     loopEndPositions: endPositions,
     currentPositions: startPositions,
+    boxSize,
+    boxNumbers,
+    boxLAPositionArrays,
     isOvers,
     arrowPositions,
     panValues,
@@ -118,6 +139,34 @@ export const update = (
       const x = loopEndPosition + preBufferSketch.margins[index];
       newLoopEndPosition.x = x;
       return newLoopEndPosition;
+    }
+  );
+  newBufferSketch.boxNumbers = preBufferSketch.boxNumbers.map(
+    (preBoxNumber, index) => {
+      if (!buffer.loopIsSwitches[index]) return preBoxNumber;
+      const diff =
+        newBufferSketch.loopStartPositions[index].x -
+        newBufferSketch.loopEndPositions[index].x;
+      return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
+    }
+  );
+  newBufferSketch.boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
+    (preBoxLAPositionArray, trackIndex) => {
+      if (!buffer.loopIsSwitches[trackIndex]) return preBoxLAPositionArray;
+      return Array.from(
+        Array(newBufferSketch.boxNumbers[trackIndex]),
+        (_, boxIndex) => {
+          const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+          const offset = new p5.Vector().set(
+            newBufferSketch.boxSize.x * boxIndex * direction,
+            newBufferSketch.boxSize.y * -0.5
+          );
+          return p5.Vector.add(
+            newBufferSketch.loopStartPositions[trackIndex],
+            offset
+          );
+        }
+      );
     }
   );
   newBufferSketch.currentPositions = preBufferSketch.currentPositions.map(
@@ -160,7 +209,7 @@ export const update = (
         const diffWidth = Math.abs(
           lastPosition.x - newBufferSketch.currentPositions[index].x
         );
-        if (diffWidth < 2) {
+        if (diffWidth < 1) {
           return preVolumePositionArray;
         }
         // add new position to array
@@ -188,8 +237,19 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
     loopEndPositions,
     arrowPositions,
     // currentPositions,
+    boxLAPositionArrays,
+    boxSize,
     volumePositionArrays,
   } = bufferSketch;
+  // boxes
+  s.push();
+  s.fill(0, 50);
+  boxLAPositionArrays.forEach((boxLAPositionArray) =>
+    boxLAPositionArray.forEach((boxLAPosition) => {
+      s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
+    })
+  );
+  s.pop();
   // whole buffer
   s.push();
   startPositions.forEach((startPosition, index) => {

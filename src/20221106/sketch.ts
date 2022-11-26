@@ -33,9 +33,7 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        rms: buffer.volumes[0].getValue(),
-        volumePositionArray: bufferSketch.volumePositionArrays[0],
-        startPosition: bufferSketch.loopStartPositions[0],
+        boxNumber: bufferSketch.boxNumbers,
       },
       5
     );
