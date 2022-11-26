@@ -32,6 +32,10 @@ export const set = (
   const endPositions = startPositions.map((startPosition, index) =>
     p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
   );
+  const isOvers = startPositions.map(() => false);
+  const volumePositionArrays = startPositions.map((startPosition) => [
+    startPosition,
+  ]);
   const panValues = startPositions.map((startPosition) =>
     tools.map(startPosition.x, 0, size, -1, 1)
   );
@@ -76,8 +80,10 @@ export const set = (
     loopStartPositions: startPositions,
     loopEndPositions: endPositions,
     currentPositions: startPositions,
+    isOvers,
     arrowPositions,
     panValues,
+    volumePositionArrays,
   };
 };
 export const obj = set(Buffer.obj, 100, Params.obj, Synth.obj);
@@ -138,6 +144,36 @@ export const update = (
         : newCurrentPosition;
     }
   );
+  newBufferSketch.isOvers = newBufferSketch.currentPositions.map(
+    (currentPosition, index) =>
+      currentPosition.x === newBufferSketch.loopStartPositions[index].x
+  );
+  newBufferSketch.volumePositionArrays =
+    preBufferSketch.volumePositionArrays.map(
+      (preVolumePositionArray, index) => {
+        // delete array and reset by startPosition
+        if (newBufferSketch.isOvers[index] || buffer.loopIsSwitches[index]) {
+          return [newBufferSketch.loopStartPositions[index]];
+        }
+        // for interval, skip addition to array
+        const lastPosition = preVolumePositionArray.slice(-1)[0];
+        const diffWidth = Math.abs(
+          lastPosition.x - newBufferSketch.currentPositions[index].x
+        );
+        if (diffWidth < 2) {
+          return preVolumePositionArray;
+        }
+        // add new position to array
+        const newPosition = newBufferSketch.currentPositions[index].copy();
+        const volume = buffer.volumes[index].getValue();
+        const finiteVolume = isFinite(volume as number) ? volume : 0;
+        const height = tools.map(finiteVolume as number, -50, -20, 0, 20);
+        const constrainedHeight = height < 0 ? 0 : height;
+        newPosition.add(new p5.Vector().set(0, -constrainedHeight));
+        preVolumePositionArray.push(newPosition);
+        return preVolumePositionArray;
+      }
+    );
   newBufferSketch.panValues = newBufferSketch.currentPositions.map(
     (currentPosition) => tools.map(currentPosition.x, 0, size, -1, 1)
   );
@@ -151,7 +187,8 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
     loopStartPositions,
     loopEndPositions,
     arrowPositions,
-    currentPositions,
+    // currentPositions,
+    volumePositionArrays,
   } = bufferSketch;
   // whole buffer
   s.push();
@@ -175,7 +212,7 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
   });
   s.pop();
   // draw forward arrow
-  s.pop();
+  s.push();
   endPositions.forEach((originPosition, index) => {
     if (!buffer.loopIsReverses[index]) {
       s.line(
@@ -196,9 +233,9 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
       );
     }
   });
-  s.push();
-  // draw reverse arrow
   s.pop();
+  // draw reverse arrow
+  s.push();
   startPositions.forEach((originPosition, index) => {
     if (buffer.loopIsReverses[index]) {
       s.line(
@@ -219,9 +256,10 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
       );
     }
   });
-  s.push();
-  // draw currentPosition
   s.pop();
+  // draw currentPosition
+  /*
+  s.push();
   currentPositions.forEach((currentPosition) =>
     s.line(
       currentPosition.x,
@@ -230,5 +268,17 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
       currentPosition.y + 10
     )
   );
+  s.pop();
+	*/
+  // draw volume at currentPositon
   s.push();
+  s.noFill();
+  s.strokeWeight(1);
+  volumePositionArrays.forEach((volumePositionArray, index) => {
+    const startPosition = startPositions[index];
+    volumePositionArray.forEach((position) => {
+      s.line(position.x, startPosition.y, position.x, position.y);
+    });
+  });
+  s.pop();
 };

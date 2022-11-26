@@ -1,4 +1,5 @@
 import * as Synth from "./synth";
+import * as Tone from "tone";
 import { tools } from "../util/tools";
 
 export const set = (synth: Synth.type) => {
@@ -15,6 +16,8 @@ export const set = (synth: Synth.type) => {
   // play immediately after play
   const loopRetentionFrames = durations.map(() => 1);
   const playbackRates = durations.map(() => 1);
+  const volumes = durations.map(() => new Tone.Meter());
+  synth.players.forEach((player, index) => player.connect(volumes[index]));
   return {
     durations,
     longestDuration,
@@ -25,6 +28,7 @@ export const set = (synth: Synth.type) => {
     loopGrainSizes: loopEndTimes,
     loopRetentionFrames,
     playbackRates,
+    volumes,
   };
 };
 export const obj = set(Synth.obj);

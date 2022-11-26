@@ -2,7 +2,7 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
-// import { debug } from "../util/debug";
+import { debug } from "../util/debug";
 import * as Params from "./params";
 import * as Synth from "./synth.js";
 import * as Buffer from "./buffer";
@@ -31,7 +31,14 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    // if (s.frameCount % 5 === 0) debug(bufferSketch);
+    debug(
+      {
+        rms: buffer.volumes[0].getValue(),
+        volumePositionArray: bufferSketch.volumePositionArrays[0],
+        startPosition: bufferSketch.loopStartPositions[0],
+      },
+      5
+    );
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer);
