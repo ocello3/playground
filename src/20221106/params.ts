@@ -7,6 +7,7 @@ export const set = () => {
     alignments,
     boxIntervalRate: 0.015,
     boxHeightRate: 0.5 / alignments.length,
+    alphaMin: 20,
   };
 };
 export const obj = set();

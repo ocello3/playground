@@ -40,16 +40,11 @@ export const set = (
     const diff = startPosition.x - endPositions[index].x;
     return Math.ceil(Math.abs(diff / boxSize.x));
   });
-  const boxLAPositionArrays = boxNumbers.map((boxNumber, trackIndex) =>
-    Array.from(Array(boxNumber), (_, boxIndex) => {
-      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
-      const offset = new p5.Vector().set(
-        boxSize.x * boxIndex * direction,
-        boxSize.y * -0.5
-      );
-      return p5.Vector.add(startPositions[trackIndex], offset);
-    })
-  );
+  const boxLAPositionArrays = boxNumbers.map((_, trackIndex) => {
+    const offset = new p5.Vector().set(0, boxSize.y * -0.5);
+    return [p5.Vector.add(startPositions[trackIndex], offset)];
+  });
+  const boxColorArrays = boxNumbers.map(() => [0]);
   const isOvers = startPositions.map(() => false);
   const volumePositionArrays = startPositions.map((startPosition) => [
     startPosition,
@@ -101,6 +96,7 @@ export const set = (
     boxSize,
     boxNumbers,
     boxLAPositionArrays,
+    boxColorArrays,
     isOvers,
     arrowPositions,
     panValues,
@@ -113,6 +109,7 @@ export type type = typeof obj;
 export const update = (
   preBufferSketch: type,
   buffer: Buffer.type,
+  params: Params.type,
   size: number,
   frameRate: number
 ) => {
@@ -150,25 +147,6 @@ export const update = (
       return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
     }
   );
-  newBufferSketch.boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
-    (preBoxLAPositionArray, trackIndex) => {
-      if (!buffer.loopIsSwitches[trackIndex]) return preBoxLAPositionArray;
-      return Array.from(
-        Array(newBufferSketch.boxNumbers[trackIndex]),
-        (_, boxIndex) => {
-          const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
-          const offset = new p5.Vector().set(
-            newBufferSketch.boxSize.x * boxIndex * direction,
-            newBufferSketch.boxSize.y * -0.5
-          );
-          return p5.Vector.add(
-            newBufferSketch.loopStartPositions[trackIndex],
-            offset
-          );
-        }
-      );
-    }
-  );
   newBufferSketch.currentPositions = preBufferSketch.currentPositions.map(
     (currentPosition, index) => {
       const loopPositionInterval = p5.Vector.dist(
@@ -191,6 +169,72 @@ export const update = (
       return isOver
         ? newBufferSketch.loopStartPositions[index]
         : newCurrentPosition;
+    }
+  );
+  newBufferSketch.boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
+    (preBoxLAPositionArray, trackIndex) => {
+      // reset for new loop
+      if (
+        buffer.loopIsSwitches[trackIndex] ||
+        newBufferSketch.isOvers[trackIndex]
+      ) {
+        const offset = new p5.Vector().set(0, preBufferSketch.boxSize.y * -0.5);
+        return [
+          p5.Vector.add(newBufferSketch.loopStartPositions[trackIndex], offset),
+        ];
+      }
+      // add new position at last of array
+      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+      const lastPosition =
+        preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
+      const diff = Math.abs(
+        newBufferSketch.currentPositions[trackIndex].x - lastPosition.x
+      );
+      const addedBoxNumber = Math.round(diff / preBufferSketch.boxSize.x);
+      if (addedBoxNumber === 0) return preBoxLAPositionArray;
+      const addedBoxPositions = Array.from(
+        Array(addedBoxNumber),
+        (_, index) => {
+          const progress = new p5.Vector(
+            preBufferSketch.boxSize.x * (index + 1) * direction,
+            0
+          );
+          return p5.Vector.add(lastPosition, progress);
+        }
+      );
+      return preBoxLAPositionArray.concat(addedBoxPositions);
+    }
+  );
+  newBufferSketch.boxColorArrays = newBufferSketch.boxLAPositionArrays.map(
+    (newBoxLAPositionArray, trackIndex) => {
+      // update last element using volume
+      const preBoxColorArray = preBufferSketch.boxColorArrays[trackIndex];
+      const differenceInElementNumber =
+        newBoxLAPositionArray.length - preBoxColorArray.length;
+      const volume = buffer.volumes[trackIndex].getValue();
+      const finiteVolume = isFinite(volume as number) ? volume : 0;
+      const alpha = tools.map(
+        finiteVolume as number,
+        -50,
+        -20,
+        params.alphaMin,
+        255
+      );
+      const constrainedAlpha = tools.constrain(alpha, params.alphaMin, 255);
+      if (differenceInElementNumber === 0) {
+        preBoxColorArray[preBoxColorArray.length - 1] = constrainedAlpha;
+        return preBoxColorArray;
+      } else if (differenceInElementNumber > 1) {
+        const newAlphas = Array.from(
+          Array(differenceInElementNumber),
+          () => constrainedAlpha
+        );
+        const newAlphaArray = preBoxColorArray.concat(newAlphas);
+        return newAlphaArray;
+      } else {
+        // if boxLAPositionsArrays are initialized by isOver || isSwitch
+        return newBoxLAPositionArray.map(() => constrainedAlpha);
+      }
     }
   );
   newBufferSketch.isOvers = newBufferSketch.currentPositions.map(
@@ -229,33 +273,39 @@ export const update = (
   return newBufferSketch;
 };
 
-export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
+export const draw = (bufferSketch: type, s: p5) => {
   const {
     startPositions,
     endPositions,
-    loopStartPositions,
-    loopEndPositions,
-    arrowPositions,
+    // loopStartPositions,
+    // loopEndPositions,
+    // arrowPositions,
     // currentPositions,
     boxLAPositionArrays,
+    boxColorArrays,
     boxSize,
-    volumePositionArrays,
+    // volumePositionArrays,
   } = bufferSketch;
-  // boxes
-  s.push();
-  s.fill(0, 50);
-  boxLAPositionArrays.forEach((boxLAPositionArray) =>
-    boxLAPositionArray.forEach((boxLAPosition) => {
-      s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
-    })
-  );
-  s.pop();
   // whole buffer
   s.push();
+  s.stroke(0);
   startPositions.forEach((startPosition, index) => {
     const endPosition = endPositions[index];
     s.line(startPosition.x, startPosition.y, endPosition.x, endPosition.y);
   });
+  s.pop();
+  // boxes
+  s.push();
+  s.noStroke();
+  boxLAPositionArrays.forEach((boxLAPositionArray, trackIndex) => {
+    const boxColorArray = boxColorArrays[trackIndex];
+    boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
+      const alpha = boxColorArray[boxIndex];
+      s.fill(0, alpha);
+      s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
+    });
+  });
+  /*
   s.pop();
   // loopStart point
   s.push();
@@ -331,6 +381,7 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
   s.pop();
 	*/
   // draw volume at currentPositon
+  /*
   s.push();
   s.noFill();
   s.strokeWeight(1);
@@ -341,4 +392,5 @@ export const draw = (bufferSketch: type, buffer: Buffer.type, s: p5) => {
     });
   });
   s.pop();
+	*/
 };

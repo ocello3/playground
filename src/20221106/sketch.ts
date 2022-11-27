@@ -33,9 +33,11 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        boxNumber: bufferSketch.boxNumbers,
+        boxNumber: bufferSketch.boxLAPositionArrays[0].length,
+        boxPos: bufferSketch.boxLAPositionArrays[0],
+        boxColorArray: bufferSketch.boxColorArrays[0],
       },
-      5
+      10
     );
     s.background(255);
     controller.updateController(s, controllers);
@@ -43,10 +45,11 @@ export const sketch = (s: p5) => {
     bufferSketch = BufferSketch.update(
       bufferSketch,
       buffer,
+      params,
       size,
       s.frameRate()
     );
-    BufferSketch.draw(bufferSketch, buffer, s);
+    BufferSketch.draw(bufferSketch, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, s.frameCount);
   };
