@@ -49,7 +49,7 @@ export const sketch = (s: p5) => {
       size,
       s.frameRate()
     );
-    BufferSketch.draw(bufferSketch, s);
+    BufferSketch.draw(bufferSketch, params, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, s.frameCount);
   };

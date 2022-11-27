@@ -5,9 +5,10 @@ export const set = () => {
   return {
     marginRate: 0.2,
     alignments,
-    boxIntervalRate: 0.015,
+    boxIntervalRate: 0.01,
     boxHeightRate: 0.5 / alignments.length,
     alphaMin: 20,
+    loopRangeLineYPosRate: 0.65,
   };
 };
 export const obj = set();
