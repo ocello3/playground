@@ -192,7 +192,7 @@ export const update = (
       if (differenceInElementNumber === 0) {
         preBoxColorArray[preBoxColorArray.length - 1] = constrainedAlpha;
         return preBoxColorArray;
-      } else if (differenceInElementNumber > 1) {
+      } else if (differenceInElementNumber >= 1) {
         const newAlphas = Array.from(
           Array(differenceInElementNumber),
           () => constrainedAlpha
