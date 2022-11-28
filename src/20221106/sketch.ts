@@ -17,7 +17,7 @@ export const sketch = (s: p5) => {
   let synth: Synth.type;
   s.setup = async () => {
     synth = await Synth.set();
-    buffer = Buffer.set(synth);
+    buffer = Buffer.set(synth, s.millis());
     bufferSketch = BufferSketch.set(buffer, size, params, synth);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -41,7 +41,7 @@ export const sketch = (s: p5) => {
     );
     s.background(255);
     controller.updateController(s, controllers);
-    buffer = Buffer.update(buffer);
+    buffer = Buffer.update(buffer, s.millis());
     bufferSketch = BufferSketch.update(
       bufferSketch,
       buffer,

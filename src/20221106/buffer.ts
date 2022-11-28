@@ -2,7 +2,7 @@ import * as Synth from "./synth";
 import * as Tone from "tone";
 import { tools } from "../util/tools";
 
-export const set = (synth: Synth.type) => {
+export const set = (synth: Synth.type, millis: number) => {
   const durations = synth.data.durations;
   const longestDuration = durations.reduce((preDuration, curDuration) => {
     if (curDuration > preDuration) return curDuration;
@@ -13,6 +13,9 @@ export const set = (synth: Synth.type) => {
   const loopEndTimes = durations.map((duration) => duration);
   const loopIsReverses = durations.map(() => false);
   const loopIsSwitches = durations.map(() => false);
+  const loopIsOvers = durations.map(() => false);
+  const loopStanpTimes = durations.map(() => 0);
+  const loopElapsedTimes = durations.map(() => millis);
   // play immediately after play
   const loopRetentionFrames = durations.map(() => 1);
   const playbackRates = durations.map(() => 1);
@@ -26,15 +29,18 @@ export const set = (synth: Synth.type) => {
     loopIsReverses,
     loopIsSwitches,
     loopGrainSizes: loopEndTimes,
-    loopRetentionFrames,
+    loopIsOvers,
+    loopStanpTimes,
+    loopElapsedTimes,
+    loopRetentionFrames, // TODO: remove later
     playbackRates,
     volumes,
   };
 };
-export const obj = set(Synth.obj);
+export const obj = set(Synth.obj, 0);
 export type type = typeof obj;
 
-export const update = (preBuffer: type) => {
+export const update = (preBuffer: type, millis: number) => {
   const newBuffer = { ...preBuffer };
   newBuffer.loopRetentionFrames = preBuffer.loopRetentionFrames.map(
     (preLoopRetentionFrame, index) => {
@@ -60,6 +66,18 @@ export const update = (preBuffer: type) => {
       if (!newBuffer.loopIsSwitches[index]) return loopIsReverse;
       return newBuffer.loopStartTimes[index] > newBuffer.loopEndTimes[index];
     }
+  );
+  newBuffer.loopIsOvers = preBuffer.loopStanpTimes.map(
+    (loopStampTime, index) =>
+      loopStampTime >
+      preBuffer.durations[index] / preBuffer.playbackRates[index]
+  );
+  newBuffer.loopStanpTimes = preBuffer.loopStanpTimes.map(
+    (preStampTime, index) =>
+      newBuffer.loopIsOvers[index] ? millis : preStampTime
+  );
+  newBuffer.loopElapsedTimes = preBuffer.loopElapsedTimes.map(
+    (_, index) => millis - newBuffer.loopStanpTimes[index]
   );
   newBuffer.loopGrainSizes = newBuffer.loopEndTimes.map((loopEndTime, index) =>
     Math.abs(loopEndTime - newBuffer.loopStartTimes[index])
