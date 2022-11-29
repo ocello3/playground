@@ -31,24 +31,11 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    debug(
-      {
-        boxNumber: bufferSketch.boxLAPositionArrays[0].length,
-        boxPos: bufferSketch.boxLAPositionArrays[0],
-        boxColorArray: bufferSketch.boxColorArrays[0],
-      },
-      10
-    );
+    debug({ status: "working" });
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer, s.millis());
-    bufferSketch = BufferSketch.update(
-      bufferSketch,
-      buffer,
-      params,
-      size,
-      s.frameRate()
-    );
+    bufferSketch = BufferSketch.update(bufferSketch, buffer, params, size);
     BufferSketch.draw(bufferSketch, params, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, s.frameCount);

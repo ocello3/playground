@@ -14,8 +14,9 @@ export const set = (synth: Synth.type, millis: number) => {
   const loopIsReverses = durations.map(() => false);
   const loopIsSwitches = durations.map(() => false);
   const loopIsOvers = durations.map(() => false);
-  const loopStanpTimes = durations.map(() => 0);
-  const loopElapsedTimes = durations.map(() => millis);
+  const loopStampTimes = durations.map(() => 0);
+  const loopElapsedTimes = durations.map(() => millis * 0.001);
+  const loopProgressRates = durations.map(() => 0);
   // play immediately after play
   const loopRetentionFrames = durations.map(() => 1);
   const playbackRates = durations.map(() => 1);
@@ -30,8 +31,9 @@ export const set = (synth: Synth.type, millis: number) => {
     loopIsSwitches,
     loopGrainSizes: loopEndTimes,
     loopIsOvers,
-    loopStanpTimes,
+    loopStampTimes,
     loopElapsedTimes,
+    loopProgressRates,
     loopRetentionFrames, // TODO: remove later
     playbackRates,
     volumes,
@@ -67,17 +69,22 @@ export const update = (preBuffer: type, millis: number) => {
       return newBuffer.loopStartTimes[index] > newBuffer.loopEndTimes[index];
     }
   );
-  newBuffer.loopIsOvers = preBuffer.loopStanpTimes.map(
-    (loopStampTime, index) =>
-      loopStampTime >
-      preBuffer.durations[index] / preBuffer.playbackRates[index]
+  newBuffer.loopIsOvers = preBuffer.loopElapsedTimes.map(
+    (loopElapsedTime, index) =>
+      loopElapsedTime >
+      newBuffer.durations[index] / newBuffer.playbackRates[index]
   );
-  newBuffer.loopStanpTimes = preBuffer.loopStanpTimes.map(
+  newBuffer.loopStampTimes = preBuffer.loopStampTimes.map(
     (preStampTime, index) =>
-      newBuffer.loopIsOvers[index] ? millis : preStampTime
+      newBuffer.loopIsOvers[index] ? millis * 0.001 : preStampTime
   );
   newBuffer.loopElapsedTimes = preBuffer.loopElapsedTimes.map(
-    (_, index) => millis - newBuffer.loopStanpTimes[index]
+    (_, index) => millis * 0.001 - newBuffer.loopStampTimes[index]
+  );
+  newBuffer.loopProgressRates = newBuffer.loopElapsedTimes.map(
+    (loopElapsedTime, index) =>
+      (loopElapsedTime / preBuffer.durations[index]) *
+      newBuffer.playbackRates[index]
   );
   newBuffer.loopGrainSizes = newBuffer.loopEndTimes.map((loopEndTime, index) =>
     Math.abs(loopEndTime - newBuffer.loopStartTimes[index])

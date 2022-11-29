@@ -45,7 +45,6 @@ export const set = (
     return [p5.Vector.add(startPositions[trackIndex], offset)];
   });
   const boxColorArrays = boxNumbers.map(() => [0]);
-  const isOvers = startPositions.map(() => false);
   const panValues = startPositions.map((startPosition) =>
     tools.map(startPosition.x, 0, size, -1, 1)
   );
@@ -63,7 +62,6 @@ export const set = (
     boxNumbers,
     boxLAPositionArrays,
     boxColorArrays,
-    isOvers,
     panValues,
   };
 };
@@ -74,8 +72,7 @@ export const update = (
   preBufferSketch: type,
   buffer: Buffer.type,
   params: Params.type,
-  size: number,
-  frameRate: number
+  size: number
 ) => {
   const newBufferSketch = { ...preBufferSketch };
   newBufferSketch.loopStartPositions = preBufferSketch.loopStartPositions.map(
@@ -112,40 +109,28 @@ export const update = (
     }
   );
   newBufferSketch.currentPositions = preBufferSketch.currentPositions.map(
-    (currentPosition, index) => {
-      const loopPositionInterval = p5.Vector.dist(
-        newBufferSketch.loopStartPositions[index],
-        newBufferSketch.loopEndPositions[index]
+    (preCurrentPosition, index) => {
+      const loopLength: number = Math.abs(
+        newBufferSketch.loopEndPositions[index].x -
+          newBufferSketch.loopStartPositions[index].x
       );
-      const prePosition = buffer.loopIsSwitches[index]
-        ? newBufferSketch.loopStartPositions[index]
-        : currentPosition;
-      const direction = buffer.loopIsReverses[index] ? -1 : 1;
-      const progressSpeed =
-        (loopPositionInterval / buffer.durations[index] / frameRate) *
-        buffer.playbackRates[index] *
-        direction;
-      const progress = new p5.Vector().set(progressSpeed, 0);
-      const newCurrentPosition = p5.Vector.add(prePosition, progress);
-      const isOver = buffer.loopIsReverses[index]
-        ? newCurrentPosition.x < preBufferSketch.loopEndPositions[index].x
-        : newCurrentPosition.x > preBufferSketch.loopEndPositions[index].x;
-      return isOver
-        ? newBufferSketch.loopStartPositions[index]
-        : newCurrentPosition;
+      const progressLength: number =
+        loopLength * buffer.loopProgressRates[index];
+      if (buffer.loopIsReverses[index]) {
+        preCurrentPosition.x =
+          newBufferSketch.loopStartPositions[index].x - progressLength;
+        return preCurrentPosition;
+      } else {
+        preCurrentPosition.x =
+          newBufferSketch.loopStartPositions[index].x + progressLength;
+        return preCurrentPosition;
+      }
     }
-  );
-  newBufferSketch.isOvers = newBufferSketch.currentPositions.map(
-    (currentPosition, index) =>
-      currentPosition.x === newBufferSketch.loopStartPositions[index].x
   );
   newBufferSketch.boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
     (preBoxLAPositionArray, trackIndex) => {
       // reset for new loop
-      if (
-        buffer.loopIsSwitches[trackIndex] ||
-        newBufferSketch.isOvers[trackIndex]
-      ) {
+      if (buffer.loopIsSwitches[trackIndex] || buffer.loopIsOvers[trackIndex]) {
         const offset = new p5.Vector().set(0, preBufferSketch.boxSize.y * -0.5);
         return [
           p5.Vector.add(newBufferSketch.loopStartPositions[trackIndex], offset),
@@ -221,34 +206,6 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
     boxColorArrays,
     boxSize,
   } = bufferSketch;
-  // frame of whole buffer
-  s.push();
-  s.stroke(0);
-  s.noFill();
-  startPositions.forEach((startPosition, index) => {
-    const endPosition = endPositions[index];
-    const width = endPosition.x - startPosition.x;
-    s.rect(
-      startPosition.x,
-      startPosition.y - boxSize.y * 0.5,
-      width,
-      boxSize.y
-    );
-  });
-  s.pop();
-  // loop range line
-  s.push();
-  s.noFill();
-  s.stroke(0);
-  loopStartPositions.forEach((loopStartPosition, index) => {
-    s.line(
-      loopStartPosition.x,
-      loopStartPosition.y + boxSize.y * params.loopRangeLineYPosRate,
-      loopEndPositions[index].x,
-      loopEndPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
-    );
-  });
-  s.pop();
   // boxes
   s.push();
   s.noStroke();
@@ -260,4 +217,34 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
       s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
     });
   });
+  // frame of whole buffer
+  s.push();
+  s.noFill();
+  s.strokeWeight(1);
+  s.strokeCap(s.SQUARE);
+  s.stroke(0, 100);
+  startPositions.forEach((startPosition, index) => {
+    s.line(
+      startPosition.x,
+      startPosition.y + boxSize.y * params.loopRangeLineYPosRate,
+      endPositions[index].x,
+      endPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
+    );
+  });
+  s.pop();
+  // loop range line
+  s.push();
+  s.noFill();
+  s.strokeWeight(2);
+  s.strokeCap(s.PROJECT);
+  s.stroke(0);
+  loopStartPositions.forEach((loopStartPosition, index) => {
+    s.line(
+      loopStartPosition.x,
+      loopStartPosition.y + boxSize.y * params.loopRangeLineYPosRate,
+      loopEndPositions[index].x,
+      loopEndPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
+    );
+  });
+  s.pop();
 };
