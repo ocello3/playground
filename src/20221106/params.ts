@@ -7,6 +7,14 @@ export const set = () => {
     alignments,
     boxIntervalRate: 0.01,
     boxHeightRate: 0.5 / alignments.length,
+    playbackRateMin: 0.3,
+    playbackRateMax: 3.5,
+    // color
+    hue: [200, 350],
+    saturationMin: 30,
+    saturationMax: 250,
+    brightnessMin: 30,
+    brightnessMax: 250,
     alphaMin: 20,
     loopRangeLineYPosRate: 0.65,
   };

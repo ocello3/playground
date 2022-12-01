@@ -1,5 +1,6 @@
 import * as Synth from "./synth";
 import * as Tone from "tone";
+import * as Params from "./params";
 import { tools } from "../util/tools";
 
 export const set = (synth: Synth.type, millis: number) => {
@@ -42,7 +43,11 @@ export const set = (synth: Synth.type, millis: number) => {
 export const obj = set(Synth.obj, 0);
 export type type = typeof obj;
 
-export const update = (preBuffer: type, millis: number) => {
+export const update = (
+  preBuffer: type,
+  params: Params.type,
+  millis: number
+) => {
   const newBuffer = { ...preBuffer };
   newBuffer.loopRetentionFrames = preBuffer.loopRetentionFrames.map(
     (preLoopRetentionFrame, index) => {
@@ -92,7 +97,13 @@ export const update = (preBuffer: type, millis: number) => {
   newBuffer.playbackRates = preBuffer.playbackRates.map(
     (prePlaybackRate, index) =>
       newBuffer.loopIsSwitches[index]
-        ? tools.map(Math.random(), 0, 1, 0.5, 2.5)
+        ? tools.map(
+            Math.random(),
+            0,
+            1,
+            params.playbackRateMin,
+            params.playbackRateMax
+          )
         : prePlaybackRate
   );
   return newBuffer;

@@ -22,6 +22,7 @@ export const sketch = (s: p5) => {
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
+    s.colorMode(s.HSB);
     s.noLoop();
     drawFrame(s, size);
     // s.frameRate(10);
@@ -34,7 +35,7 @@ export const sketch = (s: p5) => {
     debug({ status: "working" });
     s.background(255);
     controller.updateController(s, controllers);
-    buffer = Buffer.update(buffer, s.millis());
+    buffer = Buffer.update(buffer, params, s.millis());
     bufferSketch = BufferSketch.update(bufferSketch, buffer, params, size);
     BufferSketch.draw(bufferSketch, params, s);
     drawFrame(s, size);
