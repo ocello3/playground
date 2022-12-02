@@ -265,8 +265,9 @@ export const draw = (
   s.strokeWeight(1);
   s.strokeCap(s.SQUARE);
   startPositions.forEach((startPosition, index) => {
+    const flag = buffer.loopIsReverses ? 1 : 0;
     const hue = boxHues[index];
-    const saturation = params.saturations[index] - params.saturationRange;
+    const saturation = params.saturations[flag] + params.saturationRange;
     const brightness = boxSaturations[index];
     s.stroke(hue, saturation, brightness, 100);
     s.line(

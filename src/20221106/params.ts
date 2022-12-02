@@ -10,11 +10,11 @@ export const set = () => {
     playbackRateMin: 0.3,
     playbackRateMax: 3.5,
     // color
-    hues: [311, 193],
-    saturations: [78, 85],
-    brightnesses: [45, 29],
-    saturationRange: 70,
-    brightnessRange: 70,
+    hues: [357, 237],
+    saturations: [68, 68],
+    brightnesses: [80, 80],
+    saturationRange: 15,
+    brightnessRange: 65,
     loopRangeLineYPosRate: 0.65,
   };
 };
