@@ -44,20 +44,9 @@ export const set = (
     const offset = new p5.Vector().set(0, boxSize.y * -0.5);
     return [p5.Vector.add(startPositions[trackIndex], offset)];
   });
-  const boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
-    const flag = loopIsReverse ? 0 : 1;
-    return params.hue[flag];
-  });
-  const boxBrightnessArrays = margins.map(() => [0]);
-  const boxSaturations = buffer.playbackRates.map((playbackRate) =>
-    tools.map(
-      playbackRate,
-      params.playbackRateMin,
-      params.playbackRateMax,
-      params.saturationMin,
-      params.saturationMax
-    )
-  );
+  const boxHues = buffer.loopIsReverses.map(() => 0);
+  const boxSaturations = buffer.loopIsReverses.map(() => 0);
+  const boxBrightnessArrays = buffer.loopIsReverses.map(() => [0]);
   const panValues = startPositions.map((startPosition) =>
     tools.map(startPosition.x, 0, size, -1, 1)
   );
@@ -175,48 +164,61 @@ export const update = (
   );
   newBufferSketch.boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
-    return params.hue[flag];
+    return params.hues[flag];
   });
+  newBufferSketch.boxSaturations = buffer.loopIsReverses.map(
+    (loopIsReverse, index) => {
+      const flag = loopIsReverse ? 1 : 0;
+      const baseSaturation = params.saturations[flag];
+      return tools.map(
+        buffer.playbackRates[index],
+        params.playbackRateMin,
+        params.playbackRateMax,
+        baseSaturation - params.saturationRange,
+        baseSaturation + params.saturationRange
+      );
+    }
+  );
   newBufferSketch.boxBrightnessArrays = newBufferSketch.boxLAPositionArrays.map(
     (newBoxLAPositionArray, trackIndex) => {
       // update last element using volume
-      const preBoxColorArray = preBufferSketch.boxBrightnessArrays[trackIndex];
+      const preBoxBrightnessArray =
+        preBufferSketch.boxBrightnessArrays[trackIndex];
       const differenceInElementNumber =
-        newBoxLAPositionArray.length - preBoxColorArray.length;
+        newBoxLAPositionArray.length - preBoxBrightnessArray.length;
       const volume = buffer.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
-      const alpha = tools.map(
+      const flag = buffer.loopIsReverses[trackIndex] ? 1 : 0;
+      const baseBrightness = params.brightnesses[flag];
+      const brightness = tools.map(
         finiteVolume as number,
         -50,
         -20,
-        params.alphaMin,
-        255
+        baseBrightness - params.brightnessRange,
+        baseBrightness + params.brightnessRange
       );
-      const constrainedAlpha = tools.constrain(alpha, params.alphaMin, 255);
+      const constrainedBrightness = tools.constrain(
+        brightness,
+        baseBrightness - params.brightnessRange,
+        baseBrightness + params.brightnessRange
+      );
       if (differenceInElementNumber === 0) {
-        preBoxColorArray[preBoxColorArray.length - 1] = constrainedAlpha;
-        return preBoxColorArray;
+        preBoxBrightnessArray[preBoxBrightnessArray.length - 1] =
+          constrainedBrightness;
+        return preBoxBrightnessArray;
       } else if (differenceInElementNumber >= 1) {
-        const newAlphas = Array.from(
+        const newBrightnesses = Array.from(
           Array(differenceInElementNumber),
-          () => constrainedAlpha
+          () => constrainedBrightness
         );
-        const newAlphaArray = preBoxColorArray.concat(newAlphas);
-        return newAlphaArray;
+        const newBrightnessArray =
+          preBoxBrightnessArray.concat(newBrightnesses);
+        return newBrightnessArray;
       } else {
         // if boxLAPositionsArrays are initialized by isOver || isSwitch
-        return newBoxLAPositionArray.map(() => constrainedAlpha);
+        return newBoxLAPositionArray.map(() => constrainedBrightness);
       }
     }
-  );
-  newBufferSketch.boxSaturations = buffer.playbackRates.map((playbackRate) =>
-    tools.map(
-      playbackRate,
-      params.playbackRateMin,
-      params.playbackRateMax,
-      params.saturationMin,
-      params.saturationMax
-    )
   );
   newBufferSketch.panValues = newBufferSketch.currentPositions.map(
     (currentPosition) => tools.map(currentPosition.x, 0, size, -1, 1)
@@ -224,7 +226,12 @@ export const update = (
   return newBufferSketch;
 };
 
-export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
+export const draw = (
+  bufferSketch: type,
+  buffer: Buffer.type,
+  params: Params.type,
+  s: p5
+) => {
   const {
     startPositions,
     endPositions,
@@ -233,7 +240,7 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
     boxLAPositionArrays,
     boxHues,
     boxSaturations,
-    boxBrightnessArrays: boxBrightnessArrays,
+    boxBrightnessArrays,
     boxSize,
   } = bufferSketch;
   // boxes
@@ -241,14 +248,17 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
   s.noStroke();
   boxLAPositionArrays.forEach((boxLAPositionArray, trackIndex) => {
     const hue = boxHues[trackIndex];
-    const saturation = boxSaturations[trackIndex];
-    const boxBrightnessArray = boxBrightnessArrays[trackIndex];
+    const saturations = boxBrightnessArrays[trackIndex];
+    const brightness = boxSaturations[trackIndex];
     boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
-      const brightness = boxBrightnessArray[boxIndex];
+      s.push();
+      const saturation = saturations[boxIndex];
       s.fill(hue, saturation, brightness);
       s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
+      s.pop();
     });
   });
+  s.pop();
   // frame of whole buffer
   s.push();
   s.noFill();
@@ -256,9 +266,9 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
   s.strokeCap(s.SQUARE);
   startPositions.forEach((startPosition, index) => {
     const hue = boxHues[index];
-    const saturation = boxSaturations[index];
-    const brightness = 100;
-    s.stroke(hue, saturation, brightness);
+    const saturation = params.saturations[index] - params.saturationRange;
+    const brightness = boxSaturations[index];
+    s.stroke(hue, saturation, brightness, 100);
     s.line(
       startPosition.x,
       startPosition.y + boxSize.y * params.loopRangeLineYPosRate,
@@ -273,9 +283,10 @@ export const draw = (bufferSketch: type, params: Params.type, s: p5) => {
   s.strokeWeight(2);
   s.strokeCap(s.PROJECT);
   loopStartPositions.forEach((loopStartPosition, index) => {
+    const flag = buffer.loopIsReverses ? 1 : 0;
     const hue = boxHues[index];
-    const saturation = boxSaturations[index];
-    const brightness = 250;
+    const saturation = params.saturations[flag] + params.saturationRange;
+    const brightness = boxSaturations[index];
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,

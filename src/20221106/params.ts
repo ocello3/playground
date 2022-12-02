@@ -5,17 +5,16 @@ export const set = () => {
   return {
     marginRate: 0.2,
     alignments,
-    boxIntervalRate: 0.01,
+    boxIntervalRate: 0.005,
     boxHeightRate: 0.5 / alignments.length,
     playbackRateMin: 0.3,
     playbackRateMax: 3.5,
     // color
-    hue: [200, 350],
-    saturationMin: 30,
-    saturationMax: 250,
-    brightnessMin: 30,
-    brightnessMax: 250,
-    alphaMin: 20,
+    hues: [311, 193],
+    saturations: [78, 85],
+    brightnesses: [45, 29],
+    saturationRange: 70,
+    brightnessRange: 70,
     loopRangeLineYPosRate: 0.65,
   };
 };

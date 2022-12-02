@@ -32,12 +32,12 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    debug({ status: "working" });
+    debug({ alpha: bufferSketch.boxSaturationArrays }, 5);
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer, params, s.millis());
     bufferSketch = BufferSketch.update(bufferSketch, buffer, params, size);
-    BufferSketch.draw(bufferSketch, params, s);
+    BufferSketch.draw(bufferSketch, buffer, params, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, s.frameCount);
   };
