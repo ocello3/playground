@@ -27,12 +27,18 @@ export const set = (
     // for 4th buffer, fit to right end
     const x = margins[index];
     const y = (size / (synth.data.durations.length + 1)) * (index + 1);
-    return new p5.Vector().set(x, y);
+    return new p5.Vector(x, y);
+  });
+  const currentPositions = synth.data.durations.map((_, index) => {
+    // for 4th buffer, fit to right end
+    const x = margins[index];
+    const y = (size / (synth.data.durations.length + 1)) * (index + 1);
+    return new p5.Vector(x, y);
   });
   const endPositions = startPositions.map((startPosition, index) =>
     p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
   );
-  const boxSize = new p5.Vector().set(
+  const boxSize = new p5.Vector(
     size * params.boxIntervalRate,
     size * params.boxHeightRate
   );
@@ -41,7 +47,7 @@ export const set = (
     return Math.ceil(Math.abs(diff / boxSize.x));
   });
   const boxLAPositionArrays = boxNumbers.map((_, trackIndex) => {
-    const offset = new p5.Vector().set(0, boxSize.y * -0.5);
+    const offset = new p5.Vector(0, boxSize.y * -0.5);
     return [p5.Vector.add(startPositions[trackIndex], offset)];
   });
   const boxHues = buffer.loopIsReverses.map(() => 0);
@@ -59,7 +65,7 @@ export const set = (
     endPositions,
     loopStartPositions: startPositions,
     loopEndPositions: endPositions,
-    currentPositions: startPositions,
+    currentPositions,
     boxSize,
     boxNumbers,
     boxLAPositionArrays,
@@ -265,29 +271,31 @@ export const draw = (
   s.strokeWeight(1);
   s.strokeCap(s.SQUARE);
   startPositions.forEach((startPosition, index) => {
-    const flag = buffer.loopIsReverses ? 1 : 0;
-    const hue = boxHues[index];
-    const saturation = params.saturations[flag] + params.saturationRange;
-    const brightness = boxSaturations[index];
-    s.stroke(hue, saturation, brightness, 100);
+    s.push();
+    const flag = buffer.loopIsReverses[index] ? 0 : 1;
+    const hue = params.hues[flag];
+    const saturation = params.saturations[flag] - params.saturationRange;
+    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
+    s.stroke(hue, saturation, brightness);
     s.line(
       startPosition.x,
       startPosition.y + boxSize.y * params.loopRangeLineYPosRate,
       endPositions[index].x,
       endPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
     );
+    s.pop();
   });
   s.pop();
   // loop range line
   s.push();
   s.noFill();
-  s.strokeWeight(2);
+  s.strokeWeight(3);
   s.strokeCap(s.PROJECT);
   loopStartPositions.forEach((loopStartPosition, index) => {
-    const flag = buffer.loopIsReverses ? 1 : 0;
-    const hue = boxHues[index];
-    const saturation = params.saturations[flag] + params.saturationRange;
-    const brightness = boxSaturations[index];
+    const flag = buffer.loopIsReverses[index] ? 0 : 1;
+    const hue = params.hues[flag];
+    const saturation = params.saturations[flag] - params.saturationRange;
+    const brightness = params.brightnesses[flag] - params.brightnessRange * 0.5;
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,
