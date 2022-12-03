@@ -292,10 +292,11 @@ export const draw = (
   s.strokeWeight(3);
   s.strokeCap(s.PROJECT);
   loopStartPositions.forEach((loopStartPosition, index) => {
+    s.push();
     const flag = buffer.loopIsReverses[index] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.brightnesses[flag] - params.brightnessRange * 0.5;
+    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,
@@ -303,6 +304,7 @@ export const draw = (
       loopEndPositions[index].x,
       loopEndPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
     );
+    s.pop();
   });
   s.pop();
 };
