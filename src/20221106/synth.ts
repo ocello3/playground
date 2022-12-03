@@ -6,6 +6,7 @@ import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
 import * as Buffer from "./buffer";
 import * as BufferSketch from "./bufferSketch";
+import * as Params from "./params";
 
 const getBuffer = async (url: string) => {
   const buffer = new ToneAudioBuffer();
@@ -31,6 +32,12 @@ const setPlayer = (
   return player;
 };
 
+const setAMSynth = (panner: Tone.Panner) => {
+  const amSynth = new Tone.AMSynth();
+  amSynth.connect(panner);
+  return amSynth;
+};
+
 export const set = async () => {
   const se = await setSe();
   const buffers = [await getBuffer(track_1), await getBuffer(track_2)];
@@ -47,10 +54,12 @@ export const set = async () => {
   const players = durations.map((duration, index) =>
     setPlayer(buffers[index % 2], duration, panners[index])
   );
+  const amSynths = durations.map((_, index) => setAMSynth(panners[index]));
   return {
     se,
     panners,
     players,
+    amSynths,
     data: {
       durations,
     },
@@ -63,8 +72,10 @@ export const play = (
   synth: type,
   buffer: Buffer.type,
   bufferSketch: BufferSketch.type,
+  params: Params.type,
   frameCount: number
 ) => {
+  // play granular
   if (frameCount == 2) synth.players.forEach((player) => player.start());
   buffer.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
     if (loopRetentionFrame === 0) {
@@ -73,6 +84,23 @@ export const play = (
       synth.players[index].loopStart = buffer.loopStartTimes[index];
       synth.players[index].grainSize = buffer.loopGrainSizes[index];
       synth.players[index].playbackRate = buffer.playbackRates[index];
+    }
+  });
+  // play amSynth
+  buffer.loopIsSwitches.forEach((loopIsSwitch, index) => {
+    if (loopIsSwitch === true) {
+      const volume = tools.map(
+        buffer.playbackRates[index],
+        params.playbackRateMin,
+        params.playbackRateMax,
+        params.amSynthVolumeMin,
+        params.amSynthVolumeMax
+      );
+      synth.amSynths[index].volume.value = volume;
+      synth.amSynths[index].triggerAttackRelease(
+        params.amSynthNote[index],
+        "16n"
+      );
     }
   });
   return;

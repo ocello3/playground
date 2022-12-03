@@ -3,12 +3,20 @@ import { TabApi } from "tweakpane";
 export const set = () => {
   const alignments = ["right", "right", "left", "left"];
   return {
+    // position
     marginRate: 0.2,
     alignments,
     boxIntervalRate: 0.005,
     boxHeightRate: 0.5 / alignments.length,
+    // buffer
     playbackRateMin: 0.3,
     playbackRateMax: 3.5,
+    loopRetentionFrameRateMin: 0.3,
+    loopRetentionFrameRateMax: 2.5,
+    // synth
+    amSynthVolumeMin: -40,
+    amSynthVolumeMax: -10,
+    amSynthNote: ["G6", "D7", "C7", "E7"],
     // color
     hues: [357, 237],
     saturations: [68, 68],

@@ -44,6 +44,6 @@ export const sketch = (s: p5) => {
     bufferSketch = BufferSketch.update(bufferSketch, buffer, params, size);
     BufferSketch.draw(bufferSketch, buffer, params, s);
     drawFrame(s, size);
-    Synth.play(synth, buffer, bufferSketch, s.frameCount);
+    Synth.play(synth, buffer, bufferSketch, params, s.frameCount);
   };
 };

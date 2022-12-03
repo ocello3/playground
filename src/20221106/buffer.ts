@@ -52,7 +52,14 @@ export const update = (
   newBuffer.loopRetentionFrames = preBuffer.loopRetentionFrames.map(
     (preLoopRetentionFrame, index) => {
       if (preLoopRetentionFrame > 0) return preLoopRetentionFrame - 1;
-      return preBuffer.durations[index] * 60;
+      const rate = tools.map(
+        Math.random(),
+        0,
+        1,
+        params.loopRetentionFrameRateMin,
+        params.loopRetentionFrameRateMax
+      );
+      return preBuffer.durations[index] * 60 * Math.floor(rate);
     }
   );
   newBuffer.loopIsSwitches = newBuffer.loopRetentionFrames.map(
