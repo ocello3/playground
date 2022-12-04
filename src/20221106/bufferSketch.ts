@@ -64,7 +64,9 @@ export const set = (
     startPositions,
     endPositions,
     loopStartPositions: startPositions,
+    loopStartCurrentPositions: startPositions,
     loopEndPositions: endPositions,
+    loopEndCurrentPositions: endPositions,
     currentPositions,
     boxSize,
     boxNumbers,
@@ -98,6 +100,25 @@ export const update = (
       return newLoopStartPosition;
     }
   );
+  newBufferSketch.loopStartCurrentPositions =
+    preBufferSketch.loopStartCurrentPositions.map(
+      (preLoopStartCurrentPosition, index) => {
+        const loopStartTargetPosition =
+          newBufferSketch.loopStartPositions[index];
+        const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
+        if (Math.abs(diff) < 1) return loopStartTargetPosition;
+        const easingF = tools.map(
+          buffer.playbackRates[index],
+          params.playbackRateMin,
+          params.playbackRateMax,
+          params.easingFMin,
+          params.easingFMax
+        );
+        const progress = new p5.Vector(diff * easingF, 0);
+        return p5.Vector.add(preLoopStartCurrentPosition, progress);
+      }
+    );
+
   newBufferSketch.loopEndPositions = preBufferSketch.loopEndPositions.map(
     (preLoopEndPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
@@ -109,6 +130,23 @@ export const update = (
       return newLoopEndPosition;
     }
   );
+  newBufferSketch.loopEndCurrentPositions =
+    preBufferSketch.loopEndCurrentPositions.map(
+      (preLoopEndCurrentPosition, index) => {
+        const loopEndTargetPosition = newBufferSketch.loopEndPositions[index];
+        const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
+        if (Math.abs(diff) < 1) return loopEndTargetPosition;
+        const easingF = tools.map(
+          buffer.playbackRates[index],
+          params.playbackRateMin,
+          params.playbackRateMax,
+          params.easingFMin,
+          params.easingFMax
+        );
+        const progress = new p5.Vector(diff * easingF, 0);
+        return p5.Vector.add(preLoopEndCurrentPosition, progress);
+      }
+    );
   newBufferSketch.boxNumbers = preBufferSketch.boxNumbers.map(
     (preBoxNumber, index) => {
       if (!buffer.loopIsSwitches[index]) return preBoxNumber;
@@ -241,8 +279,8 @@ export const draw = (
   const {
     startPositions,
     endPositions,
-    loopStartPositions,
-    loopEndPositions,
+    loopStartCurrentPositions,
+    loopEndCurrentPositions,
     boxLAPositionArrays,
     boxHues,
     boxSaturations,
@@ -257,11 +295,9 @@ export const draw = (
     const saturations = boxBrightnessArrays[trackIndex];
     const brightness = boxSaturations[trackIndex];
     boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
-      s.push();
       const saturation = saturations[boxIndex];
       s.fill(hue, saturation, brightness);
       s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
-      s.pop();
     });
   });
   s.pop();
@@ -271,7 +307,6 @@ export const draw = (
   s.strokeWeight(1);
   s.strokeCap(s.SQUARE);
   startPositions.forEach((startPosition, index) => {
-    s.push();
     const flag = buffer.loopIsReverses[index] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
@@ -283,15 +318,11 @@ export const draw = (
       endPositions[index].x,
       endPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
     );
-    s.pop();
   });
-  s.pop();
   // loop range line
-  s.push();
-  s.noFill();
   s.strokeWeight(3);
   s.strokeCap(s.PROJECT);
-  loopStartPositions.forEach((loopStartPosition, index) => {
+  loopStartCurrentPositions.forEach((loopStartPosition, index) => {
     s.push();
     const flag = buffer.loopIsReverses[index] ? 0 : 1;
     const hue = params.hues[flag];
@@ -301,8 +332,9 @@ export const draw = (
     s.line(
       loopStartPosition.x,
       loopStartPosition.y + boxSize.y * params.loopRangeLineYPosRate,
-      loopEndPositions[index].x,
-      loopEndPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
+      loopEndCurrentPositions[index].x,
+      loopEndCurrentPositions[index].y +
+        boxSize.y * params.loopRangeLineYPosRate
     );
     s.pop();
   });

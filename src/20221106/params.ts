@@ -8,6 +8,8 @@ export const set = () => {
     alignments,
     boxIntervalRate: 0.005,
     boxHeightRate: 0.5 / alignments.length,
+    easingFMin: 0.05,
+    easingFMax: 0.5,
     // buffer
     playbackRateMin: 0.3,
     playbackRateMax: 3.5,
