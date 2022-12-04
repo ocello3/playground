@@ -436,12 +436,21 @@ export const draw = (
   s.pop();
   // wave
   s.push();
-  s.fill(0);
   waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
+    const flag = buffer.loopIsReverses[trackIndex] ? 0 : 1;
+    const hue = params.hues[flag];
+    const saturation = params.saturations[flag] - params.saturationRange;
+    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
+    s.stroke(hue, saturation, brightness);
     const waveYPositionArray = waveYPositionArrays[trackIndex];
     waveXPositionArray.forEach((waveXPosition, boxIndex) => {
       const waveYPosition = waveYPositionArray[boxIndex];
-      s.circle(waveXPosition, waveYPosition, 2);
+      s.line(
+        waveXPosition,
+        waveYPosition,
+        waveXPosition + boxSize.x,
+        waveYPosition
+      );
     });
   });
   s.pop();
