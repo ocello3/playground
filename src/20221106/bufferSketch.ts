@@ -46,6 +46,21 @@ export const set = (
     const diff = startPosition.x - endPositions[index].x;
     return Math.ceil(Math.abs(diff / boxSize.x));
   });
+  const waveXPositionArrays = startPositions.map((startPosition) =>
+    Array.from(Array(boxNumbers), () => startPosition.x)
+  );
+  const waveAngleSpeeds = boxNumbers.map(() => 0);
+  const waveAngleArrays = waveXPositionArrays.map((waveXPositionArray) =>
+    waveXPositionArray.map(() => 0)
+  );
+  const waveAmps = boxNumbers.map(() => 0);
+  const waveYPositionArrays = waveAngleArrays.map(
+    (waveAngleArray, trackIndex) =>
+      waveAngleArray.map(() => {
+        const startPosition = startPositions[trackIndex];
+        return startPosition.y;
+      })
+  );
   const boxLAPositionArrays = boxNumbers.map((_, trackIndex) => {
     const offset = new p5.Vector(0, boxSize.y * -0.5);
     return [p5.Vector.add(startPositions[trackIndex], offset)];
@@ -70,6 +85,11 @@ export const set = (
     currentPositions,
     boxSize,
     boxNumbers,
+    waveXPositionArrays,
+    waveAngleSpeeds,
+    waveAngleArrays,
+    waveAmps,
+    waveYPositionArrays,
     boxLAPositionArrays,
     boxHues,
     boxSaturations,
@@ -154,6 +174,79 @@ export const update = (
         newBufferSketch.loopStartPositions[index].x -
         newBufferSketch.loopEndPositions[index].x;
       return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
+    }
+  );
+  newBufferSketch.waveXPositionArrays = preBufferSketch.waveXPositionArrays.map(
+    (preWavePositionArray, trackIndex) => {
+      if (!buffer.loopIsSwitches[trackIndex]) return preWavePositionArray;
+      const boxNumber = newBufferSketch.boxNumbers[trackIndex];
+      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+      const loopStartPosition = newBufferSketch.loopStartPositions[trackIndex];
+      return Array.from(
+        Array(boxNumber),
+        (_, boxIndex) =>
+          loopStartPosition.x + preBufferSketch.boxSize.x * boxIndex * direction
+      );
+    }
+  );
+  newBufferSketch.waveAngleSpeeds = preBufferSketch.waveAngleSpeeds.map(
+    (preWaveAngleSpeed, trackIndex) => {
+      if (!buffer.loopIsSwitches[trackIndex]) return preWaveAngleSpeed;
+      return tools.map(
+        Math.random(),
+        0,
+        1,
+        params.waveSpeedRateMin * size,
+        params.waveSpeedRateMax * size
+      );
+    }
+  );
+  newBufferSketch.waveAngleArrays = preBufferSketch.waveAngleArrays.map(
+    (preWaveAngleArray, trackIndex) => {
+      if (!buffer.loopIsSwitches[trackIndex])
+        return preWaveAngleArray.map(
+          (preWaveAngle) =>
+            preWaveAngle + newBufferSketch.waveAngleSpeeds[trackIndex]
+        );
+      const xPositionArray = newBufferSketch.waveXPositionArrays[trackIndex];
+      const waveLength =
+        Math.abs(
+          newBufferSketch.loopEndPositions[trackIndex].x -
+            newBufferSketch.loopStartPositions[trackIndex].x
+        ) *
+        tools.map(
+          Math.random(),
+          0,
+          1,
+          params.waveLengthRateMin,
+          params.waveLengthRateMax
+        );
+      return xPositionArray.map((xPosition) => {
+        const widthPerAngle =
+          waveLength / newBufferSketch.boxNumbers[trackIndex];
+        return (xPosition / widthPerAngle) * Math.PI * 2;
+      });
+    }
+  );
+  newBufferSketch.waveAmps = preBufferSketch.waveAmps.map(
+    (preAmp, trackIndex) => {
+      if (!buffer.loopIsSwitches[trackIndex]) return preAmp;
+      return tools.map(
+        Math.random(),
+        0,
+        1,
+        params.ampRateMin * preBufferSketch.boxSize.y,
+        params.ampRateMax * preBufferSketch.boxSize.y
+      );
+    }
+  );
+  newBufferSketch.waveYPositionArrays = newBufferSketch.waveAngleArrays.map(
+    (preWaveAngleArray, trackIndex) => {
+      const amp = newBufferSketch.waveAmps[trackIndex];
+      const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
+      return preWaveAngleArray.map(
+        (angle) => Math.sin(angle) * amp + baseYPosition
+      );
     }
   );
   newBufferSketch.currentPositions = preBufferSketch.currentPositions.map(
@@ -286,6 +379,8 @@ export const draw = (
     boxSaturations,
     boxBrightnessArrays,
     boxSize,
+    waveXPositionArrays,
+    waveYPositionArrays,
   } = bufferSketch;
   // boxes
   s.push();
@@ -337,6 +432,17 @@ export const draw = (
         boxSize.y * params.loopRangeLineYPosRate
     );
     s.pop();
+  });
+  s.pop();
+  // wave
+  s.push();
+  s.fill(0);
+  waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
+    const waveYPositionArray = waveYPositionArrays[trackIndex];
+    waveXPositionArray.forEach((waveXPosition, boxIndex) => {
+      const waveYPosition = waveYPositionArray[boxIndex];
+      s.circle(waveXPosition, waveYPosition, 2);
+    });
   });
   s.pop();
 };

@@ -34,7 +34,8 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        currentPos: bufferSketch.currentPositions,
+        angleSpeeds: bufferSketch.waveAngleSpeeds,
+        angleArray: bufferSketch.waveAngleArrays[0],
       },
       5
     );

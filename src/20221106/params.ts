@@ -6,7 +6,7 @@ export const set = () => {
     // position
     marginRate: 0.2,
     alignments,
-    boxIntervalRate: 0.005,
+    boxIntervalRate: 0.01,
     boxHeightRate: 0.5 / alignments.length,
     easingFMin: 0.05,
     easingFMax: 0.5,
@@ -26,6 +26,13 @@ export const set = () => {
     saturationRange: 15,
     brightnessRange: 65,
     loopRangeLineYPosRate: 0.65,
+    // wave
+    ampRateMin: 0.1,
+    ampRateMax: 0.5,
+    waveLengthRateMin: 0.01,
+    waveLengthRateMax: 10,
+    waveSpeedRateMin: 0.00001,
+    waveSpeedRateMax: 0.0001,
   };
 };
 export const obj = set();
