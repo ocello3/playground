@@ -65,6 +65,11 @@ export const set = (
     const offset = new p5.Vector(0, boxSize.y * -0.5);
     return [p5.Vector.add(startPositions[trackIndex], offset)];
   });
+  const currentBoxIndexes = boxNumbers.map(() => 0);
+  const currentBoxHeightOffsets = boxNumbers.map(() => 0);
+  const boxHeightOffsetArrays = boxLAPositionArrays.map((boxLAPositionArray) =>
+    boxLAPositionArray.map(() => 0)
+  );
   const boxHues = buffer.loopIsReverses.map(() => 0);
   const boxSaturations = buffer.loopIsReverses.map(() => 0);
   const boxBrightnessArrays = buffer.loopIsReverses.map(() => [0]);
@@ -91,6 +96,9 @@ export const set = (
     waveAmps,
     waveYPositionArrays,
     boxLAPositionArrays,
+    currentBoxIndexes,
+    currentBoxHeightOffsets,
+    boxHeightOffsetArrays,
     boxHues,
     boxSaturations,
     boxBrightnessArrays,
@@ -299,6 +307,42 @@ export const update = (
       return preBoxLAPositionArray.concat(addedBoxPositions);
     }
   );
+  newBufferSketch.currentBoxIndexes = newBufferSketch.boxLAPositionArrays.map(
+    (boxLAPositionArray) => boxLAPositionArray.length - 1
+  );
+  newBufferSketch.currentBoxHeightOffsets =
+    newBufferSketch.waveYPositionArrays.map((_, trackIndex) => {
+      const currentBoxIndex = newBufferSketch.currentBoxIndexes[trackIndex];
+      const currentWaveYPos =
+        newBufferSketch.waveYPositionArrays[trackIndex][currentBoxIndex];
+      const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
+      return currentWaveYPos - baseYPosition;
+    });
+  newBufferSketch.boxHeightOffsetArrays =
+    preBufferSketch.boxHeightOffsetArrays.map(
+      (preBoxHeightOffsetArray, trackIndex) => {
+        const currentArrayLength =
+          newBufferSketch.boxLAPositionArrays[trackIndex].length;
+        const preArrayLength =
+          preBufferSketch.boxLAPositionArrays[trackIndex].length;
+        const addedBoxNumber = currentArrayLength - preArrayLength;
+        if (addedBoxNumber === 0) {
+          return preBoxHeightOffsetArray;
+        } else if (addedBoxNumber < 0) {
+          return Array.from(
+            Array(currentArrayLength),
+            () => newBufferSketch.currentBoxHeightOffsets[trackIndex]
+          );
+        } else {
+          // addedBoxNumber > 0
+          const newBoxHeightOffsetArray = Array.from(
+            Array(addedBoxNumber),
+            () => newBufferSketch.currentBoxHeightOffsets[trackIndex]
+          );
+          return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
+        }
+      }
+    );
   newBufferSketch.boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
     return params.hues[flag];
@@ -381,6 +425,7 @@ export const draw = (
     boxSize,
     waveXPositionArrays,
     waveYPositionArrays,
+    boxHeightOffsetArrays,
   } = bufferSketch;
   // boxes
   s.push();
@@ -389,10 +434,17 @@ export const draw = (
     const hue = boxHues[trackIndex];
     const saturations = boxBrightnessArrays[trackIndex];
     const brightness = boxSaturations[trackIndex];
+    const boxHeightOffsetArray = boxHeightOffsetArrays[trackIndex];
     boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
+      const boxHeightOffset = boxHeightOffsetArray[boxIndex];
       const saturation = saturations[boxIndex];
       s.fill(hue, saturation, brightness);
-      s.rect(boxLAPosition.x, boxLAPosition.y, boxSize.x, boxSize.y);
+      s.rect(
+        boxLAPosition.x,
+        boxLAPosition.y + boxHeightOffset,
+        boxSize.x,
+        boxSize.y - boxHeightOffset
+      );
     });
   });
   s.pop();
