@@ -78,6 +78,7 @@ export const play = (
   // play granular
   if (frameCount == 2) synth.players.forEach((player) => player.start());
   buffer.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
+    synth.players[index].volume.value = bufferSketch.amplitudes[index];
     if (loopRetentionFrame === 0) {
       synth.panners[index].pan.value = bufferSketch.panValues[index];
       synth.players[index].reverse = buffer.loopIsReverses[index];

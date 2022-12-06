@@ -70,6 +70,7 @@ export const set = (
   const boxHeightOffsetArrays = boxLAPositionArrays.map((boxLAPositionArray) =>
     boxLAPositionArray.map(() => 0)
   );
+  const amplitudes = currentBoxIndexes.map(() => 0);
   const boxHues = buffer.loopIsReverses.map(() => 0);
   const boxSaturations = buffer.loopIsReverses.map(() => 0);
   const boxBrightnessArrays = buffer.loopIsReverses.map(() => [0]);
@@ -99,6 +100,7 @@ export const set = (
     currentBoxIndexes,
     currentBoxHeightOffsets,
     boxHeightOffsetArrays,
+    amplitudes,
     boxHues,
     boxSaturations,
     boxBrightnessArrays,
@@ -253,7 +255,7 @@ export const update = (
       const amp = newBufferSketch.waveAmps[trackIndex];
       const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
       return preWaveAngleArray.map(
-        (angle) => Math.sin(angle) * amp + baseYPosition
+        (angle) => tools.map(Math.sin(angle), -1, 1, 0, 1) * amp + baseYPosition
       );
     }
   );
@@ -345,6 +347,23 @@ export const update = (
         }
       }
     );
+  newBufferSketch.amplitudes = newBufferSketch.currentBoxHeightOffsets.map(
+    (currentBoxHeightOffset) => {
+      const mappedAmp = tools.map(
+        currentBoxHeightOffset,
+        0,
+        preBufferSketch.boxSize.y,
+        params.granularVolumeMin,
+        params.granularVolumeMax
+      );
+      const amp = tools.constrain(
+        mappedAmp,
+        params.granularVolumeMin,
+        params.granularVolumeMax
+      );
+      return isNaN(amp) ? 0 : amp;
+    }
+  );
   newBufferSketch.boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
     return params.hues[flag];
@@ -444,9 +463,9 @@ export const draw = (
       s.fill(hue, saturation, brightness);
       s.rect(
         boxLAPosition.x,
-        boxLAPosition.y + boxHeightOffset,
+        boxLAPosition.y + boxSize.y - boxHeightOffset,
         boxSize.x,
-        boxSize.y - boxHeightOffset
+        boxHeightOffset
       );
     });
   });

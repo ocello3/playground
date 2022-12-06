@@ -34,8 +34,7 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        angleSpeeds: bufferSketch.waveAngleSpeeds,
-        angleArray: bufferSketch.waveAngleArrays[0],
+        results: "na",
       },
       5
     );

@@ -19,6 +19,8 @@ export const set = () => {
     amSynthVolumeMin: -40,
     amSynthVolumeMax: -10,
     amSynthNote: ["G6", "D7", "C7", "E7"],
+    granularVolumeMin: -15,
+    granularVolumeMax: -3,
     // color
     hues: [357, 237],
     saturations: [68, 68],
@@ -28,7 +30,7 @@ export const set = () => {
     loopRangeLineYPosRate: 0.65,
     // wave
     ampRateMin: 0.1,
-    ampRateMax: 0.5,
+    ampRateMax: 0.9,
     waveLengthRateMin: 0.01,
     waveLengthRateMax: 10,
     waveSpeedRateMin: 0.00001,
