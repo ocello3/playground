@@ -327,6 +327,8 @@ export const update = (
           preBufferSketch.boxLAPositionArrays[trackIndex].length;
         const addedBoxNumber = currentArrayLength - preArrayLength;
         if (addedBoxNumber === 0) {
+          preBoxHeightOffsetArray[preBoxHeightOffsetArray.length - 1] =
+            newBufferSketch.currentBoxHeightOffsets[trackIndex];
           return preBoxHeightOffsetArray;
         } else if (addedBoxNumber < 0) {
           return Array.from(
@@ -426,6 +428,7 @@ export const draw = (
     waveXPositionArrays,
     waveYPositionArrays,
     boxHeightOffsetArrays,
+    currentBoxIndexes,
   } = bufferSketch;
   // boxes
   s.push();
@@ -489,6 +492,7 @@ export const draw = (
   // wave
   s.push();
   waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
+    const currentBoxIndex = currentBoxIndexes[trackIndex];
     const flag = buffer.loopIsReverses[trackIndex] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
@@ -496,13 +500,15 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     const waveYPositionArray = waveYPositionArrays[trackIndex];
     waveXPositionArray.forEach((waveXPosition, boxIndex) => {
-      const waveYPosition = waveYPositionArray[boxIndex];
-      s.line(
-        waveXPosition,
-        waveYPosition,
-        waveXPosition + boxSize.x,
-        waveYPosition
-      );
+      if (boxIndex > currentBoxIndex) {
+        const waveYPosition = waveYPositionArray[boxIndex];
+        s.line(
+          waveXPosition,
+          waveYPosition,
+          waveXPosition + boxSize.x,
+          waveYPosition
+        );
+      }
     });
   });
   s.pop();
