@@ -8,6 +8,7 @@ export type type = {
   bufferConvertRateToLength: number;
   fullLengths: number[];
   margins: number[];
+  boxSize: p5.Vector;
   startPositions: p5.Vector[];
   endPositions: p5.Vector[];
   loopStartPositions: p5.Vector[];
@@ -15,7 +16,6 @@ export type type = {
   loopEndPositions: p5.Vector[];
   loopEndCurrentPositions: p5.Vector[];
   currentPositions: p5.Vector[];
-  boxSize: p5.Vector;
   boxNumbers: number[];
   waveXPositionArrays: number[][];
   waveAngleSpeeds: number[];
@@ -143,6 +143,12 @@ export const update = (
   params: Params.type,
   size: number
 ) => {
+  const bufferConvertRateToLength = preBufferSketch.bufferConvertRateToLength;
+  const fullLengths = preBufferSketch.fullLengths;
+  const margins = preBufferSketch.margins;
+  const boxSize = preBufferSketch.boxSize;
+  const startPositions = preBufferSketch.startPositions;
+  const endPositions = preBufferSketch.endPositions;
   const loopStartPositions = preBufferSketch.loopStartPositions.map(
     (preLoopStartPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
@@ -426,17 +432,17 @@ export const update = (
     tools.map(currentPosition.x, 0, size, -1, 1)
   );
   return {
-    bufferConvertRateToLength: preBufferSketch.bufferConvertRateToLength,
-    fullLengths: preBufferSketch.fullLengths,
-    margins: preBufferSketch.margins,
-    startPositions: preBufferSketch.startPositions,
-    endPositions: preBufferSketch.endPositions,
+    bufferConvertRateToLength,
+    fullLengths,
+    margins,
+    boxSize,
+    startPositions,
+    endPositions,
     loopStartPositions,
     loopStartCurrentPositions,
     loopEndPositions,
     loopEndCurrentPositions,
     currentPositions,
-    boxSize: preBufferSketch.boxSize,
     boxNumbers,
     waveXPositionArrays,
     waveAngleSpeeds,
