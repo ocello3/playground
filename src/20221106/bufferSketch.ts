@@ -4,7 +4,7 @@ import * as Buffer from "./buffer";
 import * as Synth from "./synth";
 import { tools } from "../util/tools";
 
-type type = {
+export type type = {
   bufferConvertRateToLength: number;
   fullLengths: number[];
   margins: number[];
@@ -143,8 +143,7 @@ export const update = (
   params: Params.type,
   size: number
 ) => {
-  const newBufferSketch = { ...preBufferSketch };
-  newBufferSketch.loopStartPositions = preBufferSketch.loopStartPositions.map(
+  const loopStartPositions = preBufferSketch.loopStartPositions.map(
     (preLoopStartPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
@@ -157,11 +156,10 @@ export const update = (
       return newLoopStartPosition;
     }
   );
-  newBufferSketch.loopStartCurrentPositions =
+  const loopStartCurrentPositions =
     preBufferSketch.loopStartCurrentPositions.map(
       (preLoopStartCurrentPosition, index) => {
-        const loopStartTargetPosition =
-          newBufferSketch.loopStartPositions[index];
+        const loopStartTargetPosition = loopStartPositions[index];
         const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
         if (Math.abs(diff) < 1) return loopStartTargetPosition;
         const easingF = tools.map(
@@ -176,7 +174,7 @@ export const update = (
       }
     );
 
-  newBufferSketch.loopEndPositions = preBufferSketch.loopEndPositions.map(
+  const loopEndPositions = preBufferSketch.loopEndPositions.map(
     (preLoopEndPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
@@ -187,38 +185,33 @@ export const update = (
       return newLoopEndPosition;
     }
   );
-  newBufferSketch.loopEndCurrentPositions =
-    preBufferSketch.loopEndCurrentPositions.map(
-      (preLoopEndCurrentPosition, index) => {
-        const loopEndTargetPosition = newBufferSketch.loopEndPositions[index];
-        const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
-        if (Math.abs(diff) < 1) return loopEndTargetPosition;
-        const easingF = tools.map(
-          buffer.playbackRates[index],
-          params.playbackRateMin,
-          params.playbackRateMax,
-          params.easingFMin,
-          params.easingFMax
-        );
-        const progress = new p5.Vector(diff * easingF, 0);
-        return p5.Vector.add(preLoopEndCurrentPosition, progress);
-      }
-    );
-  newBufferSketch.boxNumbers = preBufferSketch.boxNumbers.map(
-    (preBoxNumber, index) => {
-      if (!buffer.loopIsSwitches[index]) return preBoxNumber;
-      const diff =
-        newBufferSketch.loopStartPositions[index].x -
-        newBufferSketch.loopEndPositions[index].x;
-      return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
+  const loopEndCurrentPositions = preBufferSketch.loopEndCurrentPositions.map(
+    (preLoopEndCurrentPosition, index) => {
+      const loopEndTargetPosition = loopEndPositions[index];
+      const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
+      if (Math.abs(diff) < 1) return loopEndTargetPosition;
+      const easingF = tools.map(
+        buffer.playbackRates[index],
+        params.playbackRateMin,
+        params.playbackRateMax,
+        params.easingFMin,
+        params.easingFMax
+      );
+      const progress = new p5.Vector(diff * easingF, 0);
+      return p5.Vector.add(preLoopEndCurrentPosition, progress);
     }
   );
-  newBufferSketch.waveXPositionArrays = preBufferSketch.waveXPositionArrays.map(
+  const boxNumbers = preBufferSketch.boxNumbers.map((preBoxNumber, index) => {
+    if (!buffer.loopIsSwitches[index]) return preBoxNumber;
+    const diff = loopStartPositions[index].x - loopEndPositions[index].x;
+    return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
+  });
+  const waveXPositionArrays = preBufferSketch.waveXPositionArrays.map(
     (preWavePositionArray, trackIndex) => {
       if (!buffer.loopIsSwitches[trackIndex]) return preWavePositionArray;
-      const boxNumber = newBufferSketch.boxNumbers[trackIndex];
+      const boxNumber = boxNumbers[trackIndex];
       const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
-      const loopStartPosition = newBufferSketch.loopStartPositions[trackIndex];
+      const loopStartPosition = loopStartPositions[trackIndex];
       return Array.from(
         Array(boxNumber),
         (_, boxIndex) =>
@@ -226,7 +219,7 @@ export const update = (
       );
     }
   );
-  newBufferSketch.waveAngleSpeeds = preBufferSketch.waveAngleSpeeds.map(
+  const waveAngleSpeeds = preBufferSketch.waveAngleSpeeds.map(
     (preWaveAngleSpeed, trackIndex) => {
       if (!buffer.loopIsSwitches[trackIndex]) return preWaveAngleSpeed;
       return tools.map(
@@ -238,18 +231,16 @@ export const update = (
       );
     }
   );
-  newBufferSketch.waveAngleArrays = preBufferSketch.waveAngleArrays.map(
+  const waveAngleArrays = preBufferSketch.waveAngleArrays.map(
     (preWaveAngleArray, trackIndex) => {
       if (!buffer.loopIsSwitches[trackIndex])
         return preWaveAngleArray.map(
-          (preWaveAngle) =>
-            preWaveAngle + newBufferSketch.waveAngleSpeeds[trackIndex]
+          (preWaveAngle) => preWaveAngle + waveAngleSpeeds[trackIndex]
         );
-      const xPositionArray = newBufferSketch.waveXPositionArrays[trackIndex];
+      const xPositionArray = waveXPositionArrays[trackIndex];
       const waveLength =
         Math.abs(
-          newBufferSketch.loopEndPositions[trackIndex].x -
-            newBufferSketch.loopStartPositions[trackIndex].x
+          loopEndPositions[trackIndex].x - loopStartPositions[trackIndex].x
         ) *
         tools.map(
           Math.random(),
@@ -259,68 +250,58 @@ export const update = (
           params.waveLengthRateMax
         );
       return xPositionArray.map((xPosition) => {
-        const widthPerAngle =
-          waveLength / newBufferSketch.boxNumbers[trackIndex];
+        const widthPerAngle = waveLength / boxNumbers[trackIndex];
         return (xPosition / widthPerAngle) * Math.PI * 2;
       });
     }
   );
-  newBufferSketch.waveAmps = preBufferSketch.waveAmps.map(
-    (preAmp, trackIndex) => {
-      if (!buffer.loopIsSwitches[trackIndex]) return preAmp;
-      return tools.map(
-        Math.random(),
-        0,
-        1,
-        params.ampRateMin * preBufferSketch.boxSize.y,
-        params.ampRateMax * preBufferSketch.boxSize.y
-      );
-    }
-  );
-  newBufferSketch.waveYPositionArrays = newBufferSketch.waveAngleArrays.map(
+  const waveAmps = preBufferSketch.waveAmps.map((preAmp, trackIndex) => {
+    if (!buffer.loopIsSwitches[trackIndex]) return preAmp;
+    return tools.map(
+      Math.random(),
+      0,
+      1,
+      params.ampRateMin * preBufferSketch.boxSize.y,
+      params.ampRateMax * preBufferSketch.boxSize.y
+    );
+  });
+  const waveYPositionArrays = waveAngleArrays.map(
     (preWaveAngleArray, trackIndex) => {
-      const amp = newBufferSketch.waveAmps[trackIndex];
+      const amp = waveAmps[trackIndex];
       const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
       return preWaveAngleArray.map(
         (angle) => tools.map(Math.sin(angle), -1, 1, 0, 1) * amp + baseYPosition
       );
     }
   );
-  newBufferSketch.currentPositions = preBufferSketch.currentPositions.map(
+  const currentPositions = preBufferSketch.currentPositions.map(
     (preCurrentPosition, index) => {
       const loopLength: number = Math.abs(
-        newBufferSketch.loopEndPositions[index].x -
-          newBufferSketch.loopStartPositions[index].x
+        loopEndPositions[index].x - loopStartPositions[index].x
       );
       const progressLength: number =
         loopLength * buffer.loopProgressRates[index];
       if (buffer.loopIsReverses[index]) {
-        preCurrentPosition.x =
-          newBufferSketch.loopStartPositions[index].x - progressLength;
+        preCurrentPosition.x = loopStartPositions[index].x - progressLength;
         return preCurrentPosition;
       } else {
-        preCurrentPosition.x =
-          newBufferSketch.loopStartPositions[index].x + progressLength;
+        preCurrentPosition.x = loopStartPositions[index].x + progressLength;
         return preCurrentPosition;
       }
     }
   );
-  newBufferSketch.boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
+  const boxLAPositionArrays = preBufferSketch.boxLAPositionArrays.map(
     (preBoxLAPositionArray, trackIndex) => {
       // reset for new loop
       if (buffer.loopIsSwitches[trackIndex] || buffer.loopIsOvers[trackIndex]) {
         const offset = new p5.Vector().set(0, preBufferSketch.boxSize.y * -0.5);
-        return [
-          p5.Vector.add(newBufferSketch.loopStartPositions[trackIndex], offset),
-        ];
+        return [p5.Vector.add(loopStartPositions[trackIndex], offset)];
       }
       // add new position at last of array
       const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
-      const diff = Math.abs(
-        newBufferSketch.currentPositions[trackIndex].x - lastPosition.x
-      );
+      const diff = Math.abs(currentPositions[trackIndex].x - lastPosition.x);
       const addedBoxNumber = Math.round(diff / preBufferSketch.boxSize.x);
       if (addedBoxNumber === 0) return preBoxLAPositionArray;
       const addedBoxPositions = Array.from(
@@ -336,79 +317,71 @@ export const update = (
       return preBoxLAPositionArray.concat(addedBoxPositions);
     }
   );
-  newBufferSketch.currentBoxIndexes = newBufferSketch.boxLAPositionArrays.map(
+  const currentBoxIndexes = boxLAPositionArrays.map(
     (boxLAPositionArray) => boxLAPositionArray.length - 1
   );
-  newBufferSketch.currentBoxHeightOffsets =
-    newBufferSketch.waveYPositionArrays.map((_, trackIndex) => {
-      const currentBoxIndex = newBufferSketch.currentBoxIndexes[trackIndex];
-      const currentWaveYPos =
-        newBufferSketch.waveYPositionArrays[trackIndex][currentBoxIndex];
-      const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
-      return currentWaveYPos - baseYPosition;
-    });
-  newBufferSketch.boxHeightOffsetArrays =
-    preBufferSketch.boxHeightOffsetArrays.map(
-      (preBoxHeightOffsetArray, trackIndex) => {
-        const currentArrayLength =
-          newBufferSketch.boxLAPositionArrays[trackIndex].length;
-        const preArrayLength =
-          preBufferSketch.boxLAPositionArrays[trackIndex].length;
-        const addedBoxNumber = currentArrayLength - preArrayLength;
-        if (addedBoxNumber === 0) {
-          preBoxHeightOffsetArray[preBoxHeightOffsetArray.length - 1] =
-            newBufferSketch.currentBoxHeightOffsets[trackIndex];
-          return preBoxHeightOffsetArray;
-        } else if (addedBoxNumber < 0) {
-          return Array.from(
-            Array(currentArrayLength),
-            () => newBufferSketch.currentBoxHeightOffsets[trackIndex]
-          );
-        } else {
-          // addedBoxNumber > 0
-          const newBoxHeightOffsetArray = Array.from(
-            Array(addedBoxNumber),
-            () => newBufferSketch.currentBoxHeightOffsets[trackIndex]
-          );
-          return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
-        }
+  const currentBoxHeightOffsets = waveYPositionArrays.map((_, trackIndex) => {
+    const currentBoxIndex = currentBoxIndexes[trackIndex];
+    const currentWaveYPos = waveYPositionArrays[trackIndex][currentBoxIndex];
+    const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
+    return currentWaveYPos - baseYPosition;
+  });
+  const boxHeightOffsetArrays = preBufferSketch.boxHeightOffsetArrays.map(
+    (preBoxHeightOffsetArray, trackIndex) => {
+      const currentArrayLength = boxLAPositionArrays[trackIndex].length;
+      const preArrayLength =
+        preBufferSketch.boxLAPositionArrays[trackIndex].length;
+      const addedBoxNumber = currentArrayLength - preArrayLength;
+      if (addedBoxNumber === 0) {
+        preBoxHeightOffsetArray[preBoxHeightOffsetArray.length - 1] =
+          currentBoxHeightOffsets[trackIndex];
+        return preBoxHeightOffsetArray;
+      } else if (addedBoxNumber < 0) {
+        return Array.from(
+          Array(currentArrayLength),
+          () => currentBoxHeightOffsets[trackIndex]
+        );
+      } else {
+        // addedBoxNumber > 0
+        const newBoxHeightOffsetArray = Array.from(
+          Array(addedBoxNumber),
+          () => currentBoxHeightOffsets[trackIndex]
+        );
+        return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
       }
-    );
-  newBufferSketch.amplitudes = newBufferSketch.currentBoxHeightOffsets.map(
-    (currentBoxHeightOffset) => {
-      const mappedAmp = tools.map(
-        currentBoxHeightOffset,
-        0,
-        preBufferSketch.boxSize.y,
-        params.granularVolumeMin,
-        params.granularVolumeMax
-      );
-      const amp = tools.constrain(
-        mappedAmp,
-        params.granularVolumeMin,
-        params.granularVolumeMax
-      );
-      return isNaN(amp) ? 0 : amp;
     }
   );
-  newBufferSketch.boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
+  const amplitudes = currentBoxHeightOffsets.map((currentBoxHeightOffset) => {
+    const mappedAmp = tools.map(
+      currentBoxHeightOffset,
+      0,
+      preBufferSketch.boxSize.y,
+      params.granularVolumeMin,
+      params.granularVolumeMax
+    );
+    const amp = tools.constrain(
+      mappedAmp,
+      params.granularVolumeMin,
+      params.granularVolumeMax
+    );
+    return isNaN(amp) ? 0 : amp;
+  });
+  const boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
     return params.hues[flag];
   });
-  newBufferSketch.boxSaturations = buffer.loopIsReverses.map(
-    (loopIsReverse, index) => {
-      const flag = loopIsReverse ? 1 : 0;
-      const baseSaturation = params.saturations[flag];
-      return tools.map(
-        buffer.playbackRates[index],
-        params.playbackRateMin,
-        params.playbackRateMax,
-        baseSaturation - params.saturationRange,
-        baseSaturation + params.saturationRange
-      );
-    }
-  );
-  newBufferSketch.boxBrightnessArrays = newBufferSketch.boxLAPositionArrays.map(
+  const boxSaturations = buffer.loopIsReverses.map((loopIsReverse, index) => {
+    const flag = loopIsReverse ? 1 : 0;
+    const baseSaturation = params.saturations[flag];
+    return tools.map(
+      buffer.playbackRates[index],
+      params.playbackRateMin,
+      params.playbackRateMax,
+      baseSaturation - params.saturationRange,
+      baseSaturation + params.saturationRange
+    );
+  });
+  const boxBrightnessArrays = boxLAPositionArrays.map(
     (newBoxLAPositionArray, trackIndex) => {
       // update last element using volume
       const preBoxBrightnessArray =
@@ -449,10 +422,37 @@ export const update = (
       }
     }
   );
-  newBufferSketch.panValues = newBufferSketch.currentPositions.map(
-    (currentPosition) => tools.map(currentPosition.x, 0, size, -1, 1)
+  const panValues = currentPositions.map((currentPosition) =>
+    tools.map(currentPosition.x, 0, size, -1, 1)
   );
-  return newBufferSketch;
+  return {
+    bufferConvertRateToLength: preBufferSketch.bufferConvertRateToLength,
+    fullLengths: preBufferSketch.fullLengths,
+    margins: preBufferSketch.margins,
+    startPositions: preBufferSketch.startPositions,
+    endPositions: preBufferSketch.endPositions,
+    loopStartPositions,
+    loopStartCurrentPositions,
+    loopEndPositions,
+    loopEndCurrentPositions,
+    currentPositions,
+    boxSize: preBufferSketch.boxSize,
+    boxNumbers,
+    waveXPositionArrays,
+    waveAngleSpeeds,
+    waveAngleArrays,
+    waveAmps,
+    waveYPositionArrays,
+    boxLAPositionArrays,
+    currentBoxIndexes,
+    currentBoxHeightOffsets,
+    boxHeightOffsetArrays,
+    amplitudes,
+    boxHues,
+    boxSaturations,
+    boxBrightnessArrays,
+    panValues,
+  };
 };
 
 export const draw = (
