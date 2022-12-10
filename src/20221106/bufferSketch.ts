@@ -4,12 +4,41 @@ import * as Buffer from "./buffer";
 import * as Synth from "./synth";
 import { tools } from "../util/tools";
 
+type type = {
+  bufferConvertRateToLength: number;
+  fullLengths: number[];
+  margins: number[];
+  startPositions: p5.Vector[];
+  endPositions: p5.Vector[];
+  loopStartPositions: p5.Vector[];
+  loopStartCurrentPositions: p5.Vector[];
+  loopEndPositions: p5.Vector[];
+  loopEndCurrentPositions: p5.Vector[];
+  currentPositions: p5.Vector[];
+  boxSize: p5.Vector;
+  boxNumbers: number[];
+  waveXPositionArrays: number[][];
+  waveAngleSpeeds: number[];
+  waveAngleArrays: number[][];
+  waveAmps: number[];
+  waveYPositionArrays: number[][];
+  boxLAPositionArrays: p5.Vector[][];
+  currentBoxIndexes: number[];
+  currentBoxHeightOffsets: number[];
+  boxHeightOffsetArrays: number[][];
+  amplitudes: number[];
+  boxHues: number[];
+  boxSaturations: number[];
+  boxBrightnessArrays: number[][];
+  panValues: number[];
+};
+
 export const set = (
   buffer: Buffer.type,
   size: number,
   params: Params.type,
   synth: Synth.type
-) => {
+): type => {
   const { marginRate } = params;
   const lengthForLongestBuffer = size * (1 - marginRate);
   const bufferConvertRateToLength =
@@ -107,8 +136,6 @@ export const set = (
     panValues,
   };
 };
-export const obj = set(Buffer.obj, 100, Params.obj, Synth.obj);
-export type type = typeof obj;
 
 export const update = (
   preBufferSketch: type,
