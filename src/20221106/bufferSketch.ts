@@ -155,9 +155,8 @@ export const update = (
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
         buffer.loopStartTimes[index] / buffer.durations[index];
-      const loopStartPosition =
-        preBufferSketch.fullLengths[index] * positionRate;
-      const x = loopStartPosition + preBufferSketch.margins[index];
+      const loopStartPosition = fullLengths[index] * positionRate;
+      const x = loopStartPosition + margins[index];
       newLoopStartPosition.x = x;
       return newLoopStartPosition;
     }
@@ -185,8 +184,8 @@ export const update = (
       if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
       const positionRate = buffer.loopEndTimes[index] / buffer.durations[index];
-      const loopEndPosition = preBufferSketch.fullLengths[index] * positionRate;
-      const x = loopEndPosition + preBufferSketch.margins[index];
+      const loopEndPosition = fullLengths[index] * positionRate;
+      const x = loopEndPosition + margins[index];
       newLoopEndPosition.x = x;
       return newLoopEndPosition;
     }
@@ -210,7 +209,7 @@ export const update = (
   const boxNumbers = preBufferSketch.boxNumbers.map((preBoxNumber, index) => {
     if (!buffer.loopIsSwitches[index]) return preBoxNumber;
     const diff = loopStartPositions[index].x - loopEndPositions[index].x;
-    return Math.ceil(Math.abs(diff / preBufferSketch.boxSize.x));
+    return Math.ceil(Math.abs(diff / boxSize.x));
   });
   const waveXPositionArrays = preBufferSketch.waveXPositionArrays.map(
     (preWavePositionArray, trackIndex) => {
@@ -220,8 +219,7 @@ export const update = (
       const loopStartPosition = loopStartPositions[trackIndex];
       return Array.from(
         Array(boxNumber),
-        (_, boxIndex) =>
-          loopStartPosition.x + preBufferSketch.boxSize.x * boxIndex * direction
+        (_, boxIndex) => loopStartPosition.x + boxSize.x * boxIndex * direction
       );
     }
   );
@@ -267,8 +265,8 @@ export const update = (
       Math.random(),
       0,
       1,
-      params.ampRateMin * preBufferSketch.boxSize.y,
-      params.ampRateMax * preBufferSketch.boxSize.y
+      params.ampRateMin * boxSize.y,
+      params.ampRateMax * boxSize.y
     );
   });
   const waveYPositionArrays = waveAngleArrays.map(
@@ -300,7 +298,7 @@ export const update = (
     (preBoxLAPositionArray, trackIndex) => {
       // reset for new loop
       if (buffer.loopIsSwitches[trackIndex] || buffer.loopIsOvers[trackIndex]) {
-        const offset = new p5.Vector().set(0, preBufferSketch.boxSize.y * -0.5);
+        const offset = new p5.Vector().set(0, boxSize.y * -0.5);
         return [p5.Vector.add(loopStartPositions[trackIndex], offset)];
       }
       // add new position at last of array
@@ -308,7 +306,7 @@ export const update = (
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPositions[trackIndex].x - lastPosition.x);
-      const addedBoxNumber = Math.round(diff / preBufferSketch.boxSize.x);
+      const addedBoxNumber = Math.round(diff / boxSize.x);
       if (addedBoxNumber === 0) return preBoxLAPositionArray;
       const addedBoxPositions = Array.from(
         Array(addedBoxNumber),
@@ -329,7 +327,7 @@ export const update = (
   const currentBoxHeightOffsets = waveYPositionArrays.map((_, trackIndex) => {
     const currentBoxIndex = currentBoxIndexes[trackIndex];
     const currentWaveYPos = waveYPositionArrays[trackIndex][currentBoxIndex];
-    const baseYPosition = preBufferSketch.startPositions[trackIndex].y;
+    const baseYPosition = startPositions[trackIndex].y;
     return currentWaveYPos - baseYPosition;
   });
   const boxHeightOffsetArrays = preBufferSketch.boxHeightOffsetArrays.map(
@@ -361,7 +359,7 @@ export const update = (
     const mappedAmp = tools.map(
       currentBoxHeightOffset,
       0,
-      preBufferSketch.boxSize.y,
+      boxSize.y,
       params.granularVolumeMin,
       params.granularVolumeMax
     );
