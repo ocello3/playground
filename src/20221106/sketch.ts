@@ -18,7 +18,7 @@ export const sketch = (s: p5) => {
   s.setup = async () => {
     synth = await Synth.set();
     buffer = Buffer.set(synth, s.millis());
-    bufferSketch = BufferSketch.set(buffer, size, params, synth);
+    bufferSketch = BufferSketch.get(buffer, params, size, synth);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
@@ -34,14 +34,15 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        results: "na",
+        laPosition: bufferSketch.boxLAPositionArrays[0],
+        boxHeightOffset: bufferSketch.boxHeightOffsetArrays[0],
       },
-      5
+      10
     );
     s.background(255);
     controller.updateController(s, controllers);
     buffer = Buffer.update(buffer, params, s.millis());
-    bufferSketch = BufferSketch.update(bufferSketch, buffer, params, size);
+    bufferSketch = BufferSketch.get(buffer, params, size, synth, bufferSketch);
     BufferSketch.draw(bufferSketch, buffer, params, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, params, s.frameCount);
