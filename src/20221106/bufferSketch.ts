@@ -41,41 +41,67 @@ export const get = (
   pre?: type
 ) => {
   const isInit = pre === undefined;
-  const bufferConvertRateToLength_init = (() => {
-    const lengthForLongestBuffer = size * (1 - params.marginRate);
-    return lengthForLongestBuffer / buffer.longestDuration;
+  const bufferConvertRateToLength: type["bufferConvertRateToLength"] = (() => {
+    if (isInit) {
+      const lengthForLongestBuffer = size * (1 - params.marginRate);
+      return lengthForLongestBuffer / buffer.longestDuration;
+    } else {
+      return pre.bufferConvertRateToLength;
+    }
   })();
-  const bufferConvertRateToLength = isInit
-    ? bufferConvertRateToLength_init
-    : pre.bufferConvertRateToLength;
-  const fullLengths_init = synth.data.durations.map(
-    (duration) => duration * bufferConvertRateToLength
-  );
-  const fullLengths = isInit ? fullLengths_init : pre.fullLengths;
-  const margins_init = params.alignments.map((alignment, index) => {
-    const sideMargin = size * params.marginRate * 0.5;
-    return alignment === "right"
-      ? sideMargin
-      : size - fullLengths[index] - sideMargin;
-  });
-  const margins = isInit ? margins_init : pre.margins;
-  const boxSize_init = new p5.Vector(
-    size * params.boxIntervalRate,
-    size * params.boxHeightRate
-  );
-  const boxSize = isInit ? boxSize_init : pre.boxSize;
-  const startPositions_init = synth.data.durations.map((_, index) => {
-    // for 4th buffer, fit to right end
-    const x = margins[index];
-    const y = (size / (synth.data.durations.length + 1)) * (index + 1);
-    return new p5.Vector(x, y);
-  });
-  const startPositions = isInit ? startPositions_init : pre.startPositions;
-  const endPositions_init = startPositions.map((startPosition, index) =>
-    p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
-  );
-  const endPositions = isInit ? endPositions_init : pre.endPositions;
-  const loopStartPositions = (() => {
+  const fullLengths: type["fullLengths"] = (() => {
+    if (isInit) {
+      return synth.data.durations.map(
+        (duration) => duration * bufferConvertRateToLength
+      );
+    } else {
+      return pre.fullLengths;
+    }
+  })();
+  const margins: type["margins"] = (() => {
+    if (isInit) {
+      return params.alignments.map((alignment, index) => {
+        const sideMargin = size * params.marginRate * 0.5;
+        return alignment === "right"
+          ? sideMargin
+          : size - fullLengths[index] - sideMargin;
+      });
+    } else {
+      return pre.margins;
+    }
+  })();
+  const boxSize = (() => {
+    if (isInit) {
+      return new p5.Vector(
+        size * params.boxIntervalRate,
+        size * params.boxHeightRate
+      );
+    } else {
+      return pre.boxSize;
+    }
+  })();
+  const startPositions: type["startPositions"] = (() => {
+    if (isInit) {
+      return synth.data.durations.map((_, index) => {
+        // for 4th buffer, fit to right end
+        const x = margins[index];
+        const y = (size / (synth.data.durations.length + 1)) * (index + 1);
+        return new p5.Vector(x, y);
+      });
+    } else {
+      return pre.startPositions;
+    }
+  })();
+  const endPositions: type["endPositions"] = (() => {
+    if (isInit) {
+      return startPositions.map((startPosition, index) =>
+        p5.Vector.add(startPosition, new p5.Vector().set(fullLengths[index], 0))
+      );
+    } else {
+      return pre.endPositions;
+    }
+  })();
+  const loopStartPositions: type["loopStartPositions"] = (() => {
     if (isInit) return startPositions;
     return pre.loopStartPositions.map((preLoopStartPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
@@ -88,7 +114,7 @@ export const get = (
       return newLoopStartPosition;
     });
   })();
-  const loopStartCurrentPositions = (() => {
+  const loopStartCurrentPositions: type["loopStartCurrentPositions"] = (() => {
     if (isInit) return loopStartPositions;
     return pre.loopStartCurrentPositions.map(
       (preLoopStartCurrentPosition, index) => {
@@ -107,7 +133,7 @@ export const get = (
       }
     );
   })();
-  const loopEndPositions = (() => {
+  const loopEndPositions: type["loopEndPositions"] = (() => {
     if (isInit) return endPositions;
     return pre.loopEndPositions.map((preLoopEndPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
@@ -119,7 +145,7 @@ export const get = (
       return newLoopEndPosition;
     });
   })();
-  const loopEndCurrentPositions = (() => {
+  const loopEndCurrentPositions: type["loopEndCurrentPositions"] = (() => {
     if (isInit) return loopEndPositions;
     return pre.loopEndCurrentPositions.map(
       (preLoopEndCurrentPosition, index) => {
@@ -138,13 +164,16 @@ export const get = (
       }
     );
   })();
-  const boxNumbers = loopStartPositions.map((loopStartPosition, index) => {
-    if (!isInit && !buffer.loopIsSwitches[index]) return pre.boxNumbers[index];
-    const diff = loopStartPosition.x - loopEndPositions[index].x;
-    return Math.ceil(Math.abs(diff / boxSize.x));
-  });
-  const waveXPositionArrays = loopStartPositions.map(
-    (loopStartPosition, trackIndex) => {
+  const boxNumbers: type["boxNumbers"] = loopStartPositions.map(
+    (loopStartPosition, index) => {
+      if (!isInit && !buffer.loopIsSwitches[index])
+        return pre.boxNumbers[index];
+      const diff = loopStartPosition.x - loopEndPositions[index].x;
+      return Math.ceil(Math.abs(diff / boxSize.x));
+    }
+  );
+  const waveXPositionArrays: type["waveXPositionArrays"] =
+    loopStartPositions.map((loopStartPosition, trackIndex) => {
       if (!isInit && !buffer.loopIsSwitches[trackIndex])
         return pre.waveXPositionArrays[trackIndex];
       const boxNumber = boxNumbers[trackIndex];
@@ -153,20 +182,21 @@ export const get = (
         Array(boxNumber),
         (_, boxIndex) => loopStartPosition.x + boxSize.x * boxIndex * direction
       );
+    });
+  const waveAngleSpeeds: type["waveAngleSpeeds"] = waveXPositionArrays.map(
+    (_, trackIndex) => {
+      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+        return pre.waveAngleSpeeds[trackIndex];
+      return tools.map(
+        Math.random(),
+        0,
+        1,
+        params.waveSpeedRateMin * size,
+        params.waveSpeedRateMax * size
+      );
     }
   );
-  const waveAngleSpeeds = waveXPositionArrays.map((_, trackIndex) => {
-    if (!isInit && !buffer.loopIsSwitches[trackIndex])
-      return pre.waveAngleSpeeds[trackIndex];
-    return tools.map(
-      Math.random(),
-      0,
-      1,
-      params.waveSpeedRateMin * size,
-      params.waveSpeedRateMax * size
-    );
-  });
-  const waveAngleArrays = waveXPositionArrays.map(
+  const waveAngleArrays: type["waveAngleArrays"] = waveXPositionArrays.map(
     (waveXPositionArray, trackIndex) => {
       if (!isInit && !buffer.loopIsSwitches[trackIndex])
         return pre.waveAngleArrays[trackIndex].map(
@@ -189,18 +219,20 @@ export const get = (
       });
     }
   );
-  const waveAmps = waveXPositionArrays.map((_, trackIndex) => {
-    if (!isInit && !buffer.loopIsSwitches[trackIndex])
-      return pre.waveAmps[trackIndex];
-    return tools.map(
-      Math.random(),
-      0,
-      1,
-      params.ampRateMin * boxSize.y,
-      params.ampRateMax * boxSize.y
-    );
-  });
-  const waveYPositionArrays = waveAngleArrays.map(
+  const waveAmps: type["waveAmps"] = waveXPositionArrays.map(
+    (_, trackIndex) => {
+      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+        return pre.waveAmps[trackIndex];
+      return tools.map(
+        Math.random(),
+        0,
+        1,
+        params.ampRateMin * boxSize.y,
+        params.ampRateMax * boxSize.y
+      );
+    }
+  );
+  const waveYPositionArrays: type["waveYPositionArrays"] = waveAngleArrays.map(
     (preWaveAngleArray, trackIndex) => {
       const amp = waveAmps[trackIndex];
       const baseYPosition = startPositions[trackIndex].y;
@@ -209,7 +241,7 @@ export const get = (
       );
     }
   );
-  const currentPositions = (() => {
+  const currentPositions: type["currentPositions"] = (() => {
     if (isInit)
       return synth.data.durations.map((_, index) => {
         // for 4th buffer, fit to right end
@@ -232,7 +264,7 @@ export const get = (
       }
     });
   })();
-  const boxLAPositionArrays = currentPositions.map(
+  const boxLAPositionArrays: type["boxLAPositionArrays"] = currentPositions.map(
     (currentPosition, trackIndex) => {
       // reset for new loop
       if (
@@ -264,17 +296,18 @@ export const get = (
       return preBoxLAPositionArray.concat(addedBoxPositions);
     }
   );
-  const currentBoxIndexes = boxLAPositionArrays.map(
+  const currentBoxIndexes: type["currentBoxIndexes"] = boxLAPositionArrays.map(
     (boxLAPositionArray) => boxLAPositionArray.length - 1
   );
-  const currentBoxHeightOffsets = waveYPositionArrays.map((_, trackIndex) => {
-    const currentBoxIndex = currentBoxIndexes[trackIndex];
-    const currentWaveYPos = waveYPositionArrays[trackIndex][currentBoxIndex];
-    const baseYPosition = startPositions[trackIndex].y;
-    return currentWaveYPos - baseYPosition;
-  });
-  const boxHeightOffsetArrays = currentBoxHeightOffsets.map(
-    (currentBoxHeightOffset, trackIndex) => {
+  const currentBoxHeightOffsets: type["currentBoxHeightOffsets"] =
+    waveYPositionArrays.map((_, trackIndex) => {
+      const currentBoxIndex = currentBoxIndexes[trackIndex];
+      const currentWaveYPos = waveYPositionArrays[trackIndex][currentBoxIndex];
+      const baseYPosition = startPositions[trackIndex].y;
+      return currentWaveYPos - baseYPosition;
+    });
+  const boxHeightOffsetArrays: type["boxHeightOffsetArrays"] =
+    currentBoxHeightOffsets.map((currentBoxHeightOffset, trackIndex) => {
       const currentArrayLength = boxLAPositionArrays[trackIndex].length;
       if (pre === undefined) {
         return Array.from(
@@ -302,40 +335,45 @@ export const get = (
         () => currentBoxHeightOffsets[trackIndex]
       );
       return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
+    });
+  const amplitudes: type["amplitudes"] = currentBoxHeightOffsets.map(
+    (currentBoxHeightOffset) => {
+      const mappedAmp = tools.map(
+        currentBoxHeightOffset,
+        0,
+        boxSize.y,
+        params.granularVolumeMin,
+        params.granularVolumeMax
+      );
+      const amp = tools.constrain(
+        mappedAmp,
+        params.granularVolumeMin,
+        params.granularVolumeMax
+      );
+      return isNaN(amp) ? 0 : amp;
     }
   );
-  const amplitudes = currentBoxHeightOffsets.map((currentBoxHeightOffset) => {
-    const mappedAmp = tools.map(
-      currentBoxHeightOffset,
-      0,
-      boxSize.y,
-      params.granularVolumeMin,
-      params.granularVolumeMax
-    );
-    const amp = tools.constrain(
-      mappedAmp,
-      params.granularVolumeMin,
-      params.granularVolumeMax
-    );
-    return isNaN(amp) ? 0 : amp;
-  });
-  const boxHues = buffer.loopIsReverses.map((loopIsReverse) => {
-    const flag = loopIsReverse ? 0 : 1;
-    return params.hues[flag];
-  });
-  const boxSaturations = buffer.loopIsReverses.map((loopIsReverse, index) => {
-    const flag = loopIsReverse ? 1 : 0;
-    const baseSaturation = params.saturations[flag];
-    return tools.map(
-      buffer.playbackRates[index],
-      params.playbackRateMin,
-      params.playbackRateMax,
-      baseSaturation - params.saturationRange,
-      baseSaturation + params.saturationRange
-    );
-  });
-  const boxBrightnessArrays = boxLAPositionArrays.map(
-    (boxLAPositionArray, trackIndex) => {
+  const boxHues: type["boxHues"] = buffer.loopIsReverses.map(
+    (loopIsReverse) => {
+      const flag = loopIsReverse ? 0 : 1;
+      return params.hues[flag];
+    }
+  );
+  const boxSaturations: type["boxSaturations"] = buffer.loopIsReverses.map(
+    (loopIsReverse, index) => {
+      const flag = loopIsReverse ? 1 : 0;
+      const baseSaturation = params.saturations[flag];
+      return tools.map(
+        buffer.playbackRates[index],
+        params.playbackRateMin,
+        params.playbackRateMax,
+        baseSaturation - params.saturationRange,
+        baseSaturation + params.saturationRange
+      );
+    }
+  );
+  const boxBrightnessArrays: type["boxBrightnessArrays"] =
+    boxLAPositionArrays.map((boxLAPositionArray, trackIndex) => {
       const volume = buffer.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
       const flag = buffer.loopIsReverses[trackIndex] ? 1 : 0;
@@ -375,9 +413,8 @@ export const get = (
       );
       const newBrightnessArray = preBoxBrightnessArray.concat(newBrightnesses);
       return newBrightnessArray;
-    }
-  );
-  const panValues = currentPositions.map((currentPosition) =>
+    });
+  const panValues: type["panValues"] = currentPositions.map((currentPosition) =>
     tools.map(currentPosition.x, 0, size, -1, 1)
   );
   return {
