@@ -7,6 +7,7 @@ import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import * as SynthData from "./sound/synthData";
 import * as Seq from "./sound/sequence";
+import * as WholeBuffer from "./component/wholeBuffer";
 import * as BufferSketch from "./component/bufferSketch";
 
 export const sketch = (s: p5) => {
@@ -14,14 +15,16 @@ export const sketch = (s: p5) => {
   let controllers = controller.setController();
   const params = Params.set(size);
   let seq: Seq.type;
-  let bufferSketch: BufferSketch.type;
   let synth: Synth.type;
   let synthData: SynthData.type;
+  let wholeBuffer: WholeBuffer.type;
+  let bufferSketch: BufferSketch.type;
   s.setup = async () => {
     synth = await Synth.set();
     synthData = SynthData.get(synth);
     seq = Seq.get(synthData, params, s.millis());
-    bufferSketch = BufferSketch.get(seq, params, size, synthData);
+    wholeBuffer = WholeBuffer.get(seq, params, size, synthData);
+    bufferSketch = BufferSketch.get(seq, params, size, synthData, wholeBuffer);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
@@ -46,7 +49,16 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     seq = Seq.get(synthData, params, s.millis(), seq);
-    bufferSketch = BufferSketch.get(seq, params, size, synthData, bufferSketch);
+    wholeBuffer = WholeBuffer.get(seq, params, size, synthData, wholeBuffer);
+    bufferSketch = BufferSketch.get(
+      seq,
+      params,
+      size,
+      synthData,
+      wholeBuffer,
+      bufferSketch
+    );
+    WholeBuffer.draw(wholeBuffer, seq, params, s);
     BufferSketch.draw(bufferSketch, seq, params, s);
     drawFrame(s, size);
     Synth.play(synth, seq, bufferSketch, params, s.frameCount);
