@@ -1,6 +1,6 @@
 import p5 from "p5";
 import * as Params from "./params";
-import * as Buffer from "./buffer";
+import * as Seq from "./sequence";
 import * as SynthData from "./synthData";
 import { tools } from "../util/tools";
 
@@ -33,7 +33,7 @@ export type type = {
 };
 
 export const get = (
-  buffer: Buffer.type,
+  seq: Seq.type,
   params: Params.type,
   size: number,
   synthData: SynthData.type,
@@ -43,7 +43,7 @@ export const get = (
   const bufferConvertRateToLength: type["bufferConvertRateToLength"] = (() => {
     if (isInit) {
       const lengthForLongestBuffer = size * (1 - params.marginRate);
-      return lengthForLongestBuffer / buffer.longestDuration;
+      return lengthForLongestBuffer / seq.longestDuration;
     } else {
       return pre.bufferConvertRateToLength;
     }
@@ -93,10 +93,10 @@ export const get = (
   const loopStartPositions: type["loopStartPositions"] = (() => {
     if (isInit) return startPositions;
     return pre.loopStartPositions.map((preLoopStartPosition, index) => {
-      if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
+      if (!seq.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
-        buffer.loopStartTimes[index] / synthData.durations[index];
+        seq.loopStartTimes[index] / synthData.durations[index];
       const loopStartPosition = fullLengths[index] * positionRate;
       const x = loopStartPosition + margins[index];
       newLoopStartPosition.x = x;
@@ -111,7 +111,7 @@ export const get = (
         const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
         if (Math.abs(diff) < 1) return loopStartTargetPosition;
         const easingF = tools.map(
-          buffer.playbackRates[index],
+          seq.playbackRates[index],
           params.playbackRateMin,
           params.playbackRateMax,
           params.easingFMin,
@@ -125,10 +125,9 @@ export const get = (
   const loopEndPositions: type["loopEndPositions"] = (() => {
     if (isInit) return endPositions;
     return pre.loopEndPositions.map((preLoopEndPosition, index) => {
-      if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
+      if (!seq.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
-      const positionRate =
-        buffer.loopEndTimes[index] / synthData.durations[index];
+      const positionRate = seq.loopEndTimes[index] / synthData.durations[index];
       const loopEndPosition = fullLengths[index] * positionRate;
       const x = loopEndPosition + margins[index];
       newLoopEndPosition.x = x;
@@ -143,7 +142,7 @@ export const get = (
         const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
         if (Math.abs(diff) < 1) return loopEndTargetPosition;
         const easingF = tools.map(
-          buffer.playbackRates[index],
+          seq.playbackRates[index],
           params.playbackRateMin,
           params.playbackRateMax,
           params.easingFMin,
@@ -156,18 +155,17 @@ export const get = (
   })();
   const boxNumbers: type["boxNumbers"] = loopStartPositions.map(
     (loopStartPosition, index) => {
-      if (!isInit && !buffer.loopIsSwitches[index])
-        return pre.boxNumbers[index];
+      if (!isInit && !seq.loopIsSwitches[index]) return pre.boxNumbers[index];
       const diff = loopStartPosition.x - loopEndPositions[index].x;
       return Math.ceil(Math.abs(diff / params.boxSize.x));
     }
   );
   const waveXPositionArrays: type["waveXPositionArrays"] =
     loopStartPositions.map((loopStartPosition, trackIndex) => {
-      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+      if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveXPositionArrays[trackIndex];
       const boxNumber = boxNumbers[trackIndex];
-      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+      const direction = seq.loopIsReverses[trackIndex] ? -1 : 1;
       return Array.from(
         Array(boxNumber),
         (_, boxIndex) =>
@@ -176,7 +174,7 @@ export const get = (
     });
   const waveAngleSpeeds: type["waveAngleSpeeds"] = waveXPositionArrays.map(
     (_, trackIndex) => {
-      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+      if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveAngleSpeeds[trackIndex];
       return tools.map(
         Math.random(),
@@ -189,7 +187,7 @@ export const get = (
   );
   const waveAngleArrays: type["waveAngleArrays"] = waveXPositionArrays.map(
     (waveXPositionArray, trackIndex) => {
-      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+      if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveAngleArrays[trackIndex].map(
           (preWaveAngle) => preWaveAngle + waveAngleSpeeds[trackIndex]
         );
@@ -212,7 +210,7 @@ export const get = (
   );
   const waveAmps: type["waveAmps"] = waveXPositionArrays.map(
     (_, trackIndex) => {
-      if (!isInit && !buffer.loopIsSwitches[trackIndex])
+      if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveAmps[trackIndex];
       return tools.map(
         Math.random(),
@@ -244,9 +242,8 @@ export const get = (
       const loopLength: number = Math.abs(
         loopEndPositions[index].x - loopStartPositions[index].x
       );
-      const progressLength: number =
-        loopLength * buffer.loopProgressRates[index];
-      if (buffer.loopIsReverses[index]) {
+      const progressLength: number = loopLength * seq.loopProgressRates[index];
+      if (seq.loopIsReverses[index]) {
         preCurrentPosition.x = loopStartPositions[index].x - progressLength;
         return preCurrentPosition;
       } else {
@@ -260,15 +257,15 @@ export const get = (
       // reset for new loop
       if (
         pre === undefined ||
-        buffer.loopIsSwitches[trackIndex] ||
-        buffer.loopIsOvers[trackIndex]
+        seq.loopIsSwitches[trackIndex] ||
+        seq.loopIsOvers[trackIndex]
       ) {
         const offset = new p5.Vector().set(0, params.boxSize.y * -0.5);
         return [p5.Vector.add(loopStartPositions[trackIndex], offset)];
       }
       // add new position at last of array
       const preBoxLAPositionArray = pre.boxLAPositionArrays[trackIndex];
-      const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
+      const direction = seq.loopIsReverses[trackIndex] ? -1 : 1;
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
@@ -344,18 +341,16 @@ export const get = (
       return isNaN(amp) ? 0 : amp;
     }
   );
-  const boxHues: type["boxHues"] = buffer.loopIsReverses.map(
-    (loopIsReverse) => {
-      const flag = loopIsReverse ? 0 : 1;
-      return params.hues[flag];
-    }
-  );
-  const boxSaturations: type["boxSaturations"] = buffer.loopIsReverses.map(
+  const boxHues: type["boxHues"] = seq.loopIsReverses.map((loopIsReverse) => {
+    const flag = loopIsReverse ? 0 : 1;
+    return params.hues[flag];
+  });
+  const boxSaturations: type["boxSaturations"] = seq.loopIsReverses.map(
     (loopIsReverse, index) => {
       const flag = loopIsReverse ? 1 : 0;
       const baseSaturation = params.saturations[flag];
       return tools.map(
-        buffer.playbackRates[index],
+        seq.playbackRates[index],
         params.playbackRateMin,
         params.playbackRateMax,
         baseSaturation - params.saturationRange,
@@ -367,7 +362,7 @@ export const get = (
     boxLAPositionArrays.map((boxLAPositionArray, trackIndex) => {
       const volume = synthData.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
-      const flag = buffer.loopIsReverses[trackIndex] ? 1 : 0;
+      const flag = seq.loopIsReverses[trackIndex] ? 1 : 0;
       const baseBrightness = params.brightnesses[flag];
       const brightness = tools.map(
         finiteVolume as number,
@@ -383,8 +378,8 @@ export const get = (
       );
       if (
         pre === undefined ||
-        buffer.loopIsOvers[trackIndex] ||
-        buffer.loopIsSwitches[trackIndex]
+        seq.loopIsOvers[trackIndex] ||
+        seq.loopIsSwitches[trackIndex]
       )
         return boxLAPositionArray.map(() => constrainedBrightness);
 
@@ -439,7 +434,7 @@ export const get = (
 
 export const draw = (
   bufferSketch: type,
-  buffer: Buffer.type,
+  seq: Seq.type,
   params: Params.type,
   s: p5
 ) => {
@@ -484,7 +479,7 @@ export const draw = (
   s.strokeWeight(1);
   s.strokeCap(s.SQUARE);
   startPositions.forEach((startPosition, index) => {
-    const flag = buffer.loopIsReverses[index] ? 0 : 1;
+    const flag = seq.loopIsReverses[index] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
     const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
@@ -501,7 +496,7 @@ export const draw = (
   s.strokeCap(s.PROJECT);
   loopStartCurrentPositions.forEach((loopStartPosition, index) => {
     s.push();
-    const flag = buffer.loopIsReverses[index] ? 0 : 1;
+    const flag = seq.loopIsReverses[index] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
     const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
@@ -520,7 +515,7 @@ export const draw = (
   s.push();
   waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
     const currentBoxIndex = currentBoxIndexes[trackIndex];
-    const flag = buffer.loopIsReverses[trackIndex] ? 0 : 1;
+    const flag = seq.loopIsReverses[trackIndex] ? 0 : 1;
     const hue = params.hues[flag];
     const saturation = params.saturations[flag] - params.saturationRange;
     const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
