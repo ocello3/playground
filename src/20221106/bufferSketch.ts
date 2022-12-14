@@ -70,7 +70,7 @@ export const get = (
       return pre.margins;
     }
   })();
-  const boxSize = (() => {
+  const boxSize: type["boxSize"] = (() => {
     if (isInit) {
       return new p5.Vector(
         size * params.boxIntervalRate,

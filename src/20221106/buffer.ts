@@ -3,7 +3,24 @@ import * as Tone from "tone";
 import * as Params from "./params";
 import { tools } from "../util/tools";
 
-export const set = (synth: Synth.type, millis: number) => {
+export type type = {
+  durations: number[];
+  longestDuration: number;
+  loopStartTimes: number[];
+  loopEndTimes: number[];
+  loopIsReverses: boolean[];
+  loopIsSwitches: boolean[];
+  loopGrainSizes: number[];
+  loopIsOvers: boolean[];
+  loopStampTimes: number[];
+  loopElapsedTimes: number[];
+  loopProgressRates: number[];
+  loopRetentionFrames: number[];
+  playbackRates: number[];
+  volumes: Tone.Meter[];
+};
+
+export const set = (synth: Synth.type, millis: number): type => {
   const durations = synth.data.durations;
   const longestDuration = durations.reduce((preDuration, curDuration) => {
     if (curDuration > preDuration) return curDuration;
@@ -19,7 +36,7 @@ export const set = (synth: Synth.type, millis: number) => {
   const loopElapsedTimes = durations.map(() => millis * 0.001);
   const loopProgressRates = durations.map(() => 0);
   // play immediately after play
-  const loopRetentionFrames = durations.map(() => 1);
+  const loopRetentionFrames = durations.map(() => 100);
   const playbackRates = durations.map(() => 1);
   const volumes = durations.map(() => new Tone.Meter());
   synth.players.forEach((player, index) => player.connect(volumes[index]));
@@ -40,8 +57,6 @@ export const set = (synth: Synth.type, millis: number) => {
     volumes,
   };
 };
-export const obj = set(Synth.obj, 0);
-export type type = typeof obj;
 
 export const update = (
   preBuffer: type,
