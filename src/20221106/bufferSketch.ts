@@ -8,7 +8,6 @@ export type type = {
   bufferConvertRateToLength: number;
   fullLengths: number[];
   margins: number[];
-  boxSize: p5.Vector;
   startPositions: p5.Vector[];
   endPositions: p5.Vector[];
   loopStartPositions: p5.Vector[];
@@ -68,16 +67,6 @@ export const get = (
       });
     } else {
       return pre.margins;
-    }
-  })();
-  const boxSize: type["boxSize"] = (() => {
-    if (isInit) {
-      return new p5.Vector(
-        size * params.boxIntervalRate,
-        size * params.boxHeightRate
-      );
-    } else {
-      return pre.boxSize;
     }
   })();
   const startPositions: type["startPositions"] = (() => {
@@ -170,7 +159,7 @@ export const get = (
       if (!isInit && !buffer.loopIsSwitches[index])
         return pre.boxNumbers[index];
       const diff = loopStartPosition.x - loopEndPositions[index].x;
-      return Math.ceil(Math.abs(diff / boxSize.x));
+      return Math.ceil(Math.abs(diff / params.boxSize.x));
     }
   );
   const waveXPositionArrays: type["waveXPositionArrays"] =
@@ -181,7 +170,8 @@ export const get = (
       const direction = buffer.loopIsReverses[trackIndex] ? -1 : 1;
       return Array.from(
         Array(boxNumber),
-        (_, boxIndex) => loopStartPosition.x + boxSize.x * boxIndex * direction
+        (_, boxIndex) =>
+          loopStartPosition.x + params.boxSize.x * boxIndex * direction
       );
     });
   const waveAngleSpeeds: type["waveAngleSpeeds"] = waveXPositionArrays.map(
@@ -228,8 +218,8 @@ export const get = (
         Math.random(),
         0,
         1,
-        params.ampRateMin * boxSize.y,
-        params.ampRateMax * boxSize.y
+        params.ampRateMin * params.boxSize.y,
+        params.ampRateMax * params.boxSize.y
       );
     }
   );
@@ -273,7 +263,7 @@ export const get = (
         buffer.loopIsSwitches[trackIndex] ||
         buffer.loopIsOvers[trackIndex]
       ) {
-        const offset = new p5.Vector().set(0, boxSize.y * -0.5);
+        const offset = new p5.Vector().set(0, params.boxSize.y * -0.5);
         return [p5.Vector.add(loopStartPositions[trackIndex], offset)];
       }
       // add new position at last of array
@@ -282,13 +272,13 @@ export const get = (
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
-      const addedBoxNumber = Math.round(diff / boxSize.x);
+      const addedBoxNumber = Math.round(diff / params.boxSize.x);
       if (addedBoxNumber === 0) return preBoxLAPositionArray;
       const addedBoxPositions = Array.from(
         Array(addedBoxNumber),
         (_, index) => {
           const progress = new p5.Vector(
-            boxSize.x * (index + 1) * direction,
+            params.boxSize.x * (index + 1) * direction,
             0
           );
           return p5.Vector.add(lastPosition, progress);
@@ -342,7 +332,7 @@ export const get = (
       const mappedAmp = tools.map(
         currentBoxHeightOffset,
         0,
-        boxSize.y,
+        params.boxSize.y,
         params.granularVolumeMin,
         params.granularVolumeMax
       );
@@ -422,7 +412,6 @@ export const get = (
     bufferConvertRateToLength,
     fullLengths,
     margins,
-    boxSize,
     startPositions,
     endPositions,
     loopStartPositions,
@@ -463,7 +452,6 @@ export const draw = (
     boxHues,
     boxSaturations,
     boxBrightnessArrays,
-    boxSize,
     waveXPositionArrays,
     waveYPositionArrays,
     boxHeightOffsetArrays,
@@ -483,8 +471,8 @@ export const draw = (
       s.fill(hue, saturation, brightness);
       s.rect(
         boxLAPosition.x,
-        boxLAPosition.y + boxSize.y - boxHeightOffset,
-        boxSize.x,
+        boxLAPosition.y + params.boxSize.y - boxHeightOffset,
+        params.boxSize.x,
         boxHeightOffset
       );
     });
@@ -503,9 +491,9 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     s.line(
       startPosition.x,
-      startPosition.y + boxSize.y * params.loopRangeLineYPosRate,
+      startPosition.y + params.boxSize.y * params.loopRangeLineYPosRate,
       endPositions[index].x,
-      endPositions[index].y + boxSize.y * params.loopRangeLineYPosRate
+      endPositions[index].y + params.boxSize.y * params.loopRangeLineYPosRate
     );
   });
   // loop range line
@@ -520,10 +508,10 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,
-      loopStartPosition.y + boxSize.y * params.loopRangeLineYPosRate,
+      loopStartPosition.y + params.boxSize.y * params.loopRangeLineYPosRate,
       loopEndCurrentPositions[index].x,
       loopEndCurrentPositions[index].y +
-        boxSize.y * params.loopRangeLineYPosRate
+        params.boxSize.y * params.loopRangeLineYPosRate
     );
     s.pop();
   });
@@ -544,7 +532,7 @@ export const draw = (
         s.line(
           waveXPosition,
           waveYPosition,
-          waveXPosition + boxSize.x,
+          waveXPosition + params.boxSize.x,
           waveYPosition
         );
       }

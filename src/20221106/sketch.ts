@@ -12,7 +12,7 @@ import * as BufferSketch from "./bufferSketch";
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
   let controllers = controller.setController();
-  const params = Params.set();
+  const params = Params.set(size);
   let buffer: Buffer.type;
   let bufferSketch: BufferSketch.type;
   let synth: Synth.type;

@@ -1,13 +1,17 @@
+import p5 from "p5";
 import { TabApi } from "tweakpane";
 
-export const set = () => {
+export const set = (size: number) => {
   const alignments = ["right", "right", "left", "left"];
+  const boxIntervalRate = 0.01;
+  const boxHeightRate = 0.5 / alignments.length;
   return {
     // position
     marginRate: 0.2,
     alignments,
-    boxIntervalRate: 0.01,
-    boxHeightRate: 0.5 / alignments.length,
+    boxIntervalRate,
+    boxHeightRate,
+    boxSize: new p5.Vector(size * boxIntervalRate, size * boxHeightRate),
     easingFMin: 0.05,
     easingFMax: 0.5,
     // buffer
@@ -37,7 +41,7 @@ export const set = () => {
     waveSpeedRateMax: 0.0001,
   };
 };
-export const obj = set();
+export const obj = set(100);
 export type type = typeof obj;
 
 export const gui = (params: type, tab: TabApi) => {
