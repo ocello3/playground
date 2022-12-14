@@ -4,10 +4,10 @@ import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
 import * as Params from "./params";
-import * as Synth from "./synth";
-import * as SynthData from "./synthData";
-import * as Seq from "./sequence";
-import * as BufferSketch from "./bufferSketch";
+import * as Synth from "./sound/synth";
+import * as SynthData from "./sound/synthData";
+import * as Seq from "./sound/sequence";
+import * as BufferSketch from "./component/bufferSketch";
 
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");

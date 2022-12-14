@@ -1,6 +1,6 @@
 import * as SynthData from "./synthData";
-import * as Params from "./params";
-import { tools } from "../util/tools";
+import * as Params from "../params";
+import { tools } from "../../util/tools";
 
 export type type = {
   longestDuration: number;

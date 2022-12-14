@@ -1,8 +1,8 @@
 import p5 from "p5";
-import * as Params from "./params";
-import * as Seq from "./sequence";
-import * as SynthData from "./synthData";
-import { tools } from "../util/tools";
+import * as Params from "../params";
+import * as Seq from "../sound/sequence";
+import * as SynthData from "../sound/synthData";
+import { tools } from "../../util/tools";
 
 export type type = {
   bufferConvertRateToLength: number;

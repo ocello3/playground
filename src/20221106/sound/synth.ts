@@ -1,12 +1,12 @@
 import * as Tone from "tone";
 import { ToneAudioBuffer } from "tone";
-import { tools } from "../util/tools";
-import { setSe } from "../util/controller";
+import { tools } from "../../util/tools";
+import { setSe } from "../../util/controller";
 import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
 import * as Seq from "./sequence";
-import * as BufferSketch from "./bufferSketch";
-import * as Params from "./params";
+import * as BufferSketch from "../component/bufferSketch";
+import * as Params from "../params";
 
 const getBuffer = async (url: string) => {
   const buffer = new ToneAudioBuffer();
