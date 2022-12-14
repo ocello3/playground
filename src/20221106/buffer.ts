@@ -1,132 +1,124 @@
-import * as Synth from "./synth";
-import * as Tone from "tone";
+import * as SynthData from "./synthData";
 import * as Params from "./params";
 import { tools } from "../util/tools";
 
 export type type = {
-  durations: number[];
   longestDuration: number;
+  loopRetentionFrames: number[];
+  loopIsSwitches: boolean[];
+  playbackRates: number[];
   loopStartTimes: number[];
   loopEndTimes: number[];
   loopIsReverses: boolean[];
-  loopIsSwitches: boolean[];
-  loopGrainSizes: number[];
+  loopElapsedTimes: number[];
   loopIsOvers: boolean[];
   loopStampTimes: number[];
-  loopElapsedTimes: number[];
   loopProgressRates: number[];
-  loopRetentionFrames: number[];
-  playbackRates: number[];
-  volumes: Tone.Meter[];
+  loopGrainSizes: number[];
 };
 
-export const set = (synth: Synth.type, millis: number): type => {
-  const durations = synth.data.durations;
-  const longestDuration = durations.reduce((preDuration, curDuration) => {
-    if (curDuration > preDuration) return curDuration;
-    return preDuration;
-  }, 0);
-  // same as whole buffer for initial loop
-  const loopStartTimes = durations.map(() => 0);
-  const loopEndTimes = durations.map((duration) => duration);
-  const loopIsReverses = durations.map(() => false);
-  const loopIsSwitches = durations.map(() => false);
-  const loopIsOvers = durations.map(() => false);
-  const loopStampTimes = durations.map(() => 0);
-  const loopElapsedTimes = durations.map(() => millis * 0.001);
-  const loopProgressRates = durations.map(() => 0);
-  // play immediately after play
-  const loopRetentionFrames = durations.map(() => 100);
-  const playbackRates = durations.map(() => 1);
-  const volumes = durations.map(() => new Tone.Meter());
-  synth.players.forEach((player, index) => player.connect(volumes[index]));
+export const get = (
+  synthData: SynthData.type,
+  params: Params.type,
+  millis: number,
+  pre?: type
+) => {
+  const isInit = pre === undefined;
+  const longestDuration: type["longestDuration"] = synthData.durations.reduce(
+    (preDuration, curDuration) => {
+      if (curDuration > preDuration) return curDuration;
+      return preDuration;
+    },
+    0
+  );
+  const loopRetentionFrames: type["loopRetentionFrames"] =
+    synthData.durations.map((duration, trackIndex) => {
+      if (isInit || pre.loopRetentionFrames[trackIndex] === 0) {
+        const rate = tools.map(
+          Math.random(),
+          0,
+          1,
+          params.loopRetentionFrameRateMin,
+          params.loopRetentionFrameRateMax
+        );
+        return duration * 60 * Math.floor(rate);
+      }
+      return pre.loopRetentionFrames[trackIndex] - 1;
+    });
+  const loopIsSwitches: type["loopIsSwitches"] = loopRetentionFrames.map(
+    (loopRetentionFrame) => loopRetentionFrame === 0
+  );
+  const playbackRates: type["playbackRates"] = loopIsSwitches.map(
+    (loopIsSwitch, trackIndex) => {
+      if (isInit || loopIsSwitch)
+        return tools.map(
+          Math.random(),
+          0,
+          1,
+          params.playbackRateMin,
+          params.playbackRateMax
+        );
+      return pre.playbackRates[trackIndex];
+    }
+  );
+  const loopStartTimes: type["loopStartTimes"] = synthData.durations.map(
+    (duration, trackIndex) => {
+      if (isInit || loopIsSwitches[trackIndex]) return Math.random() * duration;
+      return pre.loopStartTimes[trackIndex];
+    }
+  );
+  const loopEndTimes: type["loopEndTimes"] = synthData.durations.map(
+    (duration, trackIndex) => {
+      if (isInit || loopIsSwitches[trackIndex]) return Math.random() * duration;
+      return pre.loopEndTimes[trackIndex];
+    }
+  );
+  const loopIsReverses: type["loopIsReverses"] = loopIsSwitches.map(
+    (loopIsSwitch, trackIndex) => {
+      if (isInit || loopIsSwitch)
+        return loopStartTimes[trackIndex] > loopEndTimes[trackIndex];
+      return pre.loopIsReverses[trackIndex];
+    }
+  );
+  const loopElapsedTimes: type["loopElapsedTimes"] = loopIsSwitches.map(
+    (loopIsSwitch, trackIndex) => {
+      if (loopIsSwitch) return 0;
+      const preLoopStampTime = isInit ? 0 : pre.loopStampTimes[trackIndex];
+      return millis * 0.001 - preLoopStampTime;
+    }
+  );
+  const loopIsOvers: type["loopIsOvers"] = loopElapsedTimes.map(
+    (loopElapsedTime, trackIndex) =>
+      loopElapsedTime >
+      synthData.durations[trackIndex] / playbackRates[trackIndex]
+  );
+  const loopStampTimes: type["loopStampTimes"] = loopIsOvers.map(
+    (loopIsOver, trackIndex) => {
+      if (isInit || loopIsOver || loopIsSwitches[trackIndex])
+        return millis * 0.001;
+      return pre.loopStampTimes[trackIndex];
+    }
+  );
+  const loopProgressRates: type["loopProgressRates"] = loopElapsedTimes.map(
+    (loopElapsedTime, trackIndex) =>
+      (loopElapsedTime / synthData.durations[trackIndex]) *
+      playbackRates[trackIndex]
+  );
+  const loopGrainSizes = loopEndTimes.map((loopEndTime, trackIndex) =>
+    Math.abs(loopEndTime - loopStartTimes[trackIndex])
+  );
   return {
-    durations,
     longestDuration,
+    loopRetentionFrames,
+    loopIsSwitches,
+    playbackRates,
     loopStartTimes,
     loopEndTimes,
     loopIsReverses,
-    loopIsSwitches,
-    loopGrainSizes: loopEndTimes,
+    loopElapsedTimes,
     loopIsOvers,
     loopStampTimes,
-    loopElapsedTimes,
     loopProgressRates,
-    loopRetentionFrames, // TODO: remove later
-    playbackRates,
-    volumes,
+    loopGrainSizes,
   };
-};
-
-export const update = (
-  preBuffer: type,
-  params: Params.type,
-  millis: number
-) => {
-  const newBuffer = { ...preBuffer };
-  newBuffer.loopRetentionFrames = preBuffer.loopRetentionFrames.map(
-    (preLoopRetentionFrame, index) => {
-      if (preLoopRetentionFrame > 0) return preLoopRetentionFrame - 1;
-      const rate = tools.map(
-        Math.random(),
-        0,
-        1,
-        params.loopRetentionFrameRateMin,
-        params.loopRetentionFrameRateMax
-      );
-      return preBuffer.durations[index] * 60 * Math.floor(rate);
-    }
-  );
-  newBuffer.loopIsSwitches = newBuffer.loopRetentionFrames.map(
-    (loopRetentionFrame) => loopRetentionFrame === 0
-  );
-  newBuffer.loopStartTimes = preBuffer.loopStartTimes.map(
-    (loopStartTime, index) => {
-      if (!newBuffer.loopIsSwitches[index]) return loopStartTime;
-      return Math.random() * preBuffer.durations[index];
-    }
-  );
-  newBuffer.loopEndTimes = preBuffer.loopEndTimes.map((loopEndTime, index) => {
-    if (!newBuffer.loopIsSwitches[index]) return loopEndTime;
-    return Math.random() * preBuffer.durations[index];
-  });
-  newBuffer.loopIsReverses = preBuffer.loopIsReverses.map(
-    (loopIsReverse, index) => {
-      if (!newBuffer.loopIsSwitches[index]) return loopIsReverse;
-      return newBuffer.loopStartTimes[index] > newBuffer.loopEndTimes[index];
-    }
-  );
-  newBuffer.loopIsOvers = preBuffer.loopElapsedTimes.map(
-    (loopElapsedTime, index) =>
-      loopElapsedTime >
-      newBuffer.durations[index] / newBuffer.playbackRates[index]
-  );
-  newBuffer.loopStampTimes = preBuffer.loopStampTimes.map(
-    (preStampTime, index) =>
-      newBuffer.loopIsOvers[index] ? millis * 0.001 : preStampTime
-  );
-  newBuffer.loopElapsedTimes = preBuffer.loopElapsedTimes.map(
-    (_, index) => millis * 0.001 - newBuffer.loopStampTimes[index]
-  );
-  newBuffer.loopProgressRates = newBuffer.loopElapsedTimes.map(
-    (loopElapsedTime, index) =>
-      (loopElapsedTime / preBuffer.durations[index]) *
-      newBuffer.playbackRates[index]
-  );
-  newBuffer.loopGrainSizes = newBuffer.loopEndTimes.map((loopEndTime, index) =>
-    Math.abs(loopEndTime - newBuffer.loopStartTimes[index])
-  );
-  newBuffer.playbackRates = preBuffer.playbackRates.map(
-    (prePlaybackRate, index) =>
-      newBuffer.loopIsSwitches[index]
-        ? tools.map(
-            Math.random(),
-            0,
-            1,
-            params.playbackRateMin,
-            params.playbackRateMax
-          )
-        : prePlaybackRate
-  );
-  return newBuffer;
 };

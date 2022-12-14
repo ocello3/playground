@@ -4,7 +4,8 @@ import { drawFrame } from "../util/drawFrame";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
 import * as Params from "./params";
-import * as Synth from "./synth.js";
+import * as Synth from "./synth";
+import * as SynthData from "./synthData";
 import * as Buffer from "./buffer";
 import * as BufferSketch from "./bufferSketch";
 
@@ -15,10 +16,12 @@ export const sketch = (s: p5) => {
   let buffer: Buffer.type;
   let bufferSketch: BufferSketch.type;
   let synth: Synth.type;
+  let synthData: SynthData.type;
   s.setup = async () => {
     synth = await Synth.set();
-    buffer = Buffer.set(synth, s.millis());
-    bufferSketch = BufferSketch.get(buffer, params, size, synth);
+    synthData = SynthData.get(synth);
+    buffer = Buffer.get(synthData, params, s.millis());
+    bufferSketch = BufferSketch.get(buffer, params, size, synthData);
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
@@ -34,15 +37,22 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        laPosition: bufferSketch.boxLAPositionArrays[0],
-        boxHeightOffset: bufferSketch.boxHeightOffsetArrays[0],
+        loopStartTime: buffer.loopStartTimes,
+        loopEndTime: buffer.loopEndTimes,
+        isReverse: buffer.loopIsReverses,
       },
       10
     );
     s.background(255);
     controller.updateController(s, controllers);
-    buffer = Buffer.update(buffer, params, s.millis());
-    bufferSketch = BufferSketch.get(buffer, params, size, synth, bufferSketch);
+    buffer = Buffer.get(synthData, params, s.millis(), buffer);
+    bufferSketch = BufferSketch.get(
+      buffer,
+      params,
+      size,
+      synthData,
+      bufferSketch
+    );
     BufferSketch.draw(bufferSketch, buffer, params, s);
     drawFrame(s, size);
     Synth.play(synth, buffer, bufferSketch, params, s.frameCount);

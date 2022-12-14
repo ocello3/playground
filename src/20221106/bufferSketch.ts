@@ -1,7 +1,7 @@
 import p5 from "p5";
 import * as Params from "./params";
 import * as Buffer from "./buffer";
-import * as Synth from "./synth";
+import * as SynthData from "./synthData";
 import { tools } from "../util/tools";
 
 export type type = {
@@ -37,7 +37,7 @@ export const get = (
   buffer: Buffer.type,
   params: Params.type,
   size: number,
-  synth: Synth.type,
+  synthData: SynthData.type,
   pre?: type
 ) => {
   const isInit = pre === undefined;
@@ -51,7 +51,7 @@ export const get = (
   })();
   const fullLengths: type["fullLengths"] = (() => {
     if (isInit) {
-      return synth.data.durations.map(
+      return synthData.durations.map(
         (duration) => duration * bufferConvertRateToLength
       );
     } else {
@@ -82,10 +82,10 @@ export const get = (
   })();
   const startPositions: type["startPositions"] = (() => {
     if (isInit) {
-      return synth.data.durations.map((_, index) => {
+      return synthData.durations.map((_, index) => {
         // for 4th buffer, fit to right end
         const x = margins[index];
-        const y = (size / (synth.data.durations.length + 1)) * (index + 1);
+        const y = (size / (synthData.durations.length + 1)) * (index + 1);
         return new p5.Vector(x, y);
       });
     } else {
@@ -107,7 +107,7 @@ export const get = (
       if (!buffer.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
-        buffer.loopStartTimes[index] / buffer.durations[index];
+        buffer.loopStartTimes[index] / synthData.durations[index];
       const loopStartPosition = fullLengths[index] * positionRate;
       const x = loopStartPosition + margins[index];
       newLoopStartPosition.x = x;
@@ -138,7 +138,8 @@ export const get = (
     return pre.loopEndPositions.map((preLoopEndPosition, index) => {
       if (!buffer.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
-      const positionRate = buffer.loopEndTimes[index] / buffer.durations[index];
+      const positionRate =
+        buffer.loopEndTimes[index] / synthData.durations[index];
       const loopEndPosition = fullLengths[index] * positionRate;
       const x = loopEndPosition + margins[index];
       newLoopEndPosition.x = x;
@@ -243,10 +244,10 @@ export const get = (
   );
   const currentPositions: type["currentPositions"] = (() => {
     if (isInit)
-      return synth.data.durations.map((_, index) => {
+      return synthData.durations.map((_, index) => {
         // for 4th buffer, fit to right end
         const x = margins[index];
-        const y = (size / (synth.data.durations.length + 1)) * (index + 1);
+        const y = (size / (synthData.durations.length + 1)) * (index + 1);
         return new p5.Vector(x, y);
       });
     return pre.currentPositions.map((preCurrentPosition, index) => {
@@ -374,7 +375,7 @@ export const get = (
   );
   const boxBrightnessArrays: type["boxBrightnessArrays"] =
     boxLAPositionArrays.map((boxLAPositionArray, trackIndex) => {
-      const volume = buffer.volumes[trackIndex].getValue();
+      const volume = synthData.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
       const flag = buffer.loopIsReverses[trackIndex] ? 1 : 0;
       const baseBrightness = params.brightnesses[flag];
