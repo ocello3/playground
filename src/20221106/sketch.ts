@@ -20,11 +20,14 @@ export const sketch = (s: p5) => {
   let wholeBuffer: WholeBuffer.type;
   let bufferSketch: BufferSketch.type;
   s.setup = async () => {
+    // set sound
     synth = await Synth.set();
     synthData = SynthData.get(synth);
     seq = Seq.get(synthData, params, s.millis());
+    // set component
     wholeBuffer = WholeBuffer.get(seq, params, size, synthData);
     bufferSketch = BufferSketch.get(seq, params, size, synthData, wholeBuffer);
+    // set canvas
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
@@ -48,7 +51,9 @@ export const sketch = (s: p5) => {
     );
     s.background(255);
     controller.updateController(s, controllers);
+    // update sound
     seq = Seq.get(synthData, params, s.millis(), seq);
+    // update component
     wholeBuffer = WholeBuffer.get(seq, params, size, synthData, wholeBuffer);
     bufferSketch = BufferSketch.get(
       seq,
@@ -58,9 +63,11 @@ export const sketch = (s: p5) => {
       wholeBuffer,
       bufferSketch
     );
+    // draw component
     WholeBuffer.draw(wholeBuffer, seq, params, s);
     BufferSketch.draw(bufferSketch, seq, params, s);
     drawFrame(s, size);
+    // play sound
     Synth.play(synth, seq, bufferSketch, params, s.frameCount);
   };
 };
