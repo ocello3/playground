@@ -2,14 +2,11 @@ import p5 from "p5";
 import * as Params from "../params";
 import * as Seq from "../sound/sequence";
 import * as SynthData from "../sound/synthData";
-import * as WholeBuffer from "./wholeBuffer";
+import * as Buffer from "./buffer";
+import * as Loop from "./loop";
 import { tools } from "../../util/tools";
 
 export type type = {
-  loopStartPositions: p5.Vector[];
-  loopStartCurrentPositions: p5.Vector[];
-  loopEndPositions: p5.Vector[];
-  loopEndCurrentPositions: p5.Vector[];
   currentPositions: p5.Vector[];
   boxNumbers: number[];
   waveXPositionArrays: number[][];
@@ -33,82 +30,20 @@ export const get = (
   params: Params.type,
   size: number,
   synthData: SynthData.type,
-  wholeBuffer: WholeBuffer.type,
+  buffer: Buffer.type,
+  loop: Loop.type,
   pre?: type
 ) => {
   const isInit = pre === undefined;
-  const loopStartPositions: type["loopStartPositions"] = (() => {
-    if (isInit) return wholeBuffer.startPositions;
-    return pre.loopStartPositions.map((preLoopStartPosition, index) => {
-      if (!seq.loopIsSwitches[index]) return preLoopStartPosition;
-      const newLoopStartPosition = preLoopStartPosition.copy();
-      const positionRate =
-        seq.loopStartTimes[index] / synthData.durations[index];
-      const loopStartPosition = wholeBuffer.fullLengths[index] * positionRate;
-      const x = loopStartPosition + wholeBuffer.margins[index];
-      newLoopStartPosition.x = x;
-      return newLoopStartPosition;
-    });
-  })();
-  const loopStartCurrentPositions: type["loopStartCurrentPositions"] = (() => {
-    if (isInit) return loopStartPositions;
-    return pre.loopStartCurrentPositions.map(
-      (preLoopStartCurrentPosition, index) => {
-        const loopStartTargetPosition = loopStartPositions[index];
-        const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
-        if (Math.abs(diff) < 1) return loopStartTargetPosition;
-        const easingF = tools.map(
-          seq.playbackRates[index],
-          params.playbackRateMin,
-          params.playbackRateMax,
-          params.easingFMin,
-          params.easingFMax
-        );
-        const progress = new p5.Vector(diff * easingF, 0);
-        return p5.Vector.add(preLoopStartCurrentPosition, progress);
-      }
-    );
-  })();
-  const loopEndPositions: type["loopEndPositions"] = (() => {
-    if (isInit) return wholeBuffer.endPositions;
-    return pre.loopEndPositions.map((preLoopEndPosition, index) => {
-      if (!seq.loopIsSwitches[index]) return preLoopEndPosition;
-      const newLoopEndPosition = preLoopEndPosition.copy();
-      const positionRate = seq.loopEndTimes[index] / synthData.durations[index];
-      const loopEndPosition = wholeBuffer.fullLengths[index] * positionRate;
-      const x = loopEndPosition + wholeBuffer.margins[index];
-      newLoopEndPosition.x = x;
-      return newLoopEndPosition;
-    });
-  })();
-  const loopEndCurrentPositions: type["loopEndCurrentPositions"] = (() => {
-    if (isInit) return loopEndPositions;
-    return pre.loopEndCurrentPositions.map(
-      (preLoopEndCurrentPosition, index) => {
-        const loopEndTargetPosition = loopEndPositions[index];
-        const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
-        if (Math.abs(diff) < 1) return loopEndTargetPosition;
-        const easingF = tools.map(
-          seq.playbackRates[index],
-          params.playbackRateMin,
-          params.playbackRateMax,
-          params.easingFMin,
-          params.easingFMax
-        );
-        const progress = new p5.Vector(diff * easingF, 0);
-        return p5.Vector.add(preLoopEndCurrentPosition, progress);
-      }
-    );
-  })();
-  const boxNumbers: type["boxNumbers"] = loopStartPositions.map(
+  const boxNumbers: type["boxNumbers"] = loop.loopStartPositions.map(
     (loopStartPosition, index) => {
       if (!isInit && !seq.loopIsSwitches[index]) return pre.boxNumbers[index];
-      const diff = loopStartPosition.x - loopEndPositions[index].x;
+      const diff = loopStartPosition.x - loop.loopEndPositions[index].x;
       return Math.ceil(Math.abs(diff / params.boxSize.x));
     }
   );
   const waveXPositionArrays: type["waveXPositionArrays"] =
-    loopStartPositions.map((loopStartPosition, trackIndex) => {
+    loop.loopStartPositions.map((loopStartPosition, trackIndex) => {
       if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveXPositionArrays[trackIndex];
       const boxNumber = boxNumbers[trackIndex];
@@ -140,7 +75,8 @@ export const get = (
         );
       const waveLength =
         Math.abs(
-          loopEndPositions[trackIndex].x - loopStartPositions[trackIndex].x
+          loop.loopEndPositions[trackIndex].x -
+            loop.loopStartPositions[trackIndex].x
         ) *
         tools.map(
           Math.random(),
@@ -171,7 +107,7 @@ export const get = (
   const waveYPositionArrays: type["waveYPositionArrays"] = waveAngleArrays.map(
     (preWaveAngleArray, trackIndex) => {
       const amp = waveAmps[trackIndex];
-      const baseYPosition = wholeBuffer.startPositions[trackIndex].y;
+      const baseYPosition = buffer.startPositions[trackIndex].y;
       return preWaveAngleArray.map(
         (angle) => tools.map(Math.sin(angle), -1, 1, 0, 1) * amp + baseYPosition
       );
@@ -181,20 +117,22 @@ export const get = (
     if (isInit)
       return synthData.durations.map((_, index) => {
         // for 4th buffer, fit to right end
-        const x = wholeBuffer.margins[index];
+        const x = buffer.margins[index];
         const y = (size / (synthData.durations.length + 1)) * (index + 1);
         return new p5.Vector(x, y);
       });
     return pre.currentPositions.map((preCurrentPosition, index) => {
       const loopLength: number = Math.abs(
-        loopEndPositions[index].x - loopStartPositions[index].x
+        loop.loopEndPositions[index].x - loop.loopStartPositions[index].x
       );
       const progressLength: number = loopLength * seq.loopProgressRates[index];
       if (seq.loopIsReverses[index]) {
-        preCurrentPosition.x = loopStartPositions[index].x - progressLength;
+        preCurrentPosition.x =
+          loop.loopStartPositions[index].x - progressLength;
         return preCurrentPosition;
       } else {
-        preCurrentPosition.x = loopStartPositions[index].x + progressLength;
+        preCurrentPosition.x =
+          loop.loopStartPositions[index].x + progressLength;
         return preCurrentPosition;
       }
     });
@@ -208,7 +146,7 @@ export const get = (
         seq.loopIsOvers[trackIndex]
       ) {
         const offset = new p5.Vector().set(0, params.boxSize.y * -0.5);
-        return [p5.Vector.add(loopStartPositions[trackIndex], offset)];
+        return [p5.Vector.add(loop.loopStartPositions[trackIndex], offset)];
       }
       // add new position at last of array
       const preBoxLAPositionArray = pre.boxLAPositionArrays[trackIndex];
@@ -238,7 +176,7 @@ export const get = (
     waveYPositionArrays.map((_, trackIndex) => {
       const currentBoxIndex = currentBoxIndexes[trackIndex];
       const currentWaveYPos = waveYPositionArrays[trackIndex][currentBoxIndex];
-      const baseYPosition = wholeBuffer.startPositions[trackIndex].y;
+      const baseYPosition = buffer.startPositions[trackIndex].y;
       return currentWaveYPos - baseYPosition;
     });
   const boxHeightOffsetArrays: type["boxHeightOffsetArrays"] =
@@ -351,10 +289,6 @@ export const get = (
     tools.map(currentPosition.x, 0, size, -1, 1)
   );
   return {
-    loopStartPositions,
-    loopStartCurrentPositions,
-    loopEndPositions,
-    loopEndCurrentPositions,
     currentPositions,
     boxNumbers,
     waveXPositionArrays,
@@ -381,8 +315,6 @@ export const draw = (
   s: p5
 ) => {
   const {
-    loopStartCurrentPositions,
-    loopEndCurrentPositions,
     boxLAPositionArrays,
     boxHues,
     boxSaturations,
@@ -411,26 +343,6 @@ export const draw = (
         boxHeightOffset
       );
     });
-  });
-  s.pop();
-  // loop range line
-  s.strokeWeight(3);
-  s.strokeCap(s.PROJECT);
-  loopStartCurrentPositions.forEach((loopStartPosition, index) => {
-    s.push();
-    const flag = seq.loopIsReverses[index] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
-    s.line(
-      loopStartPosition.x,
-      loopStartPosition.y + params.boxSize.y * params.loopRangeLineYPosRate,
-      loopEndCurrentPositions[index].x,
-      loopEndCurrentPositions[index].y +
-        params.boxSize.y * params.loopRangeLineYPosRate
-    );
-    s.pop();
   });
   s.pop();
   // wave

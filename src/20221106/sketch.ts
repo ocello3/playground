@@ -7,7 +7,8 @@ import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import * as SynthData from "./sound/synthData";
 import * as Seq from "./sound/sequence";
-import * as WholeBuffer from "./component/wholeBuffer";
+import * as Buffer from "./component/buffer";
+import * as Loop from "./component/loop";
 import * as BufferSketch from "./component/bufferSketch";
 
 export const sketch = (s: p5) => {
@@ -17,7 +18,8 @@ export const sketch = (s: p5) => {
   let seq: Seq.type;
   let synth: Synth.type;
   let synthData: SynthData.type;
-  let wholeBuffer: WholeBuffer.type;
+  let buffer: Buffer.type;
+  let loop: Loop.type;
   let bufferSketch: BufferSketch.type;
   s.setup = async () => {
     // set sound
@@ -25,8 +27,9 @@ export const sketch = (s: p5) => {
     synthData = SynthData.get(synth);
     seq = Seq.get(synthData, params, s.millis());
     // set component
-    wholeBuffer = WholeBuffer.get(seq, params, size, synthData);
-    bufferSketch = BufferSketch.get(seq, params, size, synthData, wholeBuffer);
+    buffer = Buffer.get(seq, params, size, synthData);
+    loop = Loop.get(params, seq, synthData, buffer);
+    bufferSketch = BufferSketch.get(seq, params, size, synthData, buffer, loop);
     // set canvas
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -54,17 +57,20 @@ export const sketch = (s: p5) => {
     // update sound
     seq = Seq.get(synthData, params, s.millis(), seq);
     // update component
-    wholeBuffer = WholeBuffer.get(seq, params, size, synthData, wholeBuffer);
+    buffer = Buffer.get(seq, params, size, synthData, buffer);
+    loop = Loop.get(params, seq, synthData, buffer, loop);
     bufferSketch = BufferSketch.get(
       seq,
       params,
       size,
       synthData,
-      wholeBuffer,
+      buffer,
+      loop,
       bufferSketch
     );
     // draw component
-    WholeBuffer.draw(wholeBuffer, seq, params, s);
+    Buffer.draw(buffer, seq, params, s);
+    Loop.draw(loop, seq, params, s);
     BufferSketch.draw(bufferSketch, seq, params, s);
     drawFrame(s, size);
     // play sound
