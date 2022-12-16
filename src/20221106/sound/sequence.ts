@@ -75,15 +75,16 @@ export const get = (
   );
   const loopIsReverses: type["loopIsReverses"] = loopIsSwitches.map(
     (loopIsSwitch, trackIndex) => {
-      if (isInit || loopIsSwitch)
+      if (isInit) return false;
+      if (loopIsSwitch)
         return loopStartTimes[trackIndex] > loopEndTimes[trackIndex];
       return pre.loopIsReverses[trackIndex];
     }
   );
   const loopElapsedTimes: type["loopElapsedTimes"] = loopIsSwitches.map(
     (loopIsSwitch, trackIndex) => {
-      if (loopIsSwitch) return 0;
-      const preLoopStampTime = isInit ? 0 : pre.loopStampTimes[trackIndex];
+      if (isInit || loopIsSwitch || pre.loopIsOvers[trackIndex]) return 0;
+      const preLoopStampTime = pre.loopStampTimes[trackIndex];
       return millis * 0.001 - preLoopStampTime;
     }
   );
