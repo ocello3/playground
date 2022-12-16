@@ -1,24 +1,16 @@
 import p5 from "p5";
-import * as Params from "../params";
 import * as Buffer from "./buffer";
-import * as Loop from "./loop";
 import * as Segment from "./segment";
 import * as Wave from "./wave";
 import * as Color from "./color";
-import { tools } from "../../util/tools";
 
 export type type = {
   currentBoxHeightOffsets: number[];
   boxHeightOffsetArrays: number[][];
-  amplitudes: number[];
-  panValues: number[];
 };
 
 export const get = (
-  params: Params.type,
-  canvasSize: number,
   buffer: Buffer.type,
-  loop: Loop.type,
   segment: Segment.type,
   wave: Wave.type,
   pre?: type
@@ -59,31 +51,9 @@ export const get = (
       );
       return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
     });
-  const amplitudes: type["amplitudes"] = currentBoxHeightOffsets.map(
-    (currentBoxHeightOffset) => {
-      const mappedAmp = tools.map(
-        currentBoxHeightOffset,
-        0,
-        segment.size.y,
-        params.granularVolumeMin,
-        params.granularVolumeMax
-      );
-      const amp = tools.constrain(
-        mappedAmp,
-        params.granularVolumeMin,
-        params.granularVolumeMax
-      );
-      return isNaN(amp) ? 0 : amp;
-    }
-  );
-  const panValues: type["panValues"] = loop.currentPositions.map(
-    (currentPosition) => tools.map(currentPosition.x, 0, canvasSize, -1, 1)
-  );
   return {
     currentBoxHeightOffsets,
     boxHeightOffsetArrays,
-    amplitudes,
-    panValues,
   };
 };
 

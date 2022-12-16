@@ -5,7 +5,7 @@ import { setSe } from "../../util/controller";
 import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
 import * as Ctrl from "./controller";
-import * as Box from "../component/box";
+import * as SketchData from "./sketchData";
 import * as Params from "../params";
 
 const getBuffer = async (url: string) => {
@@ -71,16 +71,16 @@ export type type = typeof obj;
 export const play = (
   synth: type,
   ctrl: Ctrl.type,
-  bufferSketch: Box.type,
+  sketchData: SketchData.type,
   params: Params.type,
   frameCount: number
 ) => {
   // play granular
   if (frameCount == 2) synth.players.forEach((player) => player.start());
   ctrl.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
-    synth.players[index].volume.value = bufferSketch.amplitudes[index];
+    synth.players[index].volume.value = sketchData.amplitudes[index];
     if (loopRetentionFrame === 0) {
-      synth.panners[index].pan.value = bufferSketch.panValues[index];
+      synth.panners[index].pan.value = sketchData.panValues[index];
       synth.players[index].reverse = ctrl.loopIsReverses[index];
       synth.players[index].loopStart = ctrl.loopStartTimes[index];
       synth.players[index].grainSize = ctrl.loopGrainSizes[index];

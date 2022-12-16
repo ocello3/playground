@@ -6,6 +6,7 @@ import { debug } from "../util/debug";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import * as SynthData from "./sound/synthData";
+import * as SketchData from "./sound/sketchData";
 import * as Ctrl from "./sound/controller";
 import * as Buffer from "./component/buffer";
 import * as Loop from "./component/loop";
@@ -21,6 +22,7 @@ export const sketch = (s: p5) => {
   let ctrl: Ctrl.type;
   let synth: Synth.type;
   let synthData: SynthData.type;
+  let sketchData: SketchData.type;
   let buffer: Buffer.type;
   let loop: Loop.type;
   let segment: Segment.type;
@@ -37,7 +39,9 @@ export const sketch = (s: p5) => {
     loop = Loop.get(params, canvasSize, ctrl, synthData, buffer);
     segment = Segment.get(params, canvasSize, ctrl, loop);
     wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment);
-    box = Box.get(params, canvasSize, buffer, loop, segment, wave);
+    box = Box.get(buffer, segment, wave);
+    color = Color.get(ctrl, params, synthData, segment, color);
+    sketchData = SketchData.get(params, canvasSize, loop, segment, box);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -69,8 +73,9 @@ export const sketch = (s: p5) => {
     loop = Loop.get(params, canvasSize, ctrl, synthData, buffer, loop);
     segment = Segment.get(params, canvasSize, ctrl, loop, segment);
     wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment, wave);
-    box = Box.get(params, canvasSize, buffer, loop, segment, wave, box);
+    box = Box.get(buffer, segment, wave, box);
     color = Color.get(ctrl, params, synthData, segment, color);
+    sketchData = SketchData.get(params, canvasSize, loop, segment, box);
     // draw component
     Buffer.draw(buffer, segment, ctrl, params, s);
     Loop.draw(loop, segment, ctrl, params, s);
@@ -78,6 +83,6 @@ export const sketch = (s: p5) => {
     Box.draw(box, segment, color, s);
     drawFrame(s, canvasSize);
     // play sound
-    Synth.play(synth, ctrl, box, params, s.frameCount);
+    Synth.play(synth, ctrl, sketchData, params, s.frameCount);
   };
 };
