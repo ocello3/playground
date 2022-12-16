@@ -14,6 +14,7 @@ import * as Segment from "./component/segment";
 import * as Wave from "./component/wave";
 import * as Box from "./component/box";
 import * as Color from "./component/color";
+import { draw } from "./draw";
 
 export const sketch = (s: p5) => {
   const canvasSize = tools.setSize("sketch");
@@ -58,9 +59,7 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        loopStartTime: ctrl.loopStartTimes,
-        loopEndTime: ctrl.loopEndTimes,
-        isReverse: ctrl.loopIsReverses,
+        debug: "na",
       },
       10
     );
@@ -75,12 +74,10 @@ export const sketch = (s: p5) => {
     wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment, wave);
     box = Box.get(buffer, segment, wave, box);
     color = Color.get(ctrl, params, synthData, segment, color);
+    // get sound data from components
     sketchData = SketchData.get(params, canvasSize, loop, segment, box);
     // draw component
-    Buffer.draw(buffer, segment, ctrl, params, s);
-    Loop.draw(loop, segment, ctrl, params, s);
-    Wave.draw(wave, segment, ctrl, params, s);
-    Box.draw(box, segment, color, s);
+    draw(buffer, loop, wave, box, color, segment, ctrl, params, s);
     drawFrame(s, canvasSize);
     // play sound
     Synth.play(synth, ctrl, sketchData, params, s.frameCount);

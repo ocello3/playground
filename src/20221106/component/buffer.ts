@@ -1,5 +1,4 @@
 import p5 from "p5";
-import * as Segment from "./segment";
 import * as Ctrl from "../sound/controller";
 import * as SynthData from "../sound/synthData";
 import * as Params from "../params";
@@ -77,32 +76,4 @@ export const get = (
     startPositions,
     endPositions,
   };
-};
-
-export const draw = (
-  buffer: type,
-  segment: Segment.type,
-  seq: Ctrl.type,
-  params: Params.type,
-  s: p5
-) => {
-  const { startPositions, endPositions } = buffer;
-  // frame of whole buffer
-  s.push();
-  s.noFill();
-  s.strokeWeight(1);
-  s.strokeCap(s.SQUARE);
-  startPositions.forEach((startPosition, index) => {
-    const flag = seq.loopIsReverses[index] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
-    s.line(
-      startPosition.x,
-      startPosition.y + segment.size.y * params.loopRangeLineYPosRate,
-      endPositions[index].x,
-      endPositions[index].y + segment.size.y * params.loopRangeLineYPosRate
-    );
-  });
 };

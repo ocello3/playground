@@ -3,7 +3,6 @@ import * as Params from "../params";
 import * as Ctrl from "../sound/controller";
 import * as SynthData from "../sound/synthData";
 import * as Buffer from "./buffer";
-import * as Segment from "./segment";
 import { tools } from "../../util/tools";
 
 export type type = {
@@ -114,37 +113,4 @@ export const get = (
     endCurrentPositions,
     currentPositions,
   };
-};
-
-export const draw = (
-  loop: type,
-  segment: Segment.type,
-  seq: Ctrl.type,
-  params: Params.type,
-  s: p5
-) => {
-  const {
-    startCurrentPositions: loopStartCurrentPositions,
-    endCurrentPositions: loopEndCurrentPositions,
-  } = loop;
-  // loop range line
-  s.strokeWeight(3);
-  s.strokeCap(s.PROJECT);
-  loopStartCurrentPositions.forEach((loopStartPosition, index) => {
-    s.push();
-    const flag = seq.loopIsReverses[index] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
-    s.line(
-      loopStartPosition.x,
-      loopStartPosition.y + segment.size.y * params.loopRangeLineYPosRate,
-      loopEndCurrentPositions[index].x,
-      loopEndCurrentPositions[index].y +
-        segment.size.y * params.loopRangeLineYPosRate
-    );
-    s.pop();
-  });
-  s.pop();
 };

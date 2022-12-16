@@ -1,4 +1,3 @@
-import p5 from "p5";
 import * as Params from "../params";
 import * as Ctrl from "../sound/controller";
 import * as Buffer from "./buffer";
@@ -100,39 +99,4 @@ export const get = (
     amps: amps,
     yPositionArrays: yPositionArrays,
   };
-};
-
-export const draw = (
-  wave: type,
-  segment: Segment.type,
-  seq: Ctrl.type,
-  params: Params.type,
-  s: p5
-) => {
-  const {
-    xPositionArrays: waveXPositionArrays,
-    yPositionArrays: waveYPositionArrays,
-  } = wave;
-  s.push();
-  waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
-    const currentBoxIndex = segment.currentIndexes[trackIndex];
-    const flag = seq.loopIsReverses[trackIndex] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
-    const waveYPositionArray = waveYPositionArrays[trackIndex];
-    waveXPositionArray.forEach((waveXPosition, boxIndex) => {
-      if (boxIndex > currentBoxIndex) {
-        const waveYPosition = waveYPositionArray[boxIndex];
-        s.line(
-          waveXPosition,
-          waveYPosition,
-          waveXPosition + segment.size.x,
-          waveYPosition
-        );
-      }
-    });
-  });
-  s.pop();
 };

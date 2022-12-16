@@ -1,8 +1,6 @@
-import p5 from "p5";
 import * as Buffer from "./buffer";
 import * as Segment from "./segment";
 import * as Wave from "./wave";
-import * as Color from "./color";
 
 export type type = {
   currentBoxHeightOffsets: number[];
@@ -55,35 +53,4 @@ export const get = (
     currentBoxHeightOffsets,
     boxHeightOffsetArrays,
   };
-};
-
-export const draw = (
-  box: type,
-  segment: Segment.type,
-  color: Color.type,
-  s: p5
-) => {
-  const { boxHeightOffsetArrays } = box;
-  // boxes
-  s.push();
-  s.noStroke();
-  segment.positionArrays.forEach((boxLAPositionArray, trackIndex) => {
-    const hue = color.hues[trackIndex];
-    const saturations = color.brightnessArrays[trackIndex];
-    const brightness = color.saturations[trackIndex];
-    const boxHeightOffsetArray = boxHeightOffsetArrays[trackIndex];
-    boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
-      const boxHeightOffset = boxHeightOffsetArray[boxIndex];
-      const saturation = saturations[boxIndex];
-      s.fill(hue, saturation, brightness);
-      s.rect(
-        boxLAPosition.x,
-        boxLAPosition.y + segment.size.y - boxHeightOffset,
-        segment.size.x,
-        boxHeightOffset
-      );
-    });
-  });
-  s.pop();
-  // wave
 };
