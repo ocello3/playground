@@ -1,6 +1,6 @@
 import p5 from "p5";
 import * as Params from "../params";
-import * as Seq from "../sound/sequence";
+import * as Ctrl from "../sound/controller";
 import * as SynthData from "../sound/synthData";
 import * as Buffer from "./buffer";
 import * as Segment from "./segment";
@@ -17,7 +17,7 @@ export type type = {
 export const get = (
   params: Params.type,
   canvasSize: number,
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   synthData: SynthData.type,
   buffer: Buffer.type,
   pre?: type
@@ -26,10 +26,10 @@ export const get = (
   const startPositions: type["startPositions"] = (() => {
     if (isInit) return buffer.startPositions;
     return pre.startPositions.map((preLoopStartPosition, index) => {
-      if (!seq.loopIsSwitches[index]) return preLoopStartPosition;
+      if (!ctrl.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
-        seq.loopStartTimes[index] / synthData.durations[index];
+        ctrl.loopStartTimes[index] / synthData.durations[index];
       const loopStartPosition = buffer.fullLengths[index] * positionRate;
       const x = loopStartPosition + buffer.margins[index];
       newLoopStartPosition.x = x;
@@ -44,7 +44,7 @@ export const get = (
         const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
         if (Math.abs(diff) < 1) return loopStartTargetPosition;
         const easingF = tools.map(
-          seq.playbackRates[index],
+          ctrl.playbackRates[index],
           params.playbackRateMin,
           params.playbackRateMax,
           params.easingFMin,
@@ -58,9 +58,10 @@ export const get = (
   const endPositions: type["endPositions"] = (() => {
     if (isInit) return buffer.endPositions;
     return pre.endPositions.map((preLoopEndPosition, index) => {
-      if (!seq.loopIsSwitches[index]) return preLoopEndPosition;
+      if (!ctrl.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
-      const positionRate = seq.loopEndTimes[index] / synthData.durations[index];
+      const positionRate =
+        ctrl.loopEndTimes[index] / synthData.durations[index];
       const loopEndPosition = buffer.fullLengths[index] * positionRate;
       const x = loopEndPosition + buffer.margins[index];
       newLoopEndPosition.x = x;
@@ -74,7 +75,7 @@ export const get = (
       const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
       if (Math.abs(diff) < 1) return loopEndTargetPosition;
       const easingF = tools.map(
-        seq.playbackRates[index],
+        ctrl.playbackRates[index],
         params.playbackRateMin,
         params.playbackRateMax,
         params.easingFMin,
@@ -96,8 +97,8 @@ export const get = (
       const loopLength: number = Math.abs(
         endPositions[index].x - startPositions[index].x
       );
-      const progressLength: number = loopLength * seq.loopProgressRates[index];
-      if (seq.loopIsReverses[index]) {
+      const progressLength: number = loopLength * ctrl.loopProgressRates[index];
+      if (ctrl.loopIsReverses[index]) {
         preCurrentPosition.x = startPositions[index].x - progressLength;
         return preCurrentPosition;
       } else {
@@ -118,7 +119,7 @@ export const get = (
 export const draw = (
   loop: type,
   segment: Segment.type,
-  seq: Seq.type,
+  seq: Ctrl.type,
   params: Params.type,
   s: p5
 ) => {

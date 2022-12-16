@@ -6,7 +6,7 @@ import { debug } from "../util/debug";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import * as SynthData from "./sound/synthData";
-import * as Seq from "./sound/sequence";
+import * as Ctrl from "./sound/controller";
 import * as Buffer from "./component/buffer";
 import * as Loop from "./component/loop";
 import * as Segment from "./component/segment";
@@ -18,7 +18,7 @@ export const sketch = (s: p5) => {
   const canvasSize = tools.setSize("sketch");
   let controllers = controller.setController();
   const params = Params.set();
-  let seq: Seq.type;
+  let ctrl: Ctrl.type;
   let synth: Synth.type;
   let synthData: SynthData.type;
   let buffer: Buffer.type;
@@ -31,12 +31,12 @@ export const sketch = (s: p5) => {
     // set sound
     synth = await Synth.set();
     synthData = SynthData.get(synth);
-    seq = Seq.get(synthData, params, s.millis());
+    ctrl = Ctrl.get(synthData, params, s.millis());
     // set component
-    buffer = Buffer.get(seq, params, canvasSize, synthData);
-    loop = Loop.get(params, canvasSize, seq, synthData, buffer);
-    segment = Segment.get(params, canvasSize, seq, loop);
-    wave = Wave.get(seq, params, canvasSize, buffer, loop, segment);
+    buffer = Buffer.get(ctrl, params, canvasSize, synthData);
+    loop = Loop.get(params, canvasSize, ctrl, synthData, buffer);
+    segment = Segment.get(params, canvasSize, ctrl, loop);
+    wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment);
     box = Box.get(params, canvasSize, buffer, loop, segment, wave);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
@@ -54,30 +54,30 @@ export const sketch = (s: p5) => {
     }
     debug(
       {
-        loopStartTime: seq.loopStartTimes,
-        loopEndTime: seq.loopEndTimes,
-        isReverse: seq.loopIsReverses,
+        loopStartTime: ctrl.loopStartTimes,
+        loopEndTime: ctrl.loopEndTimes,
+        isReverse: ctrl.loopIsReverses,
       },
       10
     );
     s.background(255);
     controller.updateController(s, controllers);
     // update sound
-    seq = Seq.get(synthData, params, s.millis(), seq);
+    ctrl = Ctrl.get(synthData, params, s.millis(), ctrl);
     // update component
-    buffer = Buffer.get(seq, params, canvasSize, synthData, buffer);
-    loop = Loop.get(params, canvasSize, seq, synthData, buffer, loop);
-    segment = Segment.get(params, canvasSize, seq, loop, segment);
-    wave = Wave.get(seq, params, canvasSize, buffer, loop, segment, wave);
+    buffer = Buffer.get(ctrl, params, canvasSize, synthData, buffer);
+    loop = Loop.get(params, canvasSize, ctrl, synthData, buffer, loop);
+    segment = Segment.get(params, canvasSize, ctrl, loop, segment);
+    wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment, wave);
     box = Box.get(params, canvasSize, buffer, loop, segment, wave, box);
-    color = Color.get(seq, params, synthData, segment, color);
+    color = Color.get(ctrl, params, synthData, segment, color);
     // draw component
-    Buffer.draw(buffer, segment, seq, params, s);
-    Loop.draw(loop, segment, seq, params, s);
-    Wave.draw(wave, segment, seq, params, s);
+    Buffer.draw(buffer, segment, ctrl, params, s);
+    Loop.draw(loop, segment, ctrl, params, s);
+    Wave.draw(wave, segment, ctrl, params, s);
     Box.draw(box, segment, color, s);
     drawFrame(s, canvasSize);
     // play sound
-    Synth.play(synth, seq, box, params, s.frameCount);
+    Synth.play(synth, ctrl, box, params, s.frameCount);
   };
 };

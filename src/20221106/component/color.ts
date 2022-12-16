@@ -1,5 +1,5 @@
 import * as Params from "../params";
-import * as Seq from "../sound/sequence";
+import * as Ctrl from "../sound/controller";
 import * as SynthData from "../sound/synthData";
 import * as Segment from "./segment";
 import { tools } from "../../util/tools";
@@ -11,22 +11,22 @@ export type type = {
 };
 
 export const get = (
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   params: Params.type,
   synthData: SynthData.type,
   segment: Segment.type,
   pre?: type
 ) => {
-  const hues: type["hues"] = seq.loopIsReverses.map((loopIsReverse) => {
+  const hues: type["hues"] = ctrl.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
     return params.hues[flag];
   });
-  const saturations: type["saturations"] = seq.loopIsReverses.map(
+  const saturations: type["saturations"] = ctrl.loopIsReverses.map(
     (loopIsReverse, index) => {
       const flag = loopIsReverse ? 1 : 0;
       const baseSaturation = params.saturations[flag];
       return tools.map(
-        seq.playbackRates[index],
+        ctrl.playbackRates[index],
         params.playbackRateMin,
         params.playbackRateMax,
         baseSaturation - params.saturationRange,
@@ -38,7 +38,7 @@ export const get = (
     (boxLAPositionArray, trackIndex) => {
       const volume = synthData.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
-      const flag = seq.loopIsReverses[trackIndex] ? 1 : 0;
+      const flag = ctrl.loopIsReverses[trackIndex] ? 1 : 0;
       const baseBrightness = params.brightnesses[flag];
       const brightness = tools.map(
         finiteVolume as number,
@@ -54,8 +54,8 @@ export const get = (
       );
       if (
         pre === undefined ||
-        seq.loopIsOvers[trackIndex] ||
-        seq.loopIsSwitches[trackIndex]
+        ctrl.loopIsOvers[trackIndex] ||
+        ctrl.loopIsSwitches[trackIndex]
       )
         return boxLAPositionArray.map(() => constrainedBrightness);
 

@@ -1,6 +1,6 @@
 import p5 from "p5";
 import * as Segment from "./segment";
-import * as Seq from "../sound/sequence";
+import * as Ctrl from "../sound/controller";
 import * as SynthData from "../sound/synthData";
 import * as Params from "../params";
 
@@ -13,7 +13,7 @@ export type type = {
 };
 
 export const get = (
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   params: Params.type,
   canvasSize: number,
   synthData: SynthData.type,
@@ -23,7 +23,7 @@ export const get = (
   const bufferConvertRateToLength: type["bufferConvertRateToLength"] = (() => {
     if (isInit) {
       const lengthForLongestBuffer = canvasSize * (1 - params.marginRate);
-      return lengthForLongestBuffer / seq.longestDuration;
+      return lengthForLongestBuffer / ctrl.longestDuration;
     } else {
       return pre.bufferConvertRateToLength;
     }
@@ -82,7 +82,7 @@ export const get = (
 export const draw = (
   buffer: type,
   segment: Segment.type,
-  seq: Seq.type,
+  seq: Ctrl.type,
   params: Params.type,
   s: p5
 ) => {

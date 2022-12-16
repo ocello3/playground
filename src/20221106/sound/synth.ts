@@ -4,7 +4,7 @@ import { tools } from "../../util/tools";
 import { setSe } from "../../util/controller";
 import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
-import * as Seq from "./sequence";
+import * as Ctrl from "./controller";
 import * as Box from "../component/box";
 import * as Params from "../params";
 
@@ -70,28 +70,28 @@ export type type = typeof obj;
 
 export const play = (
   synth: type,
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   bufferSketch: Box.type,
   params: Params.type,
   frameCount: number
 ) => {
   // play granular
   if (frameCount == 2) synth.players.forEach((player) => player.start());
-  seq.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
+  ctrl.loopRetentionFrames.forEach((loopRetentionFrame, index) => {
     synth.players[index].volume.value = bufferSketch.amplitudes[index];
     if (loopRetentionFrame === 0) {
       synth.panners[index].pan.value = bufferSketch.panValues[index];
-      synth.players[index].reverse = seq.loopIsReverses[index];
-      synth.players[index].loopStart = seq.loopStartTimes[index];
-      synth.players[index].grainSize = seq.loopGrainSizes[index];
-      synth.players[index].playbackRate = seq.playbackRates[index];
+      synth.players[index].reverse = ctrl.loopIsReverses[index];
+      synth.players[index].loopStart = ctrl.loopStartTimes[index];
+      synth.players[index].grainSize = ctrl.loopGrainSizes[index];
+      synth.players[index].playbackRate = ctrl.playbackRates[index];
     }
   });
   // play amSynth
-  seq.loopIsSwitches.forEach((loopIsSwitch, index) => {
+  ctrl.loopIsSwitches.forEach((loopIsSwitch, index) => {
     if (loopIsSwitch === true) {
       const volume = tools.map(
-        seq.playbackRates[index],
+        ctrl.playbackRates[index],
         params.playbackRateMin,
         params.playbackRateMax,
         params.amSynthVolumeMin,

@@ -1,6 +1,6 @@
 import p5 from "p5";
 import * as Params from "../params";
-import * as Seq from "../sound/sequence";
+import * as Ctrl from "../sound/controller";
 import * as Buffer from "./buffer";
 import * as Loop from "./loop";
 import * as Segment from "./segment";
@@ -15,7 +15,7 @@ export type type = {
 };
 
 export const get = (
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   params: Params.type,
   canvasSize: number,
   buffer: Buffer.type,
@@ -26,10 +26,10 @@ export const get = (
   const isInit = pre === undefined;
   const xPositionArrays: type["xPositionArrays"] = loop.startPositions.map(
     (loopStartPosition, trackIndex) => {
-      if (!isInit && !seq.loopIsSwitches[trackIndex])
+      if (!isInit && !ctrl.loopIsSwitches[trackIndex])
         return pre.xPositionArrays[trackIndex];
       const boxNumber = segment.counts[trackIndex];
-      const direction = seq.loopIsReverses[trackIndex] ? -1 : 1;
+      const direction = ctrl.loopIsReverses[trackIndex] ? -1 : 1;
       return Array.from(
         Array(boxNumber),
         (_, boxIndex) =>
@@ -39,7 +39,7 @@ export const get = (
   );
   const angleSpeeds: type["angleSpeeds"] = xPositionArrays.map(
     (_, trackIndex) => {
-      if (!isInit && !seq.loopIsSwitches[trackIndex])
+      if (!isInit && !ctrl.loopIsSwitches[trackIndex])
         return pre.angleSpeeds[trackIndex];
       return tools.map(
         Math.random(),
@@ -52,7 +52,7 @@ export const get = (
   );
   const angleArrays: type["angleArrays"] = xPositionArrays.map(
     (waveXPositionArray, trackIndex) => {
-      if (!isInit && !seq.loopIsSwitches[trackIndex])
+      if (!isInit && !ctrl.loopIsSwitches[trackIndex])
         return pre.angleArrays[trackIndex].map(
           (preWaveAngle) => preWaveAngle + angleSpeeds[trackIndex]
         );
@@ -74,7 +74,8 @@ export const get = (
     }
   );
   const amps: type["amps"] = xPositionArrays.map((_, trackIndex) => {
-    if (!isInit && !seq.loopIsSwitches[trackIndex]) return pre.amps[trackIndex];
+    if (!isInit && !ctrl.loopIsSwitches[trackIndex])
+      return pre.amps[trackIndex];
     return tools.map(
       Math.random(),
       0,
@@ -104,7 +105,7 @@ export const get = (
 export const draw = (
   wave: type,
   segment: Segment.type,
-  seq: Seq.type,
+  seq: Ctrl.type,
   params: Params.type,
   s: p5
 ) => {

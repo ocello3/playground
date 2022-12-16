@@ -40,14 +40,14 @@ export const get = (
         );
       }
       const addedBoxNumber = segment.addedSegments[trackIndex];
-      if (addedBoxNumber < 0) {
+      if (segment.addedSegments[trackIndex] < 0) {
         return Array.from(
           Array(currentArrayLength),
           () => currentBoxHeightOffset
         );
       }
       const preBoxHeightOffsetArray = pre.boxHeightOffsetArrays[trackIndex];
-      if (addedBoxNumber === 0) {
+      if (segment.addedSegments[trackIndex] === 0) {
         preBoxHeightOffsetArray[preBoxHeightOffsetArray.length - 1] =
           currentBoxHeightOffsets[trackIndex];
         return preBoxHeightOffsetArray;

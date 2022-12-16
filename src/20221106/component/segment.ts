@@ -1,6 +1,6 @@
 import p5 from "p5";
 import * as Params from "../params";
-import * as Seq from "../sound/sequence";
+import * as Ctrl from "../sound/controller";
 import * as Loop from "./loop";
 
 export type type = {
@@ -14,7 +14,7 @@ export type type = {
 export const get = (
   params: Params.type,
   canvasSize: number,
-  seq: Seq.type,
+  ctrl: Ctrl.type,
   loop: Loop.type,
   pre?: type
 ) => {
@@ -25,7 +25,7 @@ export const get = (
   );
   const counts: type["counts"] = loop.startPositions.map(
     (loopStartPosition, index) => {
-      if (!isInit && !seq.loopIsSwitches[index]) return pre.counts[index];
+      if (!isInit && !ctrl.loopIsSwitches[index]) return pre.counts[index];
       const diff = loopStartPosition.x - loop.endPositions[index].x;
       return Math.ceil(Math.abs(diff / size.x));
     }
@@ -35,15 +35,15 @@ export const get = (
       // reset for new loop
       if (
         pre === undefined ||
-        seq.loopIsSwitches[trackIndex] ||
-        seq.loopIsOvers[trackIndex]
+        ctrl.loopIsSwitches[trackIndex] ||
+        ctrl.loopIsOvers[trackIndex]
       ) {
         const offset = new p5.Vector().set(0, size.y * -0.5);
         return [p5.Vector.add(loop.startPositions[trackIndex], offset)];
       }
       // add new position at last of array
       const preBoxLAPositionArray = pre.positionArrays[trackIndex];
-      const direction = seq.loopIsReverses[trackIndex] ? -1 : 1;
+      const direction = ctrl.loopIsReverses[trackIndex] ? -1 : 1;
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
