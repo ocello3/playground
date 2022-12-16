@@ -2,7 +2,7 @@ import p5 from "p5";
 import * as Params from "../params";
 import * as Seq from "../sound/sequence";
 import * as SynthData from "../sound/synthData";
-import * as buffer from "./buffer";
+import * as Buffer from "./buffer";
 import * as Segment from "./segment";
 import { tools } from "../../util/tools";
 
@@ -19,7 +19,7 @@ export const get = (
   canvasSize: number,
   seq: Seq.type,
   synthData: SynthData.type,
-  buffer: buffer.type,
+  buffer: Buffer.type,
   pre?: type
 ) => {
   const isInit = pre === undefined;

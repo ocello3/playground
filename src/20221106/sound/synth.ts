@@ -5,7 +5,7 @@ import { setSe } from "../../util/controller";
 import track_1 from "./track_1.mp3";
 import track_2 from "./track_2.mp3";
 import * as Seq from "./sequence";
-import * as BufferSketch from "../component/bufferSketch";
+import * as Box from "../component/box";
 import * as Params from "../params";
 
 const getBuffer = async (url: string) => {
@@ -71,7 +71,7 @@ export type type = typeof obj;
 export const play = (
   synth: type,
   seq: Seq.type,
-  bufferSketch: BufferSketch.type,
+  bufferSketch: Box.type,
   params: Params.type,
   frameCount: number
 ) => {
