@@ -13,7 +13,7 @@ import * as Segment from "./component/segment";
 import * as BufferSketch from "./component/bufferSketch";
 
 export const sketch = (s: p5) => {
-  const size = tools.setSize("sketch");
+  const canvasSize = tools.setSize("sketch");
   let controllers = controller.setController();
   const params = Params.set();
   let seq: Seq.type;
@@ -29,25 +29,25 @@ export const sketch = (s: p5) => {
     synthData = SynthData.get(synth);
     seq = Seq.get(synthData, params, s.millis());
     // set component
-    buffer = Buffer.get(seq, params, size, synthData);
-    loop = Loop.get(params, seq, synthData, buffer);
-    segment = Segment.get(params, size, seq, loop);
+    buffer = Buffer.get(seq, params, canvasSize, synthData);
+    loop = Loop.get(params, canvasSize, seq, synthData, buffer);
+    segment = Segment.get(params, canvasSize, seq, loop);
     bufferSketch = BufferSketch.get(
       seq,
       params,
-      size,
+      canvasSize,
       synthData,
       buffer,
       loop,
       segment
     );
     // set canvas
-    s.createCanvas(size, size);
+    s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
     s.colorMode(s.HSB);
     s.noLoop();
-    drawFrame(s, size);
+    drawFrame(s, canvasSize);
     // s.frameRate(10);
   };
   s.draw = () => {
@@ -68,13 +68,13 @@ export const sketch = (s: p5) => {
     // update sound
     seq = Seq.get(synthData, params, s.millis(), seq);
     // update component
-    buffer = Buffer.get(seq, params, size, synthData, buffer);
-    loop = Loop.get(params, seq, synthData, buffer, loop);
-    segment = Segment.get(params, size, seq, loop, segment);
+    buffer = Buffer.get(seq, params, canvasSize, synthData, buffer);
+    loop = Loop.get(params, canvasSize, seq, synthData, buffer, loop);
+    segment = Segment.get(params, canvasSize, seq, loop, segment);
     bufferSketch = BufferSketch.get(
       seq,
       params,
-      size,
+      canvasSize,
       synthData,
       buffer,
       loop,
@@ -85,7 +85,7 @@ export const sketch = (s: p5) => {
     Buffer.draw(buffer, segment, seq, params, s);
     Loop.draw(loop, segment, seq, params, s);
     BufferSketch.draw(bufferSketch, segment, seq, params, s);
-    drawFrame(s, size);
+    drawFrame(s, canvasSize);
     // play sound
     Synth.play(synth, seq, bufferSketch, params, s.frameCount);
   };

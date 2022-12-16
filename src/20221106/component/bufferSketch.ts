@@ -8,7 +8,6 @@ import * as Segment from "./segment";
 import { tools } from "../../util/tools";
 
 export type type = {
-  currentPositions: p5.Vector[];
   waveXPositionArrays: number[][];
   waveAngleSpeeds: number[];
   waveAngleArrays: number[][];
@@ -28,7 +27,7 @@ export type type = {
 export const get = (
   seq: Seq.type,
   params: Params.type,
-  size: number,
+  canvasSize: number,
   synthData: SynthData.type,
   buffer: Buffer.type,
   loop: Loop.type,
@@ -40,12 +39,12 @@ export const get = (
     loop.startPositions.map((loopStartPosition, trackIndex) => {
       if (!isInit && !seq.loopIsSwitches[trackIndex])
         return pre.waveXPositionArrays[trackIndex];
-      const boxNumber = segment.boxNumbers[trackIndex];
+      const boxNumber = segment.counts[trackIndex];
       const direction = seq.loopIsReverses[trackIndex] ? -1 : 1;
       return Array.from(
         Array(boxNumber),
         (_, boxIndex) =>
-          loopStartPosition.x + segment.boxSize.x * boxIndex * direction
+          loopStartPosition.x + segment.size.x * boxIndex * direction
       );
     });
   const waveAngleSpeeds: type["waveAngleSpeeds"] = waveXPositionArrays.map(
@@ -56,8 +55,8 @@ export const get = (
         Math.random(),
         0,
         1,
-        params.waveSpeedRateMin * size,
-        params.waveSpeedRateMax * size
+        params.waveSpeedRateMin * canvasSize,
+        params.waveSpeedRateMax * canvasSize
       );
     }
   );
@@ -79,7 +78,7 @@ export const get = (
           params.waveLengthRateMax
         );
       return waveXPositionArray.map((xPosition) => {
-        const widthPerAngle = waveLength / segment.boxNumbers[trackIndex];
+        const widthPerAngle = waveLength / segment.counts[trackIndex];
         return (xPosition / widthPerAngle) * Math.PI * 2;
       });
     }
@@ -92,8 +91,8 @@ export const get = (
         Math.random(),
         0,
         1,
-        params.ampRateMin * segment.boxSize.y,
-        params.ampRateMax * segment.boxSize.y
+        params.ampRateMin * segment.size.y,
+        params.ampRateMax * segment.size.y
       );
     }
   );
@@ -106,37 +105,15 @@ export const get = (
       );
     }
   );
-  const currentPositions: type["currentPositions"] = (() => {
-    if (isInit)
-      return synthData.durations.map((_, index) => {
-        // for 4th buffer, fit to right end
-        const x = buffer.margins[index];
-        const y = (size / (synthData.durations.length + 1)) * (index + 1);
-        return new p5.Vector(x, y);
-      });
-    return pre.currentPositions.map((preCurrentPosition, index) => {
-      const loopLength: number = Math.abs(
-        loop.endPositions[index].x - loop.startPositions[index].x
-      );
-      const progressLength: number = loopLength * seq.loopProgressRates[index];
-      if (seq.loopIsReverses[index]) {
-        preCurrentPosition.x = loop.startPositions[index].x - progressLength;
-        return preCurrentPosition;
-      } else {
-        preCurrentPosition.x = loop.startPositions[index].x + progressLength;
-        return preCurrentPosition;
-      }
-    });
-  })();
-  const boxLAPositionArrays: type["boxLAPositionArrays"] = currentPositions.map(
-    (currentPosition, trackIndex) => {
+  const boxLAPositionArrays: type["boxLAPositionArrays"] =
+    loop.currentPositions.map((currentPosition, trackIndex) => {
       // reset for new loop
       if (
         pre === undefined ||
         seq.loopIsSwitches[trackIndex] ||
         seq.loopIsOvers[trackIndex]
       ) {
-        const offset = new p5.Vector().set(0, segment.boxSize.y * -0.5);
+        const offset = new p5.Vector().set(0, segment.size.y * -0.5);
         return [p5.Vector.add(loop.startPositions[trackIndex], offset)];
       }
       // add new position at last of array
@@ -145,21 +122,20 @@ export const get = (
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
-      const addedBoxNumber = Math.round(diff / segment.boxSize.x);
+      const addedBoxNumber = Math.round(diff / segment.size.x);
       if (addedBoxNumber === 0) return preBoxLAPositionArray;
       const addedBoxPositions = Array.from(
         Array(addedBoxNumber),
         (_, index) => {
           const progress = new p5.Vector(
-            segment.boxSize.x * (index + 1) * direction,
+            segment.size.x * (index + 1) * direction,
             0
           );
           return p5.Vector.add(lastPosition, progress);
         }
       );
       return preBoxLAPositionArray.concat(addedBoxPositions);
-    }
-  );
+    });
   const currentBoxIndexes: type["currentBoxIndexes"] = boxLAPositionArrays.map(
     (boxLAPositionArray) => boxLAPositionArray.length - 1
   );
@@ -205,7 +181,7 @@ export const get = (
       const mappedAmp = tools.map(
         currentBoxHeightOffset,
         0,
-        segment.boxSize.y,
+        segment.size.y,
         params.granularVolumeMin,
         params.granularVolumeMax
       );
@@ -276,11 +252,10 @@ export const get = (
       const newBrightnessArray = preBoxBrightnessArray.concat(newBrightnesses);
       return newBrightnessArray;
     });
-  const panValues: type["panValues"] = currentPositions.map((currentPosition) =>
-    tools.map(currentPosition.x, 0, size, -1, 1)
+  const panValues: type["panValues"] = loop.currentPositions.map(
+    (currentPosition) => tools.map(currentPosition.x, 0, canvasSize, -1, 1)
   );
   return {
-    currentPositions,
     waveXPositionArrays,
     waveAngleSpeeds,
     waveAngleArrays,
@@ -329,8 +304,8 @@ export const draw = (
       s.fill(hue, saturation, brightness);
       s.rect(
         boxLAPosition.x,
-        boxLAPosition.y + segment.boxSize.y - boxHeightOffset,
-        segment.boxSize.x,
+        boxLAPosition.y + segment.size.y - boxHeightOffset,
+        segment.size.x,
         boxHeightOffset
       );
     });
@@ -352,7 +327,7 @@ export const draw = (
         s.line(
           waveXPosition,
           waveYPosition,
-          waveXPosition + segment.boxSize.x,
+          waveXPosition + segment.size.x,
           waveYPosition
         );
       }

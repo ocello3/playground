@@ -15,14 +15,14 @@ export type type = {
 export const get = (
   seq: Seq.type,
   params: Params.type,
-  size: number,
+  canvasSize: number,
   synthData: SynthData.type,
   pre?: type
 ) => {
   const isInit = pre === undefined;
   const bufferConvertRateToLength: type["bufferConvertRateToLength"] = (() => {
     if (isInit) {
-      const lengthForLongestBuffer = size * (1 - params.marginRate);
+      const lengthForLongestBuffer = canvasSize * (1 - params.marginRate);
       return lengthForLongestBuffer / seq.longestDuration;
     } else {
       return pre.bufferConvertRateToLength;
@@ -40,10 +40,10 @@ export const get = (
   const margins: type["margins"] = (() => {
     if (isInit) {
       return params.alignments.map((alignment, index) => {
-        const sideMargin = size * params.marginRate * 0.5;
+        const sideMargin = canvasSize * params.marginRate * 0.5;
         return alignment === "right"
           ? sideMargin
-          : size - fullLengths[index] - sideMargin;
+          : canvasSize - fullLengths[index] - sideMargin;
       });
     } else {
       return pre.margins;
@@ -54,7 +54,7 @@ export const get = (
       return synthData.durations.map((_, index) => {
         // for 4th buffer, fit to right end
         const x = margins[index];
-        const y = (size / (synthData.durations.length + 1)) * (index + 1);
+        const y = (canvasSize / (synthData.durations.length + 1)) * (index + 1);
         return new p5.Vector(x, y);
       });
     } else {
@@ -100,9 +100,9 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     s.line(
       startPosition.x,
-      startPosition.y + segment.boxSize.y * params.loopRangeLineYPosRate,
+      startPosition.y + segment.size.y * params.loopRangeLineYPosRate,
       endPositions[index].x,
-      endPositions[index].y + segment.boxSize.y * params.loopRangeLineYPosRate
+      endPositions[index].y + segment.size.y * params.loopRangeLineYPosRate
     );
   });
 };

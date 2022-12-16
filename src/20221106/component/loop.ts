@@ -11,10 +11,12 @@ export type type = {
   startCurrentPositions: p5.Vector[];
   endPositions: p5.Vector[];
   endCurrentPositions: p5.Vector[];
+  currentPositions: p5.Vector[];
 };
 
 export const get = (
   params: Params.type,
+  canvasSize: number,
   seq: Seq.type,
   synthData: SynthData.type,
   buffer: buffer.type,
@@ -82,11 +84,34 @@ export const get = (
       return p5.Vector.add(preLoopEndCurrentPosition, progress);
     });
   })();
+  const currentPositions: type["currentPositions"] = (() => {
+    if (isInit)
+      return synthData.durations.map((_, index) => {
+        // for 4th buffer, fit to right end
+        const x = buffer.margins[index];
+        const y = (canvasSize / (synthData.durations.length + 1)) * (index + 1);
+        return new p5.Vector(x, y);
+      });
+    return pre.currentPositions.map((preCurrentPosition, index) => {
+      const loopLength: number = Math.abs(
+        endPositions[index].x - startPositions[index].x
+      );
+      const progressLength: number = loopLength * seq.loopProgressRates[index];
+      if (seq.loopIsReverses[index]) {
+        preCurrentPosition.x = startPositions[index].x - progressLength;
+        return preCurrentPosition;
+      } else {
+        preCurrentPosition.x = startPositions[index].x + progressLength;
+        return preCurrentPosition;
+      }
+    });
+  })();
   return {
     startPositions,
     startCurrentPositions,
     endPositions,
     endCurrentPositions,
+    currentPositions,
   };
 };
 
@@ -113,10 +138,10 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,
-      loopStartPosition.y + segment.boxSize.y * params.loopRangeLineYPosRate,
+      loopStartPosition.y + segment.size.y * params.loopRangeLineYPosRate,
       loopEndCurrentPositions[index].x,
       loopEndCurrentPositions[index].y +
-        segment.boxSize.y * params.loopRangeLineYPosRate
+        segment.size.y * params.loopRangeLineYPosRate
     );
     s.pop();
   });
