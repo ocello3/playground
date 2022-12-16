@@ -3,6 +3,7 @@ import * as Params from "../params";
 import * as Seq from "../sound/sequence";
 import * as SynthData from "../sound/synthData";
 import * as buffer from "./buffer";
+import * as Segment from "./segment";
 import { tools } from "../../util/tools";
 
 export type type = {
@@ -89,7 +90,13 @@ export const get = (
   };
 };
 
-export const draw = (loop: type, seq: Seq.type, params: Params.type, s: p5) => {
+export const draw = (
+  loop: type,
+  segment: Segment.type,
+  seq: Seq.type,
+  params: Params.type,
+  s: p5
+) => {
   const {
     startCurrentPositions: loopStartCurrentPositions,
     endCurrentPositions: loopEndCurrentPositions,
@@ -106,10 +113,10 @@ export const draw = (loop: type, seq: Seq.type, params: Params.type, s: p5) => {
     s.stroke(hue, saturation, brightness);
     s.line(
       loopStartPosition.x,
-      loopStartPosition.y + params.boxSize.y * params.loopRangeLineYPosRate,
+      loopStartPosition.y + segment.boxSize.y * params.loopRangeLineYPosRate,
       loopEndCurrentPositions[index].x,
       loopEndCurrentPositions[index].y +
-        params.boxSize.y * params.loopRangeLineYPosRate
+        segment.boxSize.y * params.loopRangeLineYPosRate
     );
     s.pop();
   });

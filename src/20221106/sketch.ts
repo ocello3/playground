@@ -15,7 +15,7 @@ import * as BufferSketch from "./component/bufferSketch";
 export const sketch = (s: p5) => {
   const size = tools.setSize("sketch");
   let controllers = controller.setController();
-  const params = Params.set(size);
+  const params = Params.set();
   let seq: Seq.type;
   let synth: Synth.type;
   let synthData: SynthData.type;
@@ -31,7 +31,7 @@ export const sketch = (s: p5) => {
     // set component
     buffer = Buffer.get(seq, params, size, synthData);
     loop = Loop.get(params, seq, synthData, buffer);
-    segment = Segment.get(params, seq, loop);
+    segment = Segment.get(params, size, seq, loop);
     bufferSketch = BufferSketch.get(
       seq,
       params,
@@ -70,7 +70,7 @@ export const sketch = (s: p5) => {
     // update component
     buffer = Buffer.get(seq, params, size, synthData, buffer);
     loop = Loop.get(params, seq, synthData, buffer, loop);
-    segment = Segment.get(params, seq, loop, segment);
+    segment = Segment.get(params, size, seq, loop, segment);
     bufferSketch = BufferSketch.get(
       seq,
       params,
@@ -82,9 +82,9 @@ export const sketch = (s: p5) => {
       bufferSketch
     );
     // draw component
-    Buffer.draw(buffer, seq, params, s);
-    Loop.draw(loop, seq, params, s);
-    BufferSketch.draw(bufferSketch, seq, params, s);
+    Buffer.draw(buffer, segment, seq, params, s);
+    Loop.draw(loop, segment, seq, params, s);
+    BufferSketch.draw(bufferSketch, segment, seq, params, s);
     drawFrame(s, size);
     // play sound
     Synth.play(synth, seq, bufferSketch, params, s.frameCount);

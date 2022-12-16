@@ -1,4 +1,5 @@
 import p5 from "p5";
+import * as Segment from "./segment";
 import * as Seq from "../sound/sequence";
 import * as SynthData from "../sound/synthData";
 import * as Params from "../params";
@@ -79,12 +80,13 @@ export const get = (
 };
 
 export const draw = (
-  wholeBuffer: type,
+  buffer: type,
+  segment: Segment.type,
   seq: Seq.type,
   params: Params.type,
   s: p5
 ) => {
-  const { startPositions, endPositions } = wholeBuffer;
+  const { startPositions, endPositions } = buffer;
   // frame of whole buffer
   s.push();
   s.noFill();
@@ -98,9 +100,9 @@ export const draw = (
     s.stroke(hue, saturation, brightness);
     s.line(
       startPosition.x,
-      startPosition.y + params.boxSize.y * params.loopRangeLineYPosRate,
+      startPosition.y + segment.boxSize.y * params.loopRangeLineYPosRate,
       endPositions[index].x,
-      endPositions[index].y + params.boxSize.y * params.loopRangeLineYPosRate
+      endPositions[index].y + segment.boxSize.y * params.loopRangeLineYPosRate
     );
   });
 };

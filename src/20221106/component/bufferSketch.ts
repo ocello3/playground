@@ -45,7 +45,7 @@ export const get = (
       return Array.from(
         Array(boxNumber),
         (_, boxIndex) =>
-          loopStartPosition.x + params.boxSize.x * boxIndex * direction
+          loopStartPosition.x + segment.boxSize.x * boxIndex * direction
       );
     });
   const waveAngleSpeeds: type["waveAngleSpeeds"] = waveXPositionArrays.map(
@@ -92,8 +92,8 @@ export const get = (
         Math.random(),
         0,
         1,
-        params.ampRateMin * params.boxSize.y,
-        params.ampRateMax * params.boxSize.y
+        params.ampRateMin * segment.boxSize.y,
+        params.ampRateMax * segment.boxSize.y
       );
     }
   );
@@ -136,7 +136,7 @@ export const get = (
         seq.loopIsSwitches[trackIndex] ||
         seq.loopIsOvers[trackIndex]
       ) {
-        const offset = new p5.Vector().set(0, params.boxSize.y * -0.5);
+        const offset = new p5.Vector().set(0, segment.boxSize.y * -0.5);
         return [p5.Vector.add(loop.startPositions[trackIndex], offset)];
       }
       // add new position at last of array
@@ -145,13 +145,13 @@ export const get = (
       const lastPosition =
         preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
-      const addedBoxNumber = Math.round(diff / params.boxSize.x);
+      const addedBoxNumber = Math.round(diff / segment.boxSize.x);
       if (addedBoxNumber === 0) return preBoxLAPositionArray;
       const addedBoxPositions = Array.from(
         Array(addedBoxNumber),
         (_, index) => {
           const progress = new p5.Vector(
-            params.boxSize.x * (index + 1) * direction,
+            segment.boxSize.x * (index + 1) * direction,
             0
           );
           return p5.Vector.add(lastPosition, progress);
@@ -205,7 +205,7 @@ export const get = (
       const mappedAmp = tools.map(
         currentBoxHeightOffset,
         0,
-        params.boxSize.y,
+        segment.boxSize.y,
         params.granularVolumeMin,
         params.granularVolumeMax
       );
@@ -300,6 +300,7 @@ export const get = (
 
 export const draw = (
   bufferSketch: type,
+  segment: Segment.type,
   seq: Seq.type,
   params: Params.type,
   s: p5
@@ -328,8 +329,8 @@ export const draw = (
       s.fill(hue, saturation, brightness);
       s.rect(
         boxLAPosition.x,
-        boxLAPosition.y + params.boxSize.y - boxHeightOffset,
-        params.boxSize.x,
+        boxLAPosition.y + segment.boxSize.y - boxHeightOffset,
+        segment.boxSize.x,
         boxHeightOffset
       );
     });
@@ -351,7 +352,7 @@ export const draw = (
         s.line(
           waveXPosition,
           waveYPosition,
-          waveXPosition + params.boxSize.x,
+          waveXPosition + segment.boxSize.x,
           waveYPosition
         );
       }
