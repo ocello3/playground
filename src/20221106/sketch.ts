@@ -9,6 +9,7 @@ import * as SynthData from "./sound/synthData";
 import * as Seq from "./sound/sequence";
 import * as Buffer from "./component/buffer";
 import * as Loop from "./component/loop";
+import * as Segment from "./component/segment";
 import * as BufferSketch from "./component/bufferSketch";
 
 export const sketch = (s: p5) => {
@@ -20,6 +21,7 @@ export const sketch = (s: p5) => {
   let synthData: SynthData.type;
   let buffer: Buffer.type;
   let loop: Loop.type;
+  let segment: Segment.type;
   let bufferSketch: BufferSketch.type;
   s.setup = async () => {
     // set sound
@@ -29,7 +31,16 @@ export const sketch = (s: p5) => {
     // set component
     buffer = Buffer.get(seq, params, size, synthData);
     loop = Loop.get(params, seq, synthData, buffer);
-    bufferSketch = BufferSketch.get(seq, params, size, synthData, buffer, loop);
+    segment = Segment.get(params, seq, loop);
+    bufferSketch = BufferSketch.get(
+      seq,
+      params,
+      size,
+      synthData,
+      buffer,
+      loop,
+      segment
+    );
     // set canvas
     s.createCanvas(size, size);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -59,6 +70,7 @@ export const sketch = (s: p5) => {
     // update component
     buffer = Buffer.get(seq, params, size, synthData, buffer);
     loop = Loop.get(params, seq, synthData, buffer, loop);
+    segment = Segment.get(params, seq, loop, segment);
     bufferSketch = BufferSketch.get(
       seq,
       params,
@@ -66,6 +78,7 @@ export const sketch = (s: p5) => {
       synthData,
       buffer,
       loop,
+      segment,
       bufferSketch
     );
     // draw component

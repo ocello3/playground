@@ -5,13 +5,14 @@ export const set = (size: number) => {
   const alignments = ["right", "right", "left", "left"];
   const boxIntervalRate = 0.01;
   const boxHeightRate = 0.5 / alignments.length;
+  const boxSize = new p5.Vector(size * boxIntervalRate, size * boxHeightRate);
   return {
     // position
     marginRate: 0.2,
     alignments,
     boxIntervalRate,
     boxHeightRate,
-    boxSize: new p5.Vector(size * boxIntervalRate, size * boxHeightRate),
+    boxSize,
     easingFMin: 0.05,
     easingFMax: 0.5,
     // buffer

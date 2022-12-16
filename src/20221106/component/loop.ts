@@ -6,10 +6,10 @@ import * as buffer from "./buffer";
 import { tools } from "../../util/tools";
 
 export type type = {
-  loopStartPositions: p5.Vector[];
-  loopStartCurrentPositions: p5.Vector[];
-  loopEndPositions: p5.Vector[];
-  loopEndCurrentPositions: p5.Vector[];
+  startPositions: p5.Vector[];
+  startCurrentPositions: p5.Vector[];
+  endPositions: p5.Vector[];
+  endCurrentPositions: p5.Vector[];
 };
 
 export const get = (
@@ -20,9 +20,9 @@ export const get = (
   pre?: type
 ) => {
   const isInit = pre === undefined;
-  const loopStartPositions: type["loopStartPositions"] = (() => {
+  const startPositions: type["startPositions"] = (() => {
     if (isInit) return buffer.startPositions;
-    return pre.loopStartPositions.map((preLoopStartPosition, index) => {
+    return pre.startPositions.map((preLoopStartPosition, index) => {
       if (!seq.loopIsSwitches[index]) return preLoopStartPosition;
       const newLoopStartPosition = preLoopStartPosition.copy();
       const positionRate =
@@ -33,11 +33,11 @@ export const get = (
       return newLoopStartPosition;
     });
   })();
-  const loopStartCurrentPositions: type["loopStartCurrentPositions"] = (() => {
-    if (isInit) return loopStartPositions;
-    return pre.loopStartCurrentPositions.map(
+  const startCurrentPositions: type["startCurrentPositions"] = (() => {
+    if (isInit) return startPositions;
+    return pre.startCurrentPositions.map(
       (preLoopStartCurrentPosition, index) => {
-        const loopStartTargetPosition = loopStartPositions[index];
+        const loopStartTargetPosition = startPositions[index];
         const diff = loopStartTargetPosition.x - preLoopStartCurrentPosition.x;
         if (Math.abs(diff) < 1) return loopStartTargetPosition;
         const easingF = tools.map(
@@ -52,9 +52,9 @@ export const get = (
       }
     );
   })();
-  const loopEndPositions: type["loopEndPositions"] = (() => {
+  const endPositions: type["endPositions"] = (() => {
     if (isInit) return buffer.endPositions;
-    return pre.loopEndPositions.map((preLoopEndPosition, index) => {
+    return pre.endPositions.map((preLoopEndPosition, index) => {
       if (!seq.loopIsSwitches[index]) return preLoopEndPosition;
       const newLoopEndPosition = preLoopEndPosition.copy();
       const positionRate = seq.loopEndTimes[index] / synthData.durations[index];
@@ -64,35 +64,36 @@ export const get = (
       return newLoopEndPosition;
     });
   })();
-  const loopEndCurrentPositions: type["loopEndCurrentPositions"] = (() => {
-    if (isInit) return loopEndPositions;
-    return pre.loopEndCurrentPositions.map(
-      (preLoopEndCurrentPosition, index) => {
-        const loopEndTargetPosition = loopEndPositions[index];
-        const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
-        if (Math.abs(diff) < 1) return loopEndTargetPosition;
-        const easingF = tools.map(
-          seq.playbackRates[index],
-          params.playbackRateMin,
-          params.playbackRateMax,
-          params.easingFMin,
-          params.easingFMax
-        );
-        const progress = new p5.Vector(diff * easingF, 0);
-        return p5.Vector.add(preLoopEndCurrentPosition, progress);
-      }
-    );
+  const endCurrentPositions: type["endCurrentPositions"] = (() => {
+    if (isInit) return endPositions;
+    return pre.endCurrentPositions.map((preLoopEndCurrentPosition, index) => {
+      const loopEndTargetPosition = endPositions[index];
+      const diff = loopEndTargetPosition.x - preLoopEndCurrentPosition.x;
+      if (Math.abs(diff) < 1) return loopEndTargetPosition;
+      const easingF = tools.map(
+        seq.playbackRates[index],
+        params.playbackRateMin,
+        params.playbackRateMax,
+        params.easingFMin,
+        params.easingFMax
+      );
+      const progress = new p5.Vector(diff * easingF, 0);
+      return p5.Vector.add(preLoopEndCurrentPosition, progress);
+    });
   })();
   return {
-    loopStartPositions,
-    loopStartCurrentPositions,
-    loopEndPositions,
-    loopEndCurrentPositions,
+    startPositions,
+    startCurrentPositions,
+    endPositions,
+    endCurrentPositions,
   };
 };
 
 export const draw = (loop: type, seq: Seq.type, params: Params.type, s: p5) => {
-  const { loopStartCurrentPositions, loopEndCurrentPositions } = loop;
+  const {
+    startCurrentPositions: loopStartCurrentPositions,
+    endCurrentPositions: loopEndCurrentPositions,
+  } = loop;
   // loop range line
   s.strokeWeight(3);
   s.strokeCap(s.PROJECT);
