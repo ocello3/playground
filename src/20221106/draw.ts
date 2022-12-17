@@ -56,25 +56,29 @@ export const draw = (
     s.pop();
   });
   s.pop();
+  /* -- segment -- // remove later
+  s.push();
+  s.noFill();
+  s.strokeWeight(0.1);
+  segment.positionArrays.forEach((positionArray) =>
+    positionArray.forEach((position) => {
+      s.rect(position.x, position.y, segment.size.x, segment.size.y);
+    })
+  );
+  s.pop();
+	*/
   // -- wave -- //
   s.push();
-  wave.xPositionArrays.forEach((waveXPositionArray, trackIndex) => {
+  wave.positionArrays.forEach((positionArray, trackIndex) => {
     const currentBoxIndex = segment.currentIndexes[trackIndex];
     s.stroke(
       color.hues[trackIndex],
       color.saturations[trackIndex],
       color.brightnesses[trackIndex]
     );
-    const waveYPositionArray = wave.yPositionArrays[trackIndex];
-    waveXPositionArray.forEach((waveXPosition, boxIndex) => {
+    positionArray.forEach((position, boxIndex) => {
       if (boxIndex > currentBoxIndex) {
-        const waveYPosition = waveYPositionArray[boxIndex];
-        s.line(
-          waveXPosition,
-          waveYPosition,
-          waveXPosition + segment.size.x,
-          waveYPosition
-        );
+        s.line(position.x, position.y, position.x + segment.size.x, position.y);
       }
     });
   });
@@ -82,21 +86,16 @@ export const draw = (
   // -- box -- //
   s.push();
   s.noStroke();
-  segment.positionArrays.forEach((boxLAPositionArray, trackIndex) => {
+  box.positionArrays.forEach((positionArray, trackIndex) => {
     const hue = color.hues[trackIndex];
     const saturations = color.brightnessArrays[trackIndex];
     const brightness = color.saturations[trackIndex];
-    const boxHeightOffsetArray = box.boxHeightOffsetArrays[trackIndex];
-    boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
-      const boxHeightOffset = boxHeightOffsetArray[boxIndex];
+    const boxHeightArray = box.heightArrays[trackIndex];
+    positionArray.forEach((position, boxIndex) => {
+      const boxHeight = boxHeightArray[boxIndex];
       const saturation = saturations[boxIndex];
       s.fill(hue, saturation, brightness);
-      s.rect(
-        boxLAPosition.x,
-        boxLAPosition.y + segment.size.y - boxHeightOffset,
-        segment.size.x,
-        boxHeightOffset
-      );
+      s.rect(position.x, position.y, segment.size.x, boxHeight);
     });
   });
   s.pop();

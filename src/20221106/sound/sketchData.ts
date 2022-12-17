@@ -16,7 +16,7 @@ export const get = (
   segment: Segment.type,
   box: Box.type
 ) => {
-  const amplitudes: type["amplitudes"] = box.currentBoxHeightOffsets.map(
+  const amplitudes: type["amplitudes"] = box.currentHeights.map(
     (currentBoxHeightOffset) => {
       const mappedAmp = tools.map(
         currentBoxHeightOffset,

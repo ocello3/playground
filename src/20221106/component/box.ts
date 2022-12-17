@@ -1,56 +1,67 @@
-import * as Buffer from "./buffer";
+import p5 from "p5";
 import * as Segment from "./segment";
 import * as Wave from "./wave";
 
 export type type = {
-  currentBoxHeightOffsets: number[];
-  boxHeightOffsetArrays: number[][];
+  LLpositionArrays: p5.Vector[][];
+  currentHeights: number[];
+  heightArrays: number[][];
+  positionArrays: p5.Vector[][];
 };
 
 export const get = (
-  buffer: Buffer.type,
   segment: Segment.type,
   wave: Wave.type,
   pre?: type
-) => {
-  const currentBoxHeightOffsets: type["currentBoxHeightOffsets"] =
-    wave.yPositionArrays.map((_, trackIndex) => {
-      const currentBoxIndex = segment.currentIndexes[trackIndex];
-      const currentWaveYPos = wave.yPositionArrays[trackIndex][currentBoxIndex];
-      const baseYPosition = buffer.startPositions[trackIndex].y;
-      return currentWaveYPos - baseYPosition;
-    });
-  const boxHeightOffsetArrays: type["boxHeightOffsetArrays"] =
-    currentBoxHeightOffsets.map((currentBoxHeightOffset, trackIndex) => {
-      const currentArrayLength = segment.positionArrays[trackIndex].length;
-      if (pre === undefined) {
-        return Array.from(
-          Array(currentArrayLength),
-          () => currentBoxHeightOffset
-        );
-      }
-      const addedBoxNumber = segment.addedSegments[trackIndex];
-      if (segment.addedSegments[trackIndex] < 0) {
-        return Array.from(
-          Array(currentArrayLength),
-          () => currentBoxHeightOffset
-        );
-      }
-      const preBoxHeightOffsetArray = pre.boxHeightOffsetArrays[trackIndex];
-      if (segment.addedSegments[trackIndex] === 0) {
-        preBoxHeightOffsetArray[preBoxHeightOffsetArray.length - 1] =
-          currentBoxHeightOffsets[trackIndex];
-        return preBoxHeightOffsetArray;
-      }
-      // addedBoxNumber > 0
-      const newBoxHeightOffsetArray = Array.from(
-        Array(addedBoxNumber),
-        () => currentBoxHeightOffsets[trackIndex]
+): type => {
+  const isInit = pre === undefined;
+  const LLpositionArrays = (() => {
+    const offset = new p5.Vector(0, segment.size.y);
+    return segment.positionArrays.map((segmentPositionArray, trackIndex) => {
+      const LUpositions = segmentPositionArray.filter(
+        (_, boxIndex) => boxIndex <= segment.currentIndexes[trackIndex]
       );
-      return preBoxHeightOffsetArray.concat(newBoxHeightOffsetArray);
+      return LUpositions.map((LUposition) => p5.Vector.add(LUposition, offset));
     });
+  })();
+  const currentHeights: type["currentHeights"] = wave.positionArrays.map(
+    (wavePositionArray, trackIndex) => {
+      const currentBoxIndex = segment.currentIndexes[trackIndex];
+      const currentWavePos = wavePositionArray[currentBoxIndex];
+      const LLposition = LLpositionArrays[trackIndex][currentBoxIndex];
+      return LLposition.y - currentWavePos.y;
+    }
+  );
+  const heightArrays: type["heightArrays"] = LLpositionArrays.map(
+    (LLpositionArray, trackIndex) => {
+      const currentHeight = currentHeights[trackIndex];
+      const addedBoxCount = segment.addedSegments[trackIndex];
+      const newBoxCount = LLpositionArray.length;
+      if (isInit || addedBoxCount < 0)
+        return Array.from(Array(newBoxCount), () => currentHeight);
+      const preHeightArray = pre.heightArrays[trackIndex];
+      if (addedBoxCount === 0)
+        return preHeightArray.map((preHeight, boxIndex) =>
+          boxIndex === preHeightArray.length - 1 ? currentHeight : preHeight
+        );
+      // addedBoxNumber > 0
+      const newHeightArray = Array.from(
+        Array(addedBoxCount),
+        () => currentHeight
+      );
+      return preHeightArray.concat(newHeightArray);
+    }
+  );
+  const positionArrays = LLpositionArrays.map((LLpositionArray, trackIndex) =>
+    LLpositionArray.map((LLposition, boxIndex) => {
+      const offset = new p5.Vector(0, heightArrays[trackIndex][boxIndex]);
+      return p5.Vector.sub(LLposition, offset);
+    })
+  );
   return {
-    currentBoxHeightOffsets,
-    boxHeightOffsetArrays,
+    LLpositionArrays,
+    currentHeights,
+    heightArrays,
+    positionArrays,
   };
 };

@@ -29,12 +29,12 @@ export const set = () => {
     brightnesses: [80, 80],
     saturationRange: 15,
     brightnessRange: 65,
-    loopRangeLineYPosRate: 0.65,
+    loopRangeLineYPosRate: 1.1,
     // wave
     ampRateMin: 0.1,
     ampRateMax: 0.9,
     waveLengthRateMin: 0.01,
-    waveLengthRateMax: 10,
+    waveLengthRateMax: 1,
     waveSpeedRateMin: 0.00001,
     waveSpeedRateMax: 0.0001,
   };

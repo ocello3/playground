@@ -39,8 +39,8 @@ export const sketch = (s: p5) => {
     buffer = Buffer.get(ctrl, params, canvasSize, synthData);
     loop = Loop.get(params, canvasSize, ctrl, synthData, buffer);
     segment = Segment.get(params, canvasSize, ctrl, loop);
-    wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment);
-    box = Box.get(buffer, segment, wave);
+    wave = Wave.get(ctrl, params, canvasSize, loop, segment);
+    box = Box.get(segment, wave);
     color = Color.get(ctrl, params, synthData, segment, color);
     sketchData = SketchData.get(params, canvasSize, loop, segment, box);
     // set canvas
@@ -60,7 +60,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          currentIndex: segment.currentIndexes,
+          na: "working",
         },
         10
       );
@@ -72,8 +72,8 @@ export const sketch = (s: p5) => {
     buffer = Buffer.get(ctrl, params, canvasSize, synthData, buffer);
     loop = Loop.get(params, canvasSize, ctrl, synthData, buffer, loop);
     segment = Segment.get(params, canvasSize, ctrl, loop, segment);
-    wave = Wave.get(ctrl, params, canvasSize, buffer, loop, segment, wave);
-    box = Box.get(buffer, segment, wave, box);
+    wave = Wave.get(ctrl, params, canvasSize, loop, segment, wave);
+    box = Box.get(segment, wave, box);
     color = Color.get(ctrl, params, synthData, segment, color);
     // get sound data from components
     sketchData = SketchData.get(params, canvasSize, loop, segment, box);

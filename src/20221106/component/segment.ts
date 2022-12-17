@@ -25,37 +25,23 @@ export const get = (
   );
   const counts: type["counts"] = loop.startPositions.map(
     (loopStartPosition, index) => {
-      if (!isInit && !ctrl.loopIsSwitches[index]) return pre.counts[index];
-      const diff = loopStartPosition.x - loop.endPositions[index].x;
-      return Math.ceil(Math.abs(diff / size.x));
+      if (isInit || ctrl.loopIsSwitches[index]) {
+        const diff = loopStartPosition.x - loop.endPositions[index].x;
+        const count = Math.ceil(Math.abs(diff / size.x));
+        return count < 1 ? 1 : count;
+      }
+      return pre.counts[index];
     }
   );
-  const positionArrays: type["positionArrays"] = loop.currentPositions.map(
-    (currentPosition, trackIndex) => {
-      // reset for new loop
-      if (
-        pre === undefined ||
-        ctrl.loopIsSwitches[trackIndex] ||
-        ctrl.loopIsOvers[trackIndex]
-      ) {
-        const offset = new p5.Vector().set(0, size.y * -0.5);
-        return [p5.Vector.add(loop.startPositions[trackIndex], offset)];
-      }
-      // add new position at last of array
-      const prePositionArray = pre.positionArrays[trackIndex];
-      const direction = ctrl.loopIsReverses[trackIndex] ? -1 : 1;
-      const lastPosition = prePositionArray[prePositionArray.length - 1];
-      const diff = Math.abs(currentPosition.x - lastPosition.x);
-      const addedBoxNumber = Math.round(diff / size.x);
-      if (addedBoxNumber === 0) return prePositionArray;
-      const addedBoxPositions = Array.from(
-        Array(addedBoxNumber),
-        (_, index) => {
-          const progress = new p5.Vector(size.x * (index + 1) * direction, 0);
-          return p5.Vector.add(lastPosition, progress);
-        }
-      );
-      return prePositionArray.concat(addedBoxPositions);
+  const positionArrays: type["positionArrays"] = loop.startPositions.map(
+    (startPosition, trackIndex) => {
+      if (isInit || ctrl.loopIsSwitches[trackIndex])
+        return Array.from(Array(counts[trackIndex]), (_, segmentIndex) => {
+          const direction = ctrl.loopIsReverses[trackIndex] ? -1 : 1;
+          const offset = new p5.Vector(size.x * direction * segmentIndex, 0);
+          return p5.Vector.add(startPosition, offset);
+        });
+      return pre.positionArrays[trackIndex];
     }
   );
   const currentIndexes: type["currentIndexes"] = loop.progresses.map(
@@ -69,7 +55,9 @@ export const get = (
       const preProgress = size.x * pre.currentIndexes[trackIndex];
       const diff = Math.abs(progress - preProgress);
       const addedIndexes = Math.floor(diff / size.x);
-      return pre.currentIndexes[trackIndex] + addedIndexes;
+      const currentIndex = pre.currentIndexes[trackIndex] + addedIndexes;
+      const maxIndex = positionArrays[trackIndex].length - 1;
+      return currentIndex > maxIndex ? maxIndex : currentIndex;
     }
   );
   const addedSegments: type["addedSegments"] = currentIndexes.map(

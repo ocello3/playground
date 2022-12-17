@@ -31,7 +31,7 @@ export const get = (
       const positionRate =
         ctrl.loopStartTimes[index] / synthData.durations[index];
       const loopStartPosition = buffer.fullLengths[index] * positionRate;
-      const x = loopStartPosition + buffer.margins[index];
+      const x = loopStartPosition + buffer.margins[index].x;
       newLoopStartPosition.x = x;
       return newLoopStartPosition;
     });
@@ -63,7 +63,7 @@ export const get = (
       const positionRate =
         ctrl.loopEndTimes[index] / synthData.durations[index];
       const loopEndPosition = buffer.fullLengths[index] * positionRate;
-      const x = loopEndPosition + buffer.margins[index];
+      const x = loopEndPosition + buffer.margins[index].x;
       newLoopEndPosition.x = x;
       return newLoopEndPosition;
     });
@@ -98,7 +98,7 @@ export const get = (
     if (isInit)
       return synthData.durations.map((_, index) => {
         // for 4th buffer, fit to right end
-        const x = buffer.margins[index];
+        const x = buffer.margins[index].x;
         const y = (canvasSize / (synthData.durations.length + 1)) * (index + 1);
         return new p5.Vector(x, y);
       });
