@@ -42,13 +42,12 @@ export const get = (
         return [p5.Vector.add(loop.startPositions[trackIndex], offset)];
       }
       // add new position at last of array
-      const preBoxLAPositionArray = pre.positionArrays[trackIndex];
+      const prePositionArray = pre.positionArrays[trackIndex];
       const direction = ctrl.loopIsReverses[trackIndex] ? -1 : 1;
-      const lastPosition =
-        preBoxLAPositionArray[preBoxLAPositionArray.length - 1];
+      const lastPosition = prePositionArray[prePositionArray.length - 1];
       const diff = Math.abs(currentPosition.x - lastPosition.x);
       const addedBoxNumber = Math.round(diff / size.x);
-      if (addedBoxNumber === 0) return preBoxLAPositionArray;
+      if (addedBoxNumber === 0) return prePositionArray;
       const addedBoxPositions = Array.from(
         Array(addedBoxNumber),
         (_, index) => {
@@ -56,11 +55,11 @@ export const get = (
           return p5.Vector.add(lastPosition, progress);
         }
       );
-      return preBoxLAPositionArray.concat(addedBoxPositions);
+      return prePositionArray.concat(addedBoxPositions);
     }
   );
   const currentIndexes: type["currentIndexes"] = positionArrays.map(
-    (boxLAPositionArray) => boxLAPositionArray.length - 1
+    (positionArray) => positionArray.length - 1
   );
   const addedSegments: type["addedSegments"] = currentIndexes.map(
     (currentBoxIndex, trackIndex) => {
