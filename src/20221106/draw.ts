@@ -6,7 +6,6 @@ import * as Wave from "./component/wave";
 import * as Box from "./component/box";
 import * as Color from "./component/color";
 import * as Segment from "./component/segment";
-import * as Ctrl from "./sound/controller";
 
 export const draw = (
   buffer: Buffer.type,
@@ -15,67 +14,58 @@ export const draw = (
   box: Box.type,
   color: Color.type,
   segment: Segment.type,
-  ctrl: Ctrl.type,
   params: Params.type,
   s: p5
 ) => {
   // -- buffer -- //
-  const { startPositions, endPositions } = buffer;
   s.push();
   s.noFill();
   s.strokeWeight(1);
   s.strokeCap(s.SQUARE);
-  startPositions.forEach((startPosition, index) => {
-    const flag = ctrl.loopIsReverses[index] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
+  buffer.startPositions.forEach((startPosition, trackIndex) => {
+    s.stroke(
+      color.hues[trackIndex],
+      color.saturations[trackIndex],
+      color.brightnesses[trackIndex]
+    );
     s.line(
       startPosition.x,
       startPosition.y + segment.size.y * params.loopRangeLineYPosRate,
-      endPositions[index].x,
-      endPositions[index].y + segment.size.y * params.loopRangeLineYPosRate
+      buffer.endPositions[trackIndex].x,
+      buffer.endPositions[trackIndex].y +
+        segment.size.y * params.loopRangeLineYPosRate
     );
   });
   // -- loop -- //
-  const {
-    startCurrentPositions: loopStartCurrentPositions,
-    endCurrentPositions: loopEndCurrentPositions,
-  } = loop;
   s.strokeWeight(3);
   s.strokeCap(s.PROJECT);
-  loopStartCurrentPositions.forEach((loopStartPosition, index) => {
+  loop.startCurrentPositions.forEach((loopStartPosition, trackIndex) => {
     s.push();
-    const flag = ctrl.loopIsReverses[index] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
+    s.stroke(
+      color.hues[trackIndex],
+      color.saturations[trackIndex],
+      color.brightnesses[trackIndex]
+    );
     s.line(
       loopStartPosition.x,
       loopStartPosition.y + segment.size.y * params.loopRangeLineYPosRate,
-      loopEndCurrentPositions[index].x,
-      loopEndCurrentPositions[index].y +
+      loop.endCurrentPositions[trackIndex].x,
+      loop.endCurrentPositions[trackIndex].y +
         segment.size.y * params.loopRangeLineYPosRate
     );
     s.pop();
   });
   s.pop();
   // -- wave -- //
-  const {
-    xPositionArrays: waveXPositionArrays,
-    yPositionArrays: waveYPositionArrays,
-  } = wave;
   s.push();
-  waveXPositionArrays.forEach((waveXPositionArray, trackIndex) => {
+  wave.xPositionArrays.forEach((waveXPositionArray, trackIndex) => {
     const currentBoxIndex = segment.currentIndexes[trackIndex];
-    const flag = ctrl.loopIsReverses[trackIndex] ? 0 : 1;
-    const hue = params.hues[flag];
-    const saturation = params.saturations[flag] - params.saturationRange;
-    const brightness = params.saturations[flag] - params.brightnessRange * 0.5;
-    s.stroke(hue, saturation, brightness);
-    const waveYPositionArray = waveYPositionArrays[trackIndex];
+    s.stroke(
+      color.hues[trackIndex],
+      color.saturations[trackIndex],
+      color.brightnesses[trackIndex]
+    );
+    const waveYPositionArray = wave.yPositionArrays[trackIndex];
     waveXPositionArray.forEach((waveXPosition, boxIndex) => {
       if (boxIndex > currentBoxIndex) {
         const waveYPosition = waveYPositionArray[boxIndex];
@@ -90,15 +80,13 @@ export const draw = (
   });
   s.pop();
   // -- box -- //
-  const { boxHeightOffsetArrays } = box;
-  // boxes
   s.push();
   s.noStroke();
   segment.positionArrays.forEach((boxLAPositionArray, trackIndex) => {
     const hue = color.hues[trackIndex];
     const saturations = color.brightnessArrays[trackIndex];
     const brightness = color.saturations[trackIndex];
-    const boxHeightOffsetArray = boxHeightOffsetArrays[trackIndex];
+    const boxHeightOffsetArray = box.boxHeightOffsetArrays[trackIndex];
     boxLAPositionArray.forEach((boxLAPosition, boxIndex) => {
       const boxHeightOffset = boxHeightOffsetArray[boxIndex];
       const saturation = saturations[boxIndex];

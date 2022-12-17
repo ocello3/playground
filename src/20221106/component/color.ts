@@ -7,6 +7,7 @@ import { tools } from "../../util/tools";
 export type type = {
   hues: number[];
   saturations: number[];
+  brightnesses: number[];
   brightnessArrays: number[][];
 };
 
@@ -16,7 +17,7 @@ export const get = (
   synthData: SynthData.type,
   segment: Segment.type,
   pre?: type
-) => {
+): type => {
   const hues: type["hues"] = ctrl.loopIsReverses.map((loopIsReverse) => {
     const flag = loopIsReverse ? 0 : 1;
     return params.hues[flag];
@@ -34,23 +35,27 @@ export const get = (
       );
     }
   );
+  const brightnesses: type["brightnesses"] = ctrl.loopIsReverses.map(
+    (loopIsReverse) => {
+      const flag = loopIsReverse ? 1 : 0;
+      return params.brightnesses[flag];
+    }
+  );
   const brightnessArrays: type["brightnessArrays"] = segment.positionArrays.map(
     (boxLAPositionArray, trackIndex) => {
       const volume = synthData.volumes[trackIndex].getValue();
       const finiteVolume = isFinite(volume as number) ? volume : 0;
-      const flag = ctrl.loopIsReverses[trackIndex] ? 1 : 0;
-      const baseBrightness = params.brightnesses[flag];
       const brightness = tools.map(
         finiteVolume as number,
         -50,
         -20,
-        baseBrightness - params.brightnessRange,
-        baseBrightness + params.brightnessRange
+        brightnesses[trackIndex] - params.brightnessRange,
+        brightnesses[trackIndex] + params.brightnessRange
       );
       const constrainedBrightness = tools.constrain(
         brightness,
-        baseBrightness - params.brightnessRange,
-        baseBrightness + params.brightnessRange
+        brightnesses[trackIndex] - params.brightnessRange,
+        brightnesses[trackIndex] + params.brightnessRange
       );
       if (
         pre === undefined ||
@@ -78,8 +83,9 @@ export const get = (
     }
   );
   return {
-    hues: hues,
-    saturations: saturations,
-    brightnessArrays: brightnessArrays,
+    hues,
+    saturations,
+    brightnesses,
+    brightnessArrays,
   };
 };

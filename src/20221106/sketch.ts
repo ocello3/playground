@@ -77,7 +77,7 @@ export const sketch = (s: p5) => {
     // get sound data from components
     sketchData = SketchData.get(params, canvasSize, loop, segment, box);
     // draw component
-    draw(buffer, loop, wave, box, color, segment, ctrl, params, s);
+    draw(buffer, loop, wave, box, color, segment, params, s);
     drawFrame(s, canvasSize);
     // play sound
     Synth.play(synth, ctrl, sketchData, params, s.frameCount);
