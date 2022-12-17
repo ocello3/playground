@@ -58,8 +58,19 @@ export const get = (
       return prePositionArray.concat(addedBoxPositions);
     }
   );
-  const currentIndexes: type["currentIndexes"] = positionArrays.map(
-    (positionArray) => positionArray.length - 1
+  const currentIndexes: type["currentIndexes"] = loop.progresses.map(
+    (progress, trackIndex) => {
+      if (
+        isInit ||
+        ctrl.loopIsSwitches[trackIndex] ||
+        ctrl.loopIsOvers[trackIndex]
+      )
+        return 0;
+      const preProgress = size.x * pre.currentIndexes[trackIndex];
+      const diff = Math.abs(progress - preProgress);
+      const addedIndexes = Math.floor(diff / size.x);
+      return pre.currentIndexes[trackIndex] + addedIndexes;
+    }
   );
   const addedSegments: type["addedSegments"] = currentIndexes.map(
     (currentBoxIndex, trackIndex) => {

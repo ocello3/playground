@@ -10,6 +10,7 @@ export type type = {
   startCurrentPositions: p5.Vector[];
   endPositions: p5.Vector[];
   endCurrentPositions: p5.Vector[];
+  progresses: number[];
   currentPositions: p5.Vector[];
 };
 
@@ -84,6 +85,15 @@ export const get = (
       return p5.Vector.add(preLoopEndCurrentPosition, progress);
     });
   })();
+  const progresses: type["progresses"] = startPositions.map(
+    (startPosition, trackIndex) => {
+      if (isInit) return 0;
+      const loopLength: number = Math.abs(
+        endPositions[trackIndex].x - startPosition.x
+      );
+      return loopLength * ctrl.loopProgressRates[trackIndex];
+    }
+  );
   const currentPositions: type["currentPositions"] = (() => {
     if (isInit)
       return synthData.durations.map((_, index) => {
@@ -93,15 +103,11 @@ export const get = (
         return new p5.Vector(x, y);
       });
     return pre.currentPositions.map((preCurrentPosition, index) => {
-      const loopLength: number = Math.abs(
-        endPositions[index].x - startPositions[index].x
-      );
-      const progressLength: number = loopLength * ctrl.loopProgressRates[index];
       if (ctrl.loopIsReverses[index]) {
-        preCurrentPosition.x = startPositions[index].x - progressLength;
+        preCurrentPosition.x = startPositions[index].x - progresses[index];
         return preCurrentPosition;
       } else {
-        preCurrentPosition.x = startPositions[index].x + progressLength;
+        preCurrentPosition.x = startPositions[index].x + progresses[index];
         return preCurrentPosition;
       }
     });
@@ -111,6 +117,7 @@ export const get = (
     startCurrentPositions,
     endPositions,
     endCurrentPositions,
+    progresses,
     currentPositions,
   };
 };
