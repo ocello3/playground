@@ -69,7 +69,7 @@ export const get = (
   return {
     size,
     counts,
-    positionArrays: positionArrays,
+    positionArrays,
     currentIndexes,
     addedSegments,
   };

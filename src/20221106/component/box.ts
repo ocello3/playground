@@ -52,11 +52,12 @@ export const get = (
       return preHeightArray.concat(newHeightArray);
     }
   );
-  const positionArrays = LLpositionArrays.map((LLpositionArray, trackIndex) =>
-    LLpositionArray.map((LLposition, boxIndex) => {
-      const offset = new p5.Vector(0, heightArrays[trackIndex][boxIndex]);
-      return p5.Vector.sub(LLposition, offset);
-    })
+  const positionArrays: type["positionArrays"] = LLpositionArrays.map(
+    (LLpositionArray, trackIndex) =>
+      LLpositionArray.map((LLposition, boxIndex) => {
+        const offset = new p5.Vector(0, heightArrays[trackIndex][boxIndex]);
+        return p5.Vector.sub(LLposition, offset);
+      })
   );
   return {
     LLpositionArrays,

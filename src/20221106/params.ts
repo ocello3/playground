@@ -7,11 +7,13 @@ export const set = () => {
   return {
     // position
     marginRate: 0.2,
+    loopRangeLineYPosRate: 1.1,
     alignments,
     boxIntervalRate,
     boxHeightRate,
     easingFMin: 0.05,
     easingFMax: 0.5,
+    // controller
     // buffer
     playbackRateMin: 0.3,
     playbackRateMax: 3.5,
@@ -29,7 +31,6 @@ export const set = () => {
     brightnesses: [80, 80],
     saturationRange: 15,
     brightnessRange: 65,
-    loopRangeLineYPosRate: 1.1,
     // wave
     ampRateMin: 0.1,
     ampRateMax: 0.9,
