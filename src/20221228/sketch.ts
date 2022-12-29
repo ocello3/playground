@@ -2,8 +2,9 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
-import * as Light from "./component/light";
 import * as Params from "./params";
+import * as Light from "./component/light";
+import * as Boader from "./component/boader";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
 
@@ -11,13 +12,14 @@ export const sketch = (s: p5) => {
   const canvasSize = tools.setSize("sketch");
   let controllers = controller.setController();
   const params = Params.set();
-  let lib: Light.type;
+  let light: Light.type;
+  let boader: Boader.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
     synth = await Synth.set();
     // set component
-    lib = Light.get(params, canvasSize);
+    light = Light.get(params, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -34,9 +36,10 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    lib = Light.get(params, canvasSize, lib);
+    light = Light.get(params, canvasSize, light);
+    boader = Boader.get(params, canvasSize, boader);
     // draw component
-    draw(lib, canvasSize, s);
+    draw(light, boader, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
