@@ -8,6 +8,9 @@ export const set = () => {
     boader: {
       angle: 0.45,
     },
+    object: {
+      count: 5,
+    },
     // synth
     maxVolume: -10,
   };
