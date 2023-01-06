@@ -17,7 +17,7 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
     return false;
   })();
   if (!isInit && isStill) return pre;
-  const vec = p5.Vector.fromAngle(Math.PI * 2 - params.boader.angle);
+  const vec = p5.Vector.fromAngle(-1 * params.boader.angle);
   const length = size / Math.cos(params.boader.angle);
   const height = size * Math.tan(params.boader.angle);
   const margin = (size - height) * 0.5;

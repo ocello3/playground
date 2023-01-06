@@ -30,7 +30,7 @@ export const get = (
     p5.Vector.add(boader.start, p5.Vector.mult(boader.vec, interval))
   );
   const vecs = intervals.map(() =>
-    p5.Vector.fromAngle(Math.PI * 2 - params.boader.angle - Math.PI * 0.5)
+    p5.Vector.fromAngle(-1 * params.boader.angle - Math.PI * 0.5)
   );
   const lengths = (() => {
     if (isInit) return intervals.map(() => Math.random() * size * 0.5);
