@@ -35,29 +35,21 @@ export const draw = (
   //--- shadow ---//
   s.push();
   s.noStroke();
-  if (light.isShadow)
-    shadow.starts.forEach((start, index) => {
-      const end = shadow.ends[index];
-      const intersection = shadow.intersections[index];
-      s.fill(0, 20);
-      s.triangle(
-        start.x,
-        start.y,
-        end.x,
-        end.y,
-        object.ends[index].x,
-        object.ends[index].y
-      );
-      s.fill(0, 60);
-      s.triangle(
-        start.x,
-        start.y,
-        end.x,
-        end.y,
-        intersection.x,
-        intersection.y
-      );
-    });
+  shadow.starts.forEach((start, index) => {
+    const end = shadow.ends[index];
+    const intersection = shadow.intersections[index];
+    s.fill(0, 20);
+    s.triangle(
+      start.x,
+      start.y,
+      end.x,
+      end.y,
+      object.ends[index].x,
+      object.ends[index].y
+    );
+    s.fill(0, 60);
+    s.triangle(start.x, start.y, end.x, end.y, intersection.x, intersection.y);
+  });
   s.pop();
   // -- frame ---//
   drawFrame(s, size);

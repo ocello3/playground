@@ -4,7 +4,8 @@ export const set = () => {
   return {
     light: {
       speed: 0.01,
-      distRate: 4,
+      shadowDistRate: 4,
+      lightDistRate: 0.5,
     },
     boader: {
       angle: 0.45,
@@ -26,7 +27,16 @@ export const gui = (params: type, tab: TabApi) => {
     title: "light",
   });
   light.addInput(params.light, "speed", { step: 0.001, min: 0.001, max: 0.1 });
-  light.addInput(params.light, "distRate", { step: 0.1, min: 1, max: 1000 });
+  light.addInput(params.light, "shadowDistRate", {
+    step: 0.1,
+    min: 1,
+    max: 1000,
+  });
+  light.addInput(params.light, "lightDistRate", {
+    step: 0.01,
+    min: 0.01,
+    max: 2,
+  });
   const boader = sketch.addFolder({
     title: "boader",
   });
