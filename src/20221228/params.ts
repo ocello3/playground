@@ -3,12 +3,12 @@ import { TabApi } from "tweakpane";
 export const set = () => {
   return {
     light: {
-      speed: 0.01,
-      shadowDistRate: 4,
-      lightDistRate: 0.5,
+      speed: 0.005,
+      shadowDistRate: 100,
+      lightDistRate: 0.25,
     },
     boader: {
-      angle: 0.45,
+      angle: 0.25,
     },
     object: {
       count: 10,
