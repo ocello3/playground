@@ -38,7 +38,7 @@ export const draw = (
   shadow.starts.forEach((start, index) => {
     const end = shadow.ends[index];
     const intersection = shadow.intersections[index];
-    s.fill(0, 20);
+    s.fill(0, 50 * light.angleRate);
     s.triangle(
       start.x,
       start.y,
@@ -47,7 +47,8 @@ export const draw = (
       object.ends[index].x,
       object.ends[index].y
     );
-    s.fill(0, 60);
+    const color = light.isShadow ? 255 : 0;
+    s.fill(color, 150 * light.angleRate);
     s.triangle(start.x, start.y, end.x, end.y, intersection.x, intersection.y);
   });
   s.pop();

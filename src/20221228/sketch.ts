@@ -43,12 +43,10 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          size: canvasSize,
-          lightParams: params.light,
+          angleRate: light.angleRate,
         },
         10
       );
-    s.background(255);
     controller.updateController(s, controllers);
     // update component
     light = Light.get(params, canvasSize, light);
@@ -56,6 +54,8 @@ export const sketch = (s: p5) => {
     object = Object.get(boader, params, canvasSize, object);
     shadow = Shadow.get(light, boader, object);
     // draw component
+    if (light.isShadow) s.background(255, 200);
+    if (!light.isShadow) s.background(0, 200);
     draw(light, boader, object, shadow, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };

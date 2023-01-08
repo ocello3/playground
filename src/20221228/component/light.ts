@@ -1,4 +1,5 @@
 import p5 from "p5";
+import { tools } from "../../util/tools";
 // import { tools } from "../../util/tools";
 import * as Params from "../params";
 
@@ -6,6 +7,7 @@ export type type = {
   start: p5.Vector; // center
   length: number;
   angle: number;
+  angleRate: number;
   vec: p5.Vector;
   end: p5.Vector;
   isShadow: boolean; // true in shadow
@@ -26,6 +28,16 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
     return lower || upper;
   })();
   const isSwitch = isInit ? true : isShadow != pre.isShadow;
+  const angleRate = (() => {
+    const rawRate = angle / (Math.PI * 2) - params.boader.angle / (Math.PI * 2);
+    const rate = rawRate < 0 ? 1 + rawRate : rawRate;
+    if (isShadow) {
+      const constrainedRate = rate - 0.5; // 0 - 0.5
+      return tools.map(Math.abs(constrainedRate - 0.25), 0, 0.25, 1, 0);
+    }
+    // rate: 0 - 0.5
+    return tools.map(Math.abs(rate - 0.25), 0, 0.25, 1, 0);
+  })();
   const start = isInit ? new p5.Vector(size * 0.5, size * 0.5) : pre.start;
   const length = (() => {
     const calc = (rate: number) => {
@@ -44,6 +56,7 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
     start,
     length,
     angle,
+    angleRate,
     vec,
     end,
     isShadow,
