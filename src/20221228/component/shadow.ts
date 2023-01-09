@@ -18,9 +18,6 @@ export const get = (
   object: Object.type
 ): type => {
   const starts = object.starts;
-  // const ends_tmp = starts.map((start) =>
-  //   p5.Vector.add(start, new p5.Vector(0, 0.1))
-  // );
   const ends = starts.map((start, index) =>
     tools.getIntersection(start, light.end, light.end, object.ends[index])
   );

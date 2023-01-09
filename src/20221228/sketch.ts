@@ -23,8 +23,8 @@ export const sketch = (s: p5) => {
     // set sound
     synth = await Synth.set();
     // set component
-    light = Light.get(params, canvasSize);
     boader = Boader.get(params, canvasSize);
+    light = Light.get(boader, params, canvasSize);
     object = Object.get(boader, params, canvasSize);
     shadow = Shadow.get(light, boader, object);
     // set canvas
@@ -43,14 +43,15 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
+          boaderAngle: boader.angle,
           angleRate: light.angleRate,
         },
         10
       );
     controller.updateController(s, controllers);
     // update component
-    light = Light.get(params, canvasSize, light);
     boader = Boader.get(params, canvasSize, boader);
+    light = Light.get(boader, params, canvasSize, light);
     object = Object.get(boader, params, canvasSize, object);
     shadow = Shadow.get(light, boader, object);
     // draw component

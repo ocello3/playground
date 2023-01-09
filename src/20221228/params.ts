@@ -8,7 +8,7 @@ export const set = () => {
       lightDistRate: 0.25,
     },
     boader: {
-      angle: 0.25,
+      speed: 0.001,
     },
     object: {
       count: 10,
@@ -37,10 +37,10 @@ export const gui = (params: type, tab: TabApi) => {
     min: 0.01,
     max: 2,
   });
-  const boader = sketch.addFolder({
-    title: "boader",
-  });
-  boader.addInput(params.boader, "angle", { step: 0.01, min: 0.01, max: 1.1 });
+  // const boader = sketch.addFolder({
+  //   title: "boader",
+  // });
+  // boader.addInput(params.boader, "angle", { step: 0.01, min: 0.01, max: 1.1 });
   // synth
   const sound = tab.pages[2];
   sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });

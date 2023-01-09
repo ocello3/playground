@@ -1,6 +1,7 @@
 import p5 from "p5";
 import { tools } from "../../util/tools";
 // import { tools } from "../../util/tools";
+import * as Boader from "./boader";
 import * as Params from "../params";
 
 export type type = {
@@ -14,22 +15,27 @@ export type type = {
   isSwitch: boolean; // true when isShadow is changed
 };
 
-export const get = (params: Params.type, size: number, pre?: type): type => {
+export const get = (
+  boader: Boader.type,
+  params: Params.type,
+  size: number,
+  pre?: type
+): type => {
   const isInit = pre === undefined;
   const angle = (() => {
-    if (isInit) return Math.PI + params.boader.angle;
+    if (isInit) return Math.PI + boader.angle;
     const newAngle = pre.angle + params.light.speed;
     // return newAngle > Math.PI * 2 ? Math.PI + params.boader.angle : newAngle;
     return newAngle > Math.PI * 2 ? newAngle - Math.PI * 2 : newAngle;
   })();
   const isShadow = (() => {
-    const lower = angle <= params.boader.angle;
-    const upper = angle >= Math.PI + params.boader.angle;
+    const lower = angle <= boader.angle;
+    const upper = angle >= Math.PI + boader.angle;
     return lower || upper;
   })();
   const isSwitch = isInit ? true : isShadow != pre.isShadow;
   const angleRate = (() => {
-    const rawRate = angle / (Math.PI * 2) - params.boader.angle / (Math.PI * 2);
+    const rawRate = angle / (Math.PI * 2) - boader.angle / (Math.PI * 2);
     const rate = rawRate < 0 ? 1 + rawRate : rawRate;
     if (isShadow) {
       const constrainedRate = rate - 0.5; // 0 - 0.5

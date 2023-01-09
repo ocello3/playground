@@ -27,10 +27,11 @@ export const get = (
     return pre.intervals;
   })();
   const starts = intervals.map((interval) =>
-    p5.Vector.add(boader.start, p5.Vector.mult(boader.vec, interval))
+    p5.Vector.add(boader.end, p5.Vector.mult(boader.vec, interval))
   );
   const vecs = intervals.map(() =>
-    p5.Vector.fromAngle(-1 * params.boader.angle - Math.PI * 0.5)
+    // p5.Vector.fromAngle(-1 * boader.angle - Math.PI * 0.5)
+    p5.Vector.fromAngle(boader.angle + Math.PI * 0.5)
   );
   const lengths = (() => {
     if (isInit) return intervals.map(() => Math.random() * size * 0.5);
