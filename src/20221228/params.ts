@@ -12,6 +12,10 @@ export const set = () => {
     },
     object: {
       count: 10,
+      speed_min: 0.1,
+      speed_max: 1,
+      lengthRate_min: 0.1,
+      lengthRate_max: 0.5,
     },
     // synth
     maxVolume: -10,

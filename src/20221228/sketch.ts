@@ -43,8 +43,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          boaderAngle: boader.angle,
-          angleRate: light.angleRate,
+          na: "na",
         },
         10
       );
@@ -55,8 +54,8 @@ export const sketch = (s: p5) => {
     object = Object.get(boader, params, canvasSize, object);
     shadow = Shadow.get(light, boader, object);
     // draw component
-    if (light.isShadow) s.background(255, 200 * light.angleRate);
-    if (!light.isShadow) s.background(100, 200 * light.angleRate);
+    if (light.isShadow) s.background(240, 220 * light.angleRate);
+    if (!light.isShadow) s.background(100, 255 * light.angleRate);
     draw(light, boader, object, shadow, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };

@@ -47,8 +47,8 @@ export const draw = (
       object.ends[index].x,
       object.ends[index].y
     );
-    const color = light.isShadow ? 0 : 255;
-    s.fill(color, 150 * light.angleRate);
+    const color = light.isShadow ? 0 : 240;
+    s.fill(color, 130 * light.angleRate);
     s.triangle(start.x, start.y, end.x, end.y, intersection.x, intersection.y);
   });
   s.pop();

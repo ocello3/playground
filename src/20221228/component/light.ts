@@ -25,7 +25,6 @@ export const get = (
   const angle = (() => {
     if (isInit) return Math.PI + boader.angle;
     const newAngle = pre.angle + params.light.speed;
-    // return newAngle > Math.PI * 2 ? Math.PI + params.boader.angle : newAngle;
     return newAngle > Math.PI * 2 ? newAngle - Math.PI * 2 : newAngle;
   })();
   const isShadow = (() => {
