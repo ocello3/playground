@@ -54,9 +54,7 @@ export const sketch = (s: p5) => {
     object = Object.get(boader, params, canvasSize, object);
     shadow = Shadow.get(light, boader, object);
     // draw component
-    if (light.isShadow) s.background(240, 220 * light.angleRate);
-    if (!light.isShadow) s.background(100, 255 * light.angleRate);
-    draw(light, boader, object, shadow, canvasSize, s);
+    draw(light, boader, object, shadow, params, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };

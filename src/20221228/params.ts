@@ -17,6 +17,12 @@ export const set = () => {
       lengthRate_min: 0.1,
       lengthRate_max: 0.5,
     },
+    background: {
+      shadowColor: 240,
+      shadowAlpha: 220,
+      lightColor: 100,
+      lightAlpha: 255,
+    },
     // synth
     maxVolume: -10,
   };

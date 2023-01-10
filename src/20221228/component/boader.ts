@@ -18,10 +18,13 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
   })();
   const vec = p5.Vector.fromAngle(angle);
   const length = size * Math.sqrt(2);
-  const width = length * 0.5 * Math.cos(angle);
-  const height = length * 0.5 * Math.sin(angle);
-  const start = new p5.Vector(size * 0.5 - width, size * 0.5 - height);
-  const end = new p5.Vector(size * 0.5 + width, size * 0.5 + height);
+  const center = new p5.Vector(size * 0.5, size * 0.5);
+  const range = new p5.Vector(
+    length * 0.5 * Math.cos(angle),
+    length * 0.5 * Math.sin(angle)
+  );
+  const start = p5.Vector.sub(center, range);
+  const end = p5.Vector.add(center, range);
   return {
     vec,
     length,

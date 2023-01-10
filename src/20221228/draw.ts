@@ -4,15 +4,28 @@ import * as Light from "./component/light";
 import * as Boader from "./component/boader";
 import * as Object from "./component/object";
 import * as Shadow from "./component/shadow";
+import * as Params from "./params";
 
 export const draw = (
   light: Light.type,
   boader: Boader.type,
   object: Object.type,
   shadow: Shadow.type,
+  params: Params.type,
   size: number,
   s: p5
 ) => {
+  //--- background ---//
+  if (light.isShadow)
+    s.background(
+      params.background.shadowColor,
+      params.background.shadowAlpha * light.angleRate
+    );
+  if (!light.isShadow)
+    s.background(
+      params.background.lightColor,
+      params.background.lightAlpha * light.angleRate
+    );
   //--- light for test ---//
   /*
   s.push();
