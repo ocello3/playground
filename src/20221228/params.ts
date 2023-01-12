@@ -17,6 +17,10 @@ export const set = () => {
       lengthRate_min: 0.1,
       lengthRate_max: 0.5,
     },
+    shadow: {
+      colorRate: 0.7,
+      alpha: 35,
+    },
     background: {
       shadowColor: 240,
       shadowAlpha: 220,
@@ -47,10 +51,22 @@ export const gui = (params: type, tab: TabApi) => {
     min: 0.01,
     max: 2,
   });
-  // const boader = sketch.addFolder({
-  //   title: "boader",
-  // });
-  // boader.addInput(params.boader, "angle", { step: 0.01, min: 0.01, max: 1.1 });
+  const boader = sketch.addFolder({
+    title: "boader",
+  });
+  boader.addInput(params.boader, "speed", { min: 0.0001, max: 0.01 });
+  const object = sketch.addFolder({
+    title: "object",
+  });
+  object.addInput(params.object, "speed_min", { min: 0.01, max: 1 });
+  object.addInput(params.object, "speed_max", { min: 0.1, max: 10 });
+  object.addInput(params.object, "lengthRate_min", { min: 0.01, max: 0.3 });
+  object.addInput(params.object, "lengthRate_max", { min: 0.3, max: 1 });
+  const shadow = sketch.addFolder({
+    title: "shadow",
+  });
+  shadow.addInput(params.shadow, "alpha", { step: 1, min: 10, max: 250 });
+  shadow.addInput(params.shadow, "colorRate", { step: 0.01, min: 0.1, max: 1 });
   // synth
   const sound = tab.pages[2];
   sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });

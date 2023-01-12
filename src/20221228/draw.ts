@@ -26,12 +26,6 @@ export const draw = (
       params.background.lightColor,
       params.background.lightAlpha * light.angleRate
     );
-  //--- light for test ---//
-  /*
-  s.push();
-  s.line(light.start.x, light.start.y, light.end.x, light.end.y);
-  s.pop();
-	*/
   //--- boader ---//
   s.push();
   s.stroke("black");
@@ -51,7 +45,7 @@ export const draw = (
   shadow.starts.forEach((start, index) => {
     const end = shadow.ends[index];
     const intersection = shadow.intersections[index];
-    s.fill(0, 50 * light.angleRate);
+    s.fill(0, params.shadow.alpha * light.angleRate);
     s.triangle(
       start.x,
       start.y,
@@ -60,8 +54,10 @@ export const draw = (
       object.ends[index].x,
       object.ends[index].y
     );
-    const color = light.isShadow ? 0 : 240;
-    s.fill(color, 130 * light.angleRate);
+    const color = light.isShadow
+      ? 0
+      : params.background.shadowColor * params.shadow.colorRate;
+    s.fill(color, params.background.shadowAlpha * light.angleRate);
     s.triangle(start.x, start.y, end.x, end.y, intersection.x, intersection.y);
   });
   s.pop();

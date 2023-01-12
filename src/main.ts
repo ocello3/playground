@@ -5,7 +5,7 @@ import latest from "./latest.txt";
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="row">
 		<div class="one-half column" id="sketch"></div>
-		<div class="one-third column" id="pane"></div>
+		<div class="one-half column" id="pane"></div>
   </div>
 	<div class = "row" id="indicator"></div>
 	<div class = "row" id="debug"></div>

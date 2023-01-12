@@ -1,6 +1,5 @@
 import p5 from "p5";
 import { tools } from "../../util/tools";
-// import { tools } from "../../util/tools";
 import * as Boader from "./boader";
 import * as Params from "../params";
 
