@@ -13,7 +13,7 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
   const isInit = pre === undefined;
   const angle = (() => {
     if (isInit) return Math.PI;
-    const newAngle = pre.angle + params.boader.speed;
+    const newAngle = pre.angle - params.boader.speed;
     return newAngle < 0 ? Math.PI : newAngle;
   })();
   const vec = p5.Vector.fromAngle(angle);

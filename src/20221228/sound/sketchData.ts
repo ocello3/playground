@@ -17,11 +17,13 @@ export const get = (
   params: Params.type,
   size: number
 ): type => {
-  const pans = object.starts.map((start) => tools.map(start.x, 0, size, -1, 1));
+  const pans = object.starts.map((start) =>
+    tools.constrain(tools.map(start.x, 0, size, -1, 1), -1, 1)
+  );
   const vols = object.rates.map(
     (rate) =>
       tools.map(
-        light.isShadow ? rate * params.synth.volReducRate : rate,
+        light.isShadow ? rate : rate * params.synth.volReducRate,
         0,
         1,
         params.synth.vol_min,

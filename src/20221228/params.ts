@@ -29,11 +29,11 @@ export const set = () => {
     },
     // synth
     synth: {
-      volReducRate: 0.5,
+      volReducRate: 8,
       vol_min: -50,
       vol_max: -10,
-      freq_min: 20,
-      freq_max: 1500,
+      freq_min: 280,
+      freq_max: 920,
     },
   };
 };
@@ -74,5 +74,14 @@ export const gui = (params: type, tab: TabApi) => {
   shadow.addInput(params.shadow, "alpha", { step: 1, min: 10, max: 250 });
   shadow.addInput(params.shadow, "colorRate", { step: 0.01, min: 0.1, max: 1 });
   // synth
-  // const sound = tab.pages[2];
+  const sound = tab.pages[2];
+  sound.addInput(params.synth, "volReducRate", {
+    step: 0.1,
+    min: 0.1,
+    max: 10,
+  });
+  sound.addInput(params.synth, "vol_min", { step: 1, min: -60, max: -30 });
+  sound.addInput(params.synth, "vol_max", { step: 1, min: -30, max: -0 });
+  sound.addInput(params.synth, "freq_min", { step: 1, min: 30, max: 500 });
+  sound.addInput(params.synth, "freq_max", { step: 1, min: 500, max: 1500 });
 };
