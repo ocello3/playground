@@ -7,6 +7,7 @@ import * as Light from "./component/light";
 import * as Boader from "./component/boader";
 import * as Object from "./component/object";
 import * as Shadow from "./component/shadow";
+import * as SketchData from "./sound/sketchData";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
 
@@ -18,6 +19,7 @@ export const sketch = (s: p5) => {
   let boader: Boader.type;
   let object: Object.type;
   let shadow: Shadow.type;
+  let sketchData: SketchData.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
@@ -31,22 +33,14 @@ export const sketch = (s: p5) => {
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
+    s.frameRate(10);
     s.noLoop();
-    // s.frameRate(10);
   };
   s.draw = () => {
     if (synth === undefined) {
       s.noLoop();
       return;
     }
-    // if (s.frameCount % 5 === 0) debug({ boader: boader }, 10);
-    if (s.frameCount % 5 === 0)
-      debug(
-        {
-          na: "na",
-        },
-        10
-      );
     controller.updateController(s, controllers);
     // update component
     boader = Boader.get(params, canvasSize, boader);
@@ -55,6 +49,16 @@ export const sketch = (s: p5) => {
     shadow = Shadow.get(light, boader, object);
     // draw component
     draw(light, boader, object, shadow, params, canvasSize, s);
+    // sound
+    sketchData = SketchData.get(light, object, shadow, params, canvasSize);
     // synth.playSynth(libData, synthData, synthParams, size);
+    // if (s.frameCount % 5 === 0) debug({ boader: boader }, 10);
+    if (s.frameCount % 5 === 0)
+      debug(
+        {
+          sketchData_vol: sketchData.vols,
+        },
+        10
+      );
   };
 };

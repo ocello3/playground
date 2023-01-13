@@ -28,7 +28,13 @@ export const set = () => {
       lightAlpha: 255,
     },
     // synth
-    maxVolume: -10,
+    synth: {
+      volReducRate: 0.5,
+      vol_min: -50,
+      vol_max: -10,
+      freq_min: 20,
+      freq_max: 1500,
+    },
   };
 };
 const obj = set();
@@ -68,6 +74,5 @@ export const gui = (params: type, tab: TabApi) => {
   shadow.addInput(params.shadow, "alpha", { step: 1, min: 10, max: 250 });
   shadow.addInput(params.shadow, "colorRate", { step: 0.01, min: 0.1, max: 1 });
   // synth
-  const sound = tab.pages[2];
-  sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  // const sound = tab.pages[2];
 };
