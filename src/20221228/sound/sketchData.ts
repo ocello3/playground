@@ -20,15 +20,16 @@ export const get = (
   const pans = object.starts.map((start) =>
     tools.constrain(tools.map(start.x, 0, size, -1, 1), -1, 1)
   );
-  const vols = object.rates.map(
-    (rate) =>
-      tools.map(
-        light.isShadow ? rate : rate * params.synth.volReducRate,
-        0,
-        1,
-        params.synth.vol_min,
-        params.synth.vol_max
-      ) / params.object.count
+  const vols = object.rates.map((rate) =>
+    tools.map(
+      light.isShadow
+        ? rate / params.object.count
+        : (rate * params.synth.volReducRate) / params.object.count,
+      0,
+      1,
+      params.synth.vol_min,
+      params.synth.vol_max
+    )
   ); // length is determined by rates
   const freqs = shadow.lengths.map((length) =>
     tools.constrain(
