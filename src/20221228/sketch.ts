@@ -51,7 +51,7 @@ export const sketch = (s: p5) => {
     draw(light, boader, object, shadow, params, canvasSize, s);
     // sound
     sketchData = SketchData.get(light, object, shadow, params, canvasSize);
-    Synth.play(synth, sketchData);
+    Synth.play(synth, sketchData, params);
     // if (s.frameCount % 5 === 0)
     //   debug(
     //     {

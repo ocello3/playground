@@ -35,6 +35,15 @@ export const set = () => {
       freq_min: 280,
       freq_max: 920,
     },
+    freeverb: {
+      dampening: 1000,
+      roomSize: 0.6,
+      wet: 0.4,
+    },
+    dist: {
+      distortion: 0.4,
+      wet: 0.3,
+    },
   };
 };
 const obj = set();
@@ -75,13 +84,25 @@ export const gui = (params: type, tab: TabApi) => {
   shadow.addInput(params.shadow, "colorRate", { step: 0.01, min: 0.1, max: 1 });
   // synth
   const sound = tab.pages[2];
-  sound.addInput(params.synth, "volReducRate", {
+  const synth = sound.addFolder({ title: "synth" });
+  synth.addInput(params.synth, "volReducRate", {
     step: 0.1,
     min: 0.1,
     max: 10,
   });
-  sound.addInput(params.synth, "vol_min", { step: 1, min: -60, max: -30 });
-  sound.addInput(params.synth, "vol_max", { step: 1, min: -30, max: -0 });
-  sound.addInput(params.synth, "freq_min", { step: 1, min: 30, max: 500 });
-  sound.addInput(params.synth, "freq_max", { step: 1, min: 500, max: 1500 });
+  synth.addInput(params.synth, "vol_min", { step: 1, min: -60, max: -30 });
+  synth.addInput(params.synth, "vol_max", { step: 1, min: -30, max: -0 });
+  synth.addInput(params.synth, "freq_min", { step: 1, min: 30, max: 500 });
+  synth.addInput(params.synth, "freq_max", { step: 1, min: 500, max: 1500 });
+  const freeverb = sound.addFolder({ title: "freeverb" });
+  freeverb.addInput(params.freeverb, "dampening", {
+    step: 1,
+    min: 100,
+    max: 1500,
+  });
+  freeverb.addInput(params.freeverb, "roomSize", { min: 0, max: 1 });
+  freeverb.addInput(params.freeverb, "wet", { min: 0, max: 1 });
+  const dist = sound.addFolder({ title: "distortion" });
+  dist.addInput(params.dist, "distortion", { min: 0, max: 1 });
+  dist.addInput(params.dist, "wet", { min: 0, max: 1 });
 };
