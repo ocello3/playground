@@ -14,7 +14,12 @@ export type type = {
 export const set = async (params: Params.type): Promise<type> => {
   const se = await setSe();
   const freeverb = new Tone.Freeverb().toDestination();
-  const dist = new Tone.Distortion(0.8).connect(freeverb);
+  freeverb.dampening = 1000; // frequency
+  freeverb.roomSize.value = 0.8; // 0 - 1
+  freeverb.wet.value = 0.8; // 0 - 1
+  const dist = new Tone.Distortion().connect(freeverb);
+  dist.distortion = 0.8; // 0 - 1
+  dist.wet.value = 0.8; // 0 - 1
   const pans = Array.from(Array(params.object.count), () =>
     new Tone.Panner().connect(dist)
   );
@@ -29,16 +34,7 @@ export const set = async (params: Params.type): Promise<type> => {
   };
 };
 
-export const play = (
-  synth: type,
-  sketchData: SketchData.type,
-  params: Params.type
-) => {
-  synth.freeverb.dampening = params.freeverb.dampening; // frequency
-  synth.freeverb.roomSize.value = params.freeverb.roomSize; // 0 - 1
-  synth.freeverb.wet.value = params.freeverb.wet; // 0 - 1
-  synth.dist.distortion = params.dist.distortion; // 0 - 1
-  synth.dist.wet.value = params.dist.wet; // 0 - 1
+export const play = (synth: type, sketchData: SketchData.type) => {
   synth.pans.forEach((pan, index) => (pan.pan.value = sketchData.pans[index]));
   synth.oscs.forEach((osc, index) => {
     osc.frequency.value = sketchData.freqs[index];

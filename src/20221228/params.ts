@@ -35,15 +35,6 @@ export const set = () => {
       freq_min: 280,
       freq_max: 920,
     },
-    freeverb: {
-      dampening: 1000,
-      roomSize: 0.6,
-      wet: 0.4,
-    },
-    dist: {
-      distortion: 0.4,
-      wet: 0.3,
-    },
   };
 };
 const obj = set();
@@ -94,15 +85,4 @@ export const gui = (params: type, tab: TabApi) => {
   synth.addInput(params.synth, "vol_max", { step: 1, min: -30, max: -0 });
   synth.addInput(params.synth, "freq_min", { step: 1, min: 30, max: 500 });
   synth.addInput(params.synth, "freq_max", { step: 1, min: 500, max: 1500 });
-  const freeverb = sound.addFolder({ title: "freeverb" });
-  freeverb.addInput(params.freeverb, "dampening", {
-    step: 1,
-    min: 100,
-    max: 1500,
-  });
-  freeverb.addInput(params.freeverb, "roomSize", { min: 0, max: 1 });
-  freeverb.addInput(params.freeverb, "wet", { min: 0, max: 1 });
-  const dist = sound.addFolder({ title: "distortion" });
-  dist.addInput(params.dist, "distortion", { min: 0, max: 1 });
-  dist.addInput(params.dist, "wet", { min: 0, max: 1 });
 };
