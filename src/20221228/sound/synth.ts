@@ -18,8 +18,8 @@ export const set = async (params: Params.type): Promise<type> => {
   freeverb.roomSize.value = 0.8; // 0 - 1
   freeverb.wet.value = 0.8; // 0 - 1
   const dist = new Tone.Distortion().connect(freeverb);
-  dist.distortion = 0.8; // 0 - 1
-  dist.wet.value = 0.8; // 0 - 1
+  dist.distortion = 0.3; // 0 - 1
+  dist.wet.value = 0.3; // 0 - 1
   const pans = Array.from(Array(params.object.count), () =>
     new Tone.Panner().connect(dist)
   );

@@ -30,8 +30,8 @@ export const set = () => {
     // synth
     synth: {
       volReducRate: 0.7,
-      vol_min: -30,
-      vol_max: -10,
+      vol_min: -45,
+      vol_max: -15,
       freq_min: 280,
       freq_max: 920,
     },
