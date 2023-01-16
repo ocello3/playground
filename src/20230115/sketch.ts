@@ -17,11 +17,12 @@ export const sketch = (s: p5) => {
     // set sound
     synth = await Synth.set();
     // set component
-    euclid = Euclid.get([{ a: 80, b: 7 }]);
+    euclid = Euclid.get([], params);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
+    debug({ euclid }, 10);
     s.noLoop();
     // s.frameRate(10);
   };
@@ -34,7 +35,7 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    // euclid = Euclid.get(params, canvasSize, euclid);
+    euclid = Euclid.get([], params, euclid);
     // draw component
     draw(euclid, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
