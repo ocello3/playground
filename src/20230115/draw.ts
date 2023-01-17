@@ -1,12 +1,16 @@
 import p5 from "p5";
 import { drawFrame } from "../util/drawFrame";
-import * as Euclid from "./component/euclid";
+// import * as Euclid from "./component/euclid";
+import * as Rect from "./component/rect";
 
-export const draw = (euclid: Euclid.type, size: number, s: p5) => {
+export const draw = (rect: Rect.type, size: number, s: p5) => {
   s.push();
-  s.textAlign(s.CENTER, s.CENTER);
-  s.textSize(size * 0.05);
-  s.text(euclid[euclid.length - 1].dividend, size * 0.5, size * 0.5);
+  s.stroke(0);
+  s.strokeWeight(2);
+  rect.sizes.forEach((size, index) => {
+    const position = rect.positions[index];
+    s.rect(position.x, position.y, size.x, size.y);
+  });
   s.pop();
   drawFrame(s, size);
 };

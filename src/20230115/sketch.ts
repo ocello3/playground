@@ -3,6 +3,7 @@ import { controller } from "../util/controller";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
 import * as Euclid from "./component/euclid";
+import * as Rect from "./component/rect";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
@@ -12,12 +13,14 @@ export const sketch = (s: p5) => {
   let controllers = controller.setController();
   const params = Params.set();
   let euclid: Euclid.type;
+  let rect: Rect.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
     synth = await Synth.set();
     // set component
     euclid = Euclid.get([], params);
+    rect = Rect.get(euclid, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -26,7 +29,7 @@ export const sketch = (s: p5) => {
     s.frameRate(10);
   };
   s.draw = () => {
-    if (s.frameCount % 5 === 0) debug({ euclid }, 10);
+    if (s.frameCount % 5 === 0) debug({ rect }, 10);
     if (synth === undefined) {
       s.noLoop();
       return;
@@ -35,8 +38,9 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     // update component
     euclid = Euclid.get([], params, euclid);
+    rect = Rect.get(euclid, canvasSize);
     // draw component
-    draw(euclid, canvasSize, s);
+    draw(rect, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
