@@ -5,23 +5,25 @@ export type type = {
   divisor: number;
 }[];
 
-export const get = (units: type, params?: Params.type, pre?: type): type => {
+export const get = (units: type, params: Params.type, pre?: type): type => {
+  // get first unit
   const unit =
-    params === undefined
-      ? units.slice(-1)[0]
-      : { dividend: params.euclid.dividend, divisor: params.euclid.divisor };
-  const isUpdate = pre != undefined && unit === pre[0];
+    units.length === 0
+      ? { dividend: params.euclid.dividend, divisor: params.euclid.divisor }
+      : units.slice(-1)[0];
   // no update
-  if (isUpdate) return pre;
-  // update
-  if (params != undefined) units.push(unit);
-  const isThreshold = params != undefined && units.length > params?.euclid.thr;
-  const remainder = unit.dividend % unit.divisor;
+  if (pre != undefined && unit === pre[0]) return pre;
+  // add first unit
+  if (units.length === 0) units.push(unit);
+  // quit recursion
+  const isThreshold = units.length > params.euclid.thr;
   if (unit.divisor === 0 || isThreshold) return units;
+  // get new unit
+  const remainder = unit.dividend % unit.divisor;
   const newUnit = {
     dividend: unit.divisor,
     divisor: remainder,
   };
   units.push(newUnit);
-  return get(units);
+  return get(units, params);
 };

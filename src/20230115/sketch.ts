@@ -22,16 +22,15 @@ export const sketch = (s: p5) => {
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
-    debug({ euclid }, 20);
     s.noLoop();
     s.frameRate(10);
   };
   s.draw = () => {
+    if (s.frameCount % 5 === 0) debug({ euclid }, 10);
     if (synth === undefined) {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ euclid }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component
