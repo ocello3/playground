@@ -7,8 +7,5 @@ export type type = {};
 
 export const get = (): type => {
   // const isInit = pre === undefined;
-  // const quotients = euclids.map((euclid) =>
-  //   Math.floor(euclid.dividend / euclid.divisor)
-  // );
   return {};
 };

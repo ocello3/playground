@@ -22,9 +22,9 @@ export const sketch = (s: p5) => {
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
-    debug({ euclid }, 10);
+    debug({ euclid }, 20);
     s.noLoop();
-    // s.frameRate(10);
+    s.frameRate(10);
   };
   s.draw = () => {
     if (synth === undefined) {

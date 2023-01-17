@@ -10,11 +10,14 @@ export const get = (units: type, params?: Params.type, pre?: type): type => {
     params === undefined
       ? units.slice(-1)[0]
       : { dividend: params.euclid.dividend, divisor: params.euclid.divisor };
+  const isUpdate = pre != undefined && unit === pre[0];
   // no update
-  if (pre != undefined && unit === pre[0]) return pre;
+  if (isUpdate) return pre;
   // update
+  if (params != undefined) units.push(unit);
+  const isThreshold = params != undefined && units.length > params?.euclid.thr;
   const remainder = unit.dividend % unit.divisor;
-  if (unit.divisor === 0) return units;
+  if (unit.divisor === 0 || isThreshold) return units;
   const newUnit = {
     dividend: unit.divisor,
     divisor: remainder,

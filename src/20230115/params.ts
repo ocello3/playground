@@ -16,7 +16,8 @@ export const gui = (params: type, tab: TabApi) => {
   // sketch
   const sketch = tab.pages[1];
   sketch.addInput(params.euclid, "dividend", { step: 1, min: 2, max: 1000 });
-  sketch.addInput(params.euclid, "divisor", { step: 1, min: 2, max: 500 });
+  sketch.addInput(params.euclid, "divisor", { step: 1, min: 2, max: 1000 });
+  sketch.addInput(params.euclid, "thr", { step: 1, min: 2, max: 20 });
   // synth
   // const sound = tab.pages[2];
   // sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
