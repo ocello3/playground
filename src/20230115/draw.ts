@@ -6,10 +6,9 @@ import * as Rect from "./component/rect";
 export const draw = (rect: Rect.type, size: number, s: p5) => {
   s.push();
   s.stroke(0);
-  s.strokeWeight(2);
   rect.sizes.forEach((size, index) => {
     const position = rect.positions[index];
-    s.rect(position.x, position.y, size.x, size.y);
+    s.rect(position.x, position.y, size, size);
   });
   s.pop();
   drawFrame(s, size);

@@ -20,7 +20,7 @@ export const sketch = (s: p5) => {
     synth = await Synth.set();
     // set component
     euclid = Euclid.get([], params);
-    rect = Rect.get(euclid, canvasSize);
+    rect = Rect.get(euclid, params, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -38,7 +38,7 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     // update component
     euclid = Euclid.get([], params, euclid);
-    rect = Rect.get(euclid, canvasSize);
+    rect = Rect.get(euclid, params, canvasSize);
     // draw component
     draw(rect, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
