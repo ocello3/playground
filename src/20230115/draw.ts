@@ -8,7 +8,7 @@ export const draw = (rect: Rect.type, size: number, s: p5) => {
   s.stroke(0);
   rect.sizes.forEach((size, index) => {
     const position = rect.positions[index];
-    s.rect(position.x, position.y, size, size);
+    s.rect(position.x, position.y, size.x, size.y);
   });
   s.pop();
   drawFrame(s, size);

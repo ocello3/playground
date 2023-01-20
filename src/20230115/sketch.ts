@@ -20,7 +20,7 @@ export const sketch = (s: p5) => {
     synth = await Synth.set();
     // set component
     euclid = Euclid.get([], params);
-    rect = Rect.get(euclid, params, canvasSize);
+    rect = Rect.get(euclid, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -29,7 +29,7 @@ export const sketch = (s: p5) => {
     s.frameRate(10);
   };
   s.draw = () => {
-    if (s.frameCount % 5 === 0) debug({ rect }, 10);
+    if (s.frameCount % 5 === 0) debug({ euclid }, 10);
     if (synth === undefined) {
       s.noLoop();
       return;
@@ -38,7 +38,7 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     // update component
     euclid = Euclid.get([], params, euclid);
-    rect = Rect.get(euclid, params, canvasSize);
+    rect = Rect.get(euclid, canvasSize);
     // draw component
     draw(rect, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
