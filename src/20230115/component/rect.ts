@@ -6,6 +6,11 @@ import * as Euclid from "./euclid";
 export type type = {
   sizes: p5.Vector[];
   positions: p5.Vector[];
+  rates: {
+    area: number;
+    pairIndex: number;
+    rectIndex: number;
+  }[];
 };
 
 export const get = (
@@ -13,29 +18,21 @@ export const get = (
   // params: Params.type,
   size: number
 ): type => {
-  // const isInit = pre === undefined;
-  const wholeSize = (() => {
-    const height = euclid[0].divisor;
-    const width =
-      euclid[1] === undefined
-        ? height
-        : height * Math.floor(euclid[0].dividend / euclid[0].divisor) +
-          euclid[1].divisor;
-    return { x: width, y: height };
+  const fullSize = (() => {
+    const size_0 = euclid[0].divisor;
+    const size_1 = euclid[1].divisor;
+    const count_0 = Math.floor(euclid[0].dividend / euclid[0].divisor);
+    const width = euclid[1] === undefined ? size_0 : size_0 * count_0 + size_1;
+    return { x: width, y: size_0 };
   })();
-  const scale = new p5.Vector(size / wholeSize.x, size / wholeSize.y);
+  const scale = new p5.Vector(size / fullSize.x, size / fullSize.y);
   const directions = euclid.map((_, index) => (index % 2 === 0 ? "x" : "y"));
-  // const sizes: p5.Vector[][] = euclid.map((unit, index) => {
-  const sizes: p5.Vector[][] = euclid.map((unit) => {
+  const nestedSizes: p5.Vector[][] = euclid.map((unit) => {
     if (unit.divisor === 0) return [new p5.Vector(0, 0)];
-    // create multiple rects based on quotient
-    // const count = index === 0 ? 1 : Math.floor(unit.dividend / unit.divisor);
     const count = Math.floor(unit.dividend / unit.divisor);
-    // return Array.from(Array(count), () => p5.Vector.mult(scale, unit.divisor));
-    // if (index === 0) return [new p5.Vector(0, 0)];
     return Array.from(Array(count), () => p5.Vector.mult(scale, unit.divisor));
   });
-  const progresses = sizes
+  const progresses = nestedSizes
     .map((size, index) =>
       size.map((size) =>
         directions[index] === "x"
@@ -50,8 +47,26 @@ export const get = (
       .slice(0, index)
       .reduce((acu, cur) => p5.Vector.add(acu, cur));
   });
+  const rates = nestedSizes
+    .map((sizes, pairIndex) => {
+      const pairIndexRate = pairIndex / nestedSizes.length;
+      return sizes.map((size, rectIndex) => {
+        const areaRate =
+          nestedSizes[0][0] === undefined
+            ? 1
+            : (size.x * size.y) / (nestedSizes[0][0].x * nestedSizes[0][0].y);
+        const rectIndexRate = rectIndex / sizes.length;
+        return {
+          area: areaRate,
+          pairIndex: pairIndexRate,
+          rectIndex: rectIndexRate,
+        };
+      });
+    })
+    .flat();
   return {
-    sizes: sizes.flat(),
+    sizes: nestedSizes.flat(),
     positions,
+    rates,
   };
 };
