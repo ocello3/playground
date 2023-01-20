@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { controller } from "../util/controller";
 import { tools } from "../util/tools";
-import { debug } from "../util/debug";
+// import { debug } from "../util/debug";
 import * as Euclid from "./component/euclid";
 import * as Rect from "./component/rect";
 import * as Params from "./params";
@@ -17,7 +17,7 @@ export const sketch = (s: p5) => {
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
-    synth = await Synth.set();
+    synth = await Synth.set(params);
     // set component
     euclid = Euclid.get([], params);
     rect = Rect.get(euclid, canvasSize);
@@ -30,7 +30,7 @@ export const sketch = (s: p5) => {
     s.frameRate(10);
   };
   s.draw = () => {
-    if (s.frameCount % 5 === 0) debug({ rect }, 10);
+    // if (s.frameCount % 5 === 0) debug({ rect }, 10);
     if (synth === undefined) {
       s.noLoop();
       return;
@@ -42,6 +42,6 @@ export const sketch = (s: p5) => {
     rect = Rect.get(euclid, canvasSize);
     // draw component
     draw(rect, params, canvasSize, s);
-    // synth.playSynth(libData, synthData, synthParams, size);
+    if (s.frameCount > 1) Synth.play(synth, rect, params);
   };
 };

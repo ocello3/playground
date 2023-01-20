@@ -15,6 +15,12 @@ export const set = () => {
       b_min: 40,
       b_max: 80,
     },
+    synth: {
+      count: 15,
+      baseFreq: 1000,
+      volume_min: -40,
+      volume_max: -10,
+    },
   };
 };
 const obj = set();
@@ -35,6 +41,8 @@ export const gui = (params: type, tab: TabApi) => {
   rect.addInput(params.rect, "b_min", { step: 1, min: 0, max: 255 });
   rect.addInput(params.rect, "b_max", { step: 1, min: 0, max: 255 });
   // synth
-  // const sound = tab.pages[2];
-  // sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  const sound = tab.pages[2];
+  sound.addInput(params.synth, "baseFreq", { step: 1, min: 100, max: 2000 });
+  sound.addInput(params.synth, "volume_min", { step: 1, min: -60, max: -30 });
+  sound.addInput(params.synth, "volume_max", { step: 1, min: -30, max: -10 });
 };
