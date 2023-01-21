@@ -6,13 +6,12 @@ export type type = {
 }[];
 
 export const get = (units: type, params: Params.type, pre?: type): type => {
+  if (pre != undefined && params.isUpdate == false) return pre;
   // get first unit
   const unit =
     units.length === 0
       ? { dividend: params.euclid.dividend, divisor: params.euclid.divisor }
       : units.slice(-1)[0];
-  // no update
-  if (pre != undefined && unit === pre[0]) return pre;
   // add first unit
   if (units.length === 0) units.push(unit);
   // quit recursion

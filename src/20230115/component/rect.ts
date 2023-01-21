@@ -1,7 +1,6 @@
 import p5 from "p5";
-// import { tools } from "../../util/tools";
 import * as Euclid from "./euclid";
-// import * as Params from "../params";
+import * as Params from "../params";
 
 export type type = {
   sizes: p5.Vector[];
@@ -15,9 +14,11 @@ export type type = {
 
 export const get = (
   euclid: Euclid.type,
-  // params: Params.type,
-  size: number
+  params: Params.type,
+  size: number,
+  pre?: type
 ): type => {
+  if (pre != undefined && params.isUpdate === false) return pre;
   const fullSize = (() => {
     const size_0 = euclid[0].divisor;
     const size_1 = euclid[1].divisor;

@@ -21,18 +21,28 @@ export const set = () => {
       volume_min: -30,
       volume_max: -10,
     },
+    isUpdate: false,
   };
 };
 const obj = set();
 export type type = typeof obj;
 
+export const update = (params: type): void => {
+  if (params.isUpdate === true) params.isUpdate = false;
+};
+
 export const gui = (params: type, tab: TabApi) => {
   // sketch
   const sketch = tab.pages[1];
   const euclid = sketch.addFolder({ title: "euclid" });
-  euclid.addInput(params.euclid, "dividend", { step: 1, min: 2, max: 1000 });
-  euclid.addInput(params.euclid, "divisor", { step: 1, min: 2, max: 1000 });
+  euclid
+    .addInput(params.euclid, "dividend", { step: 1, min: 2, max: 1000 })
+    .on("change", () => (params.isUpdate = true));
+  euclid
+    .addInput(params.euclid, "divisor", { step: 1, min: 2, max: 1000 })
+    .on("change", () => (params.isUpdate = true));
   euclid.addInput(params.euclid, "thr", { step: 1, min: 2, max: 20 });
+  euclid.addMonitor(params, "isUpdate");
   const rect = sketch.addFolder({ title: "rect" });
   rect.addInput(params.rect, "h_min", { step: 1, min: 0, max: 255 });
   rect.addInput(params.rect, "h_max", { step: 1, min: 0, max: 255 });
