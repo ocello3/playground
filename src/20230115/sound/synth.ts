@@ -46,9 +46,9 @@ export const play = (synth: type, rect: Rect.type, params: Params.type) => {
     )
   );
   synth.oscillators.forEach((oscillator, index) => {
-    if (index > rect.sizes.length) return;
+    if (index > rect.sizes.length - 1) return;
     const freq = freqs[index];
-    const volume = volumes[index] === undefined ? 0 : volumes[index];
+    const volume = volumes[index];
     oscillator.frequency.value = freq;
     oscillator.volume.value = volume;
   });
