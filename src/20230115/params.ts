@@ -18,8 +18,14 @@ export const set = () => {
     synth: {
       count: 15,
       baseFreq: 1000,
-      volume_min: -30,
-      volume_max: -10,
+      volume_min: -25,
+      volume_max: -5,
+    },
+    env: {
+      attack: 0.1,
+      decay: 0.2,
+      sustain: 0.8,
+      release: 0.8,
     },
     isUpdate: false,
   };
@@ -52,7 +58,13 @@ export const gui = (params: type, tab: TabApi) => {
   rect.addInput(params.rect, "b_max", { step: 1, min: 0, max: 255 });
   // synth
   const sound = tab.pages[2];
-  sound.addInput(params.synth, "baseFreq", { step: 1, min: 100, max: 2000 });
-  sound.addInput(params.synth, "volume_min", { step: 1, min: -60, max: -20 });
-  sound.addInput(params.synth, "volume_max", { step: 1, min: -20, max: -5 });
+  const synth = sound.addFolder({ title: "synth" });
+  synth.addInput(params.synth, "baseFreq", { step: 1, min: 100, max: 2000 });
+  synth.addInput(params.synth, "volume_min", { step: 1, min: -60, max: -20 });
+  synth.addInput(params.synth, "volume_max", { step: 1, min: -20, max: -5 });
+  const env = sound.addFolder({ title: "env" });
+  env.addInput(params.env, "attack", { min: 0.1, max: 0.9 });
+  env.addInput(params.env, "decay", { min: 0.1, max: 0.9 });
+  env.addInput(params.env, "sustain", { min: 0.1, max: 0.9 });
+  env.addInput(params.env, "release", { min: 0.1, max: 0.9 });
 };

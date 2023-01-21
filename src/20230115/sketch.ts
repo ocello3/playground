@@ -27,7 +27,7 @@ export const sketch = (s: p5) => {
     Params.gui(params, tab);
     s.colorMode(s.HSB);
     s.noLoop();
-    s.frameRate(10);
+    // s.frameRate(10);
   };
   s.draw = () => {
     // if (s.frameCount % 5 === 0) debug({ rect }, 10);
