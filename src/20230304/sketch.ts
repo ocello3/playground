@@ -3,6 +3,7 @@ import { controller } from "../util/controller";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
 import * as Circle from "./component/circle";
+import * as Cum from "./component/cum";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
@@ -12,12 +13,14 @@ export const sketch = (s: p5) => {
   let controllers = controller.setController();
   const params = Params.set();
   let circle: Circle.type;
+  let cum: Cum.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
     synth = await Synth.set();
     // set component
     circle = Circle.get(params, canvasSize);
+    cum = Cum.get(circle, params, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -35,8 +38,9 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     // update component
     circle = Circle.get(params, canvasSize, circle);
+    cum = Cum.get(circle, params, canvasSize, cum);
     // draw component
-    draw(circle, canvasSize, s);
+    draw(circle, cum, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };

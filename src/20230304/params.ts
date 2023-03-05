@@ -6,7 +6,10 @@ export const set = () => {
     circle: {
       baseRadiusRate: 0.3,
       centerXRate: 0.7,
-      rotationSpeedBpm: 60,
+      bpm: 60,
+    },
+    cum: {
+      distRate: 0.5,
     },
     // synth
     maxVolume: -10,

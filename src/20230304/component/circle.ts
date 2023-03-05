@@ -20,7 +20,7 @@ export const get = (params: Params.type, size: number, pre?: type): type => {
         return new p5.Vector(x, y);
       })()
     : pre.center;
-  const rotationSpeed = (Math.PI * params.circle.rotationSpeedBpm) / 1800;
+  const rotationSpeed = (Math.PI * params.circle.bpm) / 1800;
   const angle =
     isInit || pre.angle > Math.PI * 2
       ? 0
