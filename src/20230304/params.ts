@@ -4,13 +4,16 @@ export const set = () => {
   return {
     // sketch
     circle: {
-      baseRadiusRate: 0.3,
+      baseRadiusRate: 0.25,
+      radiusReducRate: 0.0004,
+      radiusIncreRate: 0.005,
       centerXRate: 0.7,
       bpm: 40,
-      sizeRate: 0.025,
+      sizeRate: 0.02,
+      trackArrayResolution: 80,
     },
     cum: {
-      distRate: 0.4,
+      distRate: 0.35,
     },
     // synth
     maxVolume: -10,

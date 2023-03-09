@@ -12,12 +12,30 @@ export const draw = (
   s: p5
 ) => {
   // --- circle
+  // distal
   s.push();
   s.fill(0);
-  // distal
   s.circle(circle.distal.x, circle.distal.y, size * params.circle.sizeRate);
   // center
   s.circle(circle.center.x, circle.center.y, size * params.circle.sizeRate);
+  s.pop();
+  // outline
+  s.push();
+  s.noFill();
+  s.circle(
+    circle.center.x,
+    circle.center.y,
+    size * params.circle.baseRadiusRate * 2
+  );
+  // distals
+  s.push();
+  s.noFill();
+  s.beginShape();
+  circle.distals.forEach((distal) => {
+    s.curveVertex(distal.x, distal.y);
+  });
+  s.endShape();
+  s.pop();
   // connection line
   s.line(circle.center.x, circle.center.y, circle.distal.x, circle.distal.y);
   s.pop();

@@ -19,7 +19,7 @@ export const sketch = (s: p5) => {
     // set sound
     synth = await Synth.set();
     // set component
-    circle = Circle.get(params, canvasSize);
+    circle = Circle.get(params, canvasSize, 0);
     cum = Cum.get(circle, params, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
@@ -33,11 +33,11 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: circle }, 10);
+    if (s.frameCount % 5 === 0) debug({ lib: 0 }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    circle = Circle.get(params, canvasSize, circle);
+    circle = Circle.get(params, canvasSize, s.frameCount, circle);
     cum = Cum.get(circle, params, canvasSize, cum);
     // draw component
     draw(circle, cum, params, canvasSize, s);
