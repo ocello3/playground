@@ -15,6 +15,7 @@ export const set = () => {
     },
     cum: {
       distRate: 0.35,
+      posesLength: 50,
     },
     // synth
     maxVolume: -10,

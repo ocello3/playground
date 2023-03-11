@@ -48,6 +48,15 @@ export const draw = (
   s.fill(0);
   s.circle(cum.pos.x, cum.pos.y, size * params.circle.sizeRate);
   s.pop();
+  // poses
+  s.push();
+  s.noFill();
+  s.beginShape();
+  cum.poses.forEach((pos) => {
+    s.curveVertex(pos.x, pos.y);
+  });
+  s.endShape();
+  s.pop();
   // --- connection line
   s.push();
   s.line(circle.distal.x, circle.distal.y, cum.pos.x, cum.pos.y);
