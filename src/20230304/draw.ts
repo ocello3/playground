@@ -27,15 +27,19 @@ export const draw = (
     circle.center.y,
     size * params.circle.baseRadiusRate * 2
   );
-  // distals
+  s.pop();
+  // distals - track
   s.push();
   s.noFill();
   s.beginShape();
+  s.curveVertex(circle.distals.slice(-1)[0].x, circle.distals.slice(-1)[0].y);
   circle.distals.forEach((distal) => {
     s.curveVertex(distal.x, distal.y);
   });
+  s.curveVertex(circle.distals[0].x, circle.distals[0].y);
+  if (circle.distals.length > 1)
+    s.curveVertex(circle.distals[1].x, circle.distals[1].y);
   s.endShape();
-  s.pop();
   // connection line
   s.line(circle.center.x, circle.center.y, circle.distal.x, circle.distal.y);
   s.pop();

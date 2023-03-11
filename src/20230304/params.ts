@@ -31,6 +31,11 @@ export const gui = (params: type, tab: TabApi) => {
     min: 0.1,
     max: 1.0,
   });
+  circle.addInput(params.circle, "trackArrayResolution", {
+    step: 1,
+    min: 1,
+    max: 100,
+  });
   // synth
   const sound = tab.pages[2];
   sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
