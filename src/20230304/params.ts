@@ -4,13 +4,14 @@ export const set = () => {
   return {
     // sketch
     circle: {
-      baseRadiusRate: 0.25,
-      radiusReducRate: 0.0004,
+      baseRadiusRate: 0.28,
+      radiusReducRate: 0.0002,
       radiusIncreRate: 0.005,
-      centerXRate: 0.7,
-      bpm: 40,
+      centerXRate: 0.65,
+      bpm: 30,
       sizeRate: 0.02,
       trackArrayResolution: 80,
+      rattlingProbability: 0.3,
     },
     cum: {
       distRate: 0.35,
@@ -35,6 +36,10 @@ export const gui = (params: type, tab: TabApi) => {
     step: 1,
     min: 1,
     max: 100,
+  });
+  circle.addInput(params.circle, "rattlingProbability", {
+    min: 0,
+    max: 0.5,
   });
   // synth
   const sound = tab.pages[2];

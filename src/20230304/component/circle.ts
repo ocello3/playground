@@ -54,7 +54,11 @@ export const get = (
       })()
     : pre.center;
   const rotationSpeed = (() => {
-    if (status === "rotate") return (Math.PI * params.circle.bpm) / 1800;
+    if (status === "rotate") {
+      const direction =
+        Math.random() < params.circle.rattlingProbability ? 0.2 : 1;
+      return (direction * (Math.PI * params.circle.bpm)) / 1800;
+    }
     return 0;
   })();
   const angle = (() => {
