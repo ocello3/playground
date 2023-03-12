@@ -6,6 +6,7 @@ export type type = {
   status: string;
   radius: number;
   center: p5.Vector;
+  rattlingRate: number;
   rotationSpeed: number;
   angle: number;
   distal: p5.Vector;
@@ -49,15 +50,21 @@ export const get = (
   const center = isInit
     ? (() => {
         const x = size * params.circle.centerXRate;
-        const y = size * 0.5;
+        const y = size * params.circle.centerYRate;
         return new p5.Vector(x, y);
       })()
     : pre.center;
+  const rattlingRate = (() => {
+    const seed = Math.random();
+    const rattlings = params.circle.rattlings;
+    if (seed < rattlings[0].prob) return rattlings[0].rattlingRate;
+    if (seed < rattlings[1].prob) return rattlings[1].rattlingRate;
+    if (seed < rattlings[2].prob) return rattlings[2].rattlingRate;
+    return 1;
+  })();
   const rotationSpeed = (() => {
     if (status === "rotate") {
-      const direction =
-        Math.random() < params.circle.rattlingProbability ? 0.2 : 1;
-      return (direction * (Math.PI * params.circle.bpm)) / 1800;
+      return (rattlingRate * (Math.PI * params.circle.bpm)) / 1800;
     }
     return 0;
   })();
@@ -87,6 +94,7 @@ export const get = (
     status,
     radius,
     center,
+    rattlingRate,
     rotationSpeed,
     angle,
     distal,

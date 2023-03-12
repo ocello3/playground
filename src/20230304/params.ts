@@ -8,14 +8,21 @@ export const set = () => {
       radiusReducRate: 0.0002,
       radiusIncreRate: 0.005,
       centerXRate: 0.65,
+      centerYRate: 0.2,
       bpm: 30,
-      sizeRate: 0.02,
-      trackArrayResolution: 80,
-      rattlingProbability: 0.3,
+      sizeRate: 0.015,
+      trackArrayResolution: 85,
+      rattlings: [
+        { prob: 0.2, rattlingRate: 0.1 },
+        { prob: 0.4, rattlingRate: 0.3 },
+        { prob: 0.6, rattlingRate: 0.5 },
+        { prob: 0.8, rattlingRate: 0.7 },
+      ],
     },
     cum: {
       distRate: 0.35,
-      posesLength: 50,
+      posesLength: 85,
+      rattlingSize: 1.5,
     },
     // synth
     maxVolume: -10,
@@ -37,10 +44,6 @@ export const gui = (params: type, tab: TabApi) => {
     step: 1,
     min: 1,
     max: 100,
-  });
-  circle.addInput(params.circle, "rattlingProbability", {
-    min: 0,
-    max: 0.5,
   });
   // synth
   const sound = tab.pages[2];

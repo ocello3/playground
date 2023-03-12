@@ -17,7 +17,8 @@ export const get = (
   const isInit = pre === undefined;
   const dist = isInit ? size * params.cum.distRate : pre.dist;
   const pos = (() => {
-    const y = circle.center.y;
+    const y =
+      circle.center.y + (0.5 - circle.rattlingRate) * params.cum.rattlingSize;
     const x =
       circle.distal.x -
       Math.pow(Math.pow(dist, 2) - Math.pow(circle.distal.y - y, 2), 0.5);

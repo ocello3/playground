@@ -63,7 +63,12 @@ export const draw = (
   s.pop();
   // --- cum guide
   s.push();
-  s.line(0, size * 0.5, size, size * 0.5);
+  s.line(
+    0,
+    size * params.circle.centerYRate,
+    size,
+    size * params.circle.centerYRate
+  );
   s.pop();
   // --- frame
   drawFrame(s, size);
