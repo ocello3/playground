@@ -2,18 +2,20 @@ import p5 from "p5";
 import * as Params from "../params";
 import * as Circle from "./circle";
 
-export type type = {
+type cumType = {
   dist: number;
   pos: p5.Vector;
   poses: p5.Vector[];
 };
 
-export const get = (
-  circle: Circle.type,
+export type type = cumType[];
+
+const getCum = (
+  circle: Circle.circleType,
   params: Params.type,
   size: number,
-  pre?: type
-): type => {
+  pre?: cumType
+): cumType => {
   const isInit = pre === undefined;
   const dist = isInit ? size * params.cum.distRate : pre.dist;
   const pos = (() => {
@@ -39,4 +41,17 @@ export const get = (
     pos,
     poses,
   };
+};
+
+export const get = (
+  circles: Circle.type,
+  params: Params.type,
+  size: number,
+  pre?: type
+): type => {
+  if (pre === undefined)
+    return circles.map((circle) => getCum(circle, params, size));
+  return circles.map((circle, index) =>
+    getCum(circle, params, size, pre[index])
+  );
 };

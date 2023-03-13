@@ -12,15 +12,15 @@ export const sketch = (s: p5) => {
   const canvasSize = tools.setSize("sketch");
   let controllers = controller.setController();
   const params = Params.set();
-  let circle: Circle.type;
-  let cum: Cum.type;
+  let circles: Circle.type;
+  let cums: Cum.type;
   let synth: Synth.type;
   s.setup = async () => {
-    // set sound
-    synth = await Synth.set();
     // set component
-    circle = Circle.get(params, canvasSize, 0);
-    cum = Cum.get(circle, params, canvasSize);
+    circles = Circle.get(params, canvasSize, 0);
+    cums = Cum.get(circles, params, canvasSize);
+    // set sound
+    synth = await Synth.set(circles, cums);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -37,11 +37,10 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    circle = Circle.get(params, canvasSize, s.frameCount, circle);
-    cum = Cum.get(circle, params, canvasSize, cum);
+    circles = Circle.get(params, canvasSize, s.frameCount, circles);
+    cums = Cum.get(circles, params, canvasSize, cums);
     // draw component
-    draw(circle, cum, params, canvasSize, s);
-    Synth.play(synth, circle, cum, params, canvasSize);
-    // synth.playSynth(libData, synthData, synthParams, size);
+    draw(circles, cums, params, canvasSize, s);
+    Synth.play(synth, circles, cums, params, canvasSize);
   };
 };

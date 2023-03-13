@@ -4,6 +4,7 @@ export const set = () => {
   return {
     // sketch
     circle: {
+      count: 3,
       baseRadiusRate: 0.28,
       radiusReducRate: 0.0002,
       radiusIncreRate: 0.005,
@@ -18,6 +19,10 @@ export const set = () => {
         { prob: 0.6, rattlingRate: 0.5 },
         { prob: 0.8, rattlingRate: 0.7 },
       ],
+      color: {
+        min: 0,
+        max: 180,
+      },
     },
     cum: {
       distRate: 0.35,
@@ -25,22 +30,58 @@ export const set = () => {
       rattlingSize: 1.5,
     },
     // synth
-    circleOsc: {
-      volume: {
-        base: -15,
-        range: 10,
+    circleOsc: [
+      {
+        volume: {
+          base: -20,
+          range: 8,
+        },
+        freq: {
+          min: 100,
+          max: 880,
+        },
       },
-      freq: {
-        min: 100,
-        max: 880,
+      {
+        volume: {
+          base: -25,
+          range: 7,
+        },
+        freq: {
+          min: 80,
+          max: 220,
+        },
       },
-    },
-    cumNoise: {
-      volume: {
-        min: -40,
-        max: -10,
+      {
+        volume: {
+          base: -30,
+          range: 6,
+        },
+        freq: {
+          min: 660,
+          max: 1600,
+        },
       },
-    },
+    ],
+    cumNoise: [
+      {
+        volume: {
+          min: -40,
+          max: -20,
+        },
+      },
+      {
+        volume: {
+          min: -45,
+          max: -25,
+        },
+      },
+      {
+        volume: {
+          min: -50,
+          max: -30,
+        },
+      },
+    ],
   };
 };
 const obj = set();

@@ -1,8 +1,8 @@
 import p5 from "p5";
-// import { tools } from "../../util/tools";
+import { tools } from "../../util/tools";
 import * as Params from "../params";
 
-export type type = {
+export type circleType = {
   status: string;
   radius: number;
   center: p5.Vector;
@@ -11,40 +11,44 @@ export type type = {
   angle: number;
   distal: p5.Vector;
   distals: p5.Vector[];
+  color: number;
 };
 
-export const get = (
+export type type = circleType[];
+
+const getCircle = (
+  index: number,
   params: Params.type,
   size: number,
   frameCount: number,
-  pre?: type
-): type => {
-  const isInit = pre === undefined;
+  preCircle?: circleType
+): circleType => {
+  const isInit = preCircle === undefined;
   const status = (() => {
     const max = size * params.circle.baseRadiusRate;
     if (isInit) {
       return "max";
-    } else if (pre.status === "max") {
+    } else if (preCircle.status === "max") {
       return "rotate";
-    } else if (pre.status === "rotate") {
-      if (pre.radius < 0) return "min";
-      return pre.status;
-    } else if (pre.status === "min") {
+    } else if (preCircle.status === "rotate") {
+      if (preCircle.radius < 0) return "min";
+      return preCircle.status;
+    } else if (preCircle.status === "min") {
       return "back";
-    } else if (pre.status === "back") {
-      if (pre.radius > max) return "max";
-      return pre.status;
+    } else if (preCircle.status === "back") {
+      if (preCircle.radius > max) return "max";
+      return preCircle.status;
     }
-    throw `preStatus: ${pre.status}`;
+    throw `preStatus: ${preCircle.status}`;
   })();
   const radius = (() => {
     const max = size * params.circle.baseRadiusRate;
     if (isInit || status === "max") return max;
     if (status === "rotate")
-      return pre.radius - size * params.circle.radiusReducRate;
+      return preCircle.radius - size * params.circle.radiusReducRate;
     if (status === "min") return 0;
     if (status === "back")
-      return pre.radius + size * params.circle.radiusIncreRate;
+      return preCircle.radius + size * params.circle.radiusIncreRate;
     throw `status: ${status}`;
   })();
   const center = isInit
@@ -53,7 +57,7 @@ export const get = (
         const y = size * params.circle.centerYRate;
         return new p5.Vector(x, y);
       })()
-    : pre.center;
+    : preCircle.center;
   const rattlingRate = (() => {
     const seed = Math.random();
     const rattlings = params.circle.rattlings;
@@ -69,8 +73,8 @@ export const get = (
     return 0;
   })();
   const angle = (() => {
-    if (!isInit && status === "rotate" && pre.angle < Math.PI * 2)
-      return pre.angle + pre.rotationSpeed;
+    if (!isInit && status === "rotate" && preCircle.angle < Math.PI * 2)
+      return preCircle.angle + preCircle.rotationSpeed;
     return 0;
   })();
   const distal = (() => {
@@ -80,16 +84,27 @@ export const get = (
   })();
   const distals = (() => {
     if (isInit || status === "max") return [distal];
-    if (status === "back") return pre.distals;
+    if (status === "back") return preCircle.distals;
     const cycleFrameCounts =
       params.circle.baseRadiusRate / params.circle.radiusReducRate;
     const intervalFrameCounts = Math.floor(
       cycleFrameCounts / params.circle.trackArrayResolution
     );
     if (frameCount % intervalFrameCounts === 0)
-      return pre.distals.concat(distal);
-    return pre.distals;
+      return preCircle.distals.concat(distal);
+    return preCircle.distals;
   })();
+  const color = isInit
+    ? Math.floor(
+        tools.map(
+          index,
+          0,
+          params.circle.count - 1,
+          params.circle.color.max,
+          params.circle.color.min
+        )
+      )
+    : preCircle.color;
   return {
     status,
     radius,
@@ -99,5 +114,21 @@ export const get = (
     angle,
     distal,
     distals,
+    color,
   };
+};
+
+export const get = (
+  params: Params.type,
+  size: number,
+  frameCount: number,
+  pre?: type
+): type => {
+  if (pre === undefined)
+    return Array.from(Array(params.circle.count), (_, index) =>
+      getCircle(index, params, size, frameCount)
+    );
+  return pre.map((preCircle, index) =>
+    getCircle(index, params, size, frameCount, preCircle)
+  );
 };
