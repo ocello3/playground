@@ -25,7 +25,16 @@ export const set = () => {
       rattlingSize: 1.5,
     },
     // synth
-    maxVolume: -10,
+    circleOsc: {
+      volume: {
+        base: -15,
+        range: 10,
+      },
+      freq: {
+        min: 100,
+        max: 880,
+      },
+    },
   };
 };
 const obj = set();
@@ -46,6 +55,6 @@ export const gui = (params: type, tab: TabApi) => {
     max: 100,
   });
   // synth
-  const sound = tab.pages[2];
-  sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  // const sound = tab.pages[2];
+  // sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
