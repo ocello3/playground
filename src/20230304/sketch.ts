@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { controller } from "../util/controller";
 import { tools } from "../util/tools";
-import { debug } from "../util/debug";
+// import { debug } from "../util/debug";
 import * as Circle from "./component/circle";
 import * as Cum from "./component/cum";
 import * as Params from "./params";
@@ -33,7 +33,7 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: 0 }, 10);
+    // if (s.frameCount % 5 === 0) debug({ lib: 0 }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component
