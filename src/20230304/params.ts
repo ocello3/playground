@@ -35,6 +35,12 @@ export const set = () => {
         max: 880,
       },
     },
+    cumNoise: {
+      volume: {
+        min: -40,
+        max: -10,
+      },
+    },
   };
 };
 const obj = set();

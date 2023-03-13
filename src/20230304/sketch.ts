@@ -41,7 +41,7 @@ export const sketch = (s: p5) => {
     cum = Cum.get(circle, params, canvasSize, cum);
     // draw component
     draw(circle, cum, params, canvasSize, s);
-    Synth.play(synth, circle, params, canvasSize);
+    Synth.play(synth, circle, cum, params, canvasSize);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
