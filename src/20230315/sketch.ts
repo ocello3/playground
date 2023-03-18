@@ -22,6 +22,7 @@ export const sketch = (s: p5) => {
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
     Params.gui(params, tab);
+    s.textAlign(s.LEFT, s.CENTER);
     s.noLoop();
     // s.frameRate(10);
   };

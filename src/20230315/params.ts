@@ -4,7 +4,7 @@ export const set = () => {
   return {
     // sketch
     font: {
-      baseScaleRate: 0.03,
+      baseScaleRate: 0.08,
     },
     // synth
     maxVolume: -10,
