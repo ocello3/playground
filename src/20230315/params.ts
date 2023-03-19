@@ -4,6 +4,7 @@ export const set = () => {
   return {
     // sketch
     font: {
+      count: 4,
       str: "バタン",
       baseScaleRates: [0.08, 0.04, 0.05],
     },

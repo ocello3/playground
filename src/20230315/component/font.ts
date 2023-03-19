@@ -2,7 +2,9 @@ import p5 from "p5";
 // import { tools } from "../../util/tools";
 import * as Params from "../params";
 
-export type type = {
+export type fontType = {
+  compartmentOrigin: p5.Vector;
+  compartmentScale: number;
   textWidths: number[];
   baseScales: p5.Vector[];
   scale_1vs2and3: number;
@@ -11,13 +13,23 @@ export type type = {
   poses: p5.Vector | p5.Vector[];
 };
 
-export const get = (
+export type type = fontType[];
+
+const getFont = (
+  compartmentIndex: number,
   params: Params.type,
   size: number,
   s: p5,
-  pre?: type
-): type => {
+  pre?: fontType
+): fontType => {
   const isInit = pre === undefined;
+  const compartmentOrigin = isInit
+    ? new p5.Vector(
+        (compartmentIndex % 2) * size * 0.5,
+        Math.floor(compartmentIndex / 2) * size * 0.5
+      )
+    : pre.compartmentOrigin;
+  const compartmentScale = 0.5;
   const baseScales = isInit
     ? [...params.font.str].map(
         (_, index) =>
@@ -53,6 +65,8 @@ export const get = (
       )
   );
   return {
+    compartmentOrigin,
+    compartmentScale,
     textWidths,
     baseScales,
     scale_1vs2and3,
@@ -60,4 +74,18 @@ export const get = (
     scales,
     poses,
   };
+};
+
+export const get = (
+  params: Params.type,
+  size: number,
+  s: p5,
+  pre?: type
+): type => {
+  const isInit = pre === undefined;
+  return isInit
+    ? Array.from(Array(params.font.count), (_, index) =>
+        getFont(index, params, size, s)
+      )
+    : pre.map((preFont, index) => getFont(index, params, size, s, preFont));
 };

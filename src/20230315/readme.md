@@ -8,7 +8,11 @@
 Link to sketch: https://ocello3.github.io/playground/?date=20230315
 
 # Composition
-
+- There are 4 compartments.
+	- index-0: left-above
+	- index-1: right-above
+	- index-2: left-below
+	- index-3: right-below
 
 ## Sound
 ### background
