@@ -3,11 +3,10 @@ import p5 from "p5";
 import * as Params from "../params";
 
 export type type = {
-  str: string;
   textWidths: number[];
-  baseScaleRates: p5.Vector[];
-  scaleRate_1: number;
-  scaleRate_2: number;
+  baseScales: p5.Vector[];
+  scale_1vs2and3: number;
+  scale_2vs3: number;
   scales: p5.Vector[];
   poses: p5.Vector | p5.Vector[];
 };
@@ -19,30 +18,29 @@ export const get = (
   pre?: type
 ): type => {
   const isInit = pre === undefined;
-  const str = isInit ? "バタン" : pre.str;
-  const baseScaleRates = isInit
-    ? [...str].map(
-        () =>
+  const baseScales = isInit
+    ? [...params.font.str].map(
+        (_, index) =>
           new p5.Vector(
-            size * params.font.baseScaleRate,
-            size * params.font.baseScaleRate
+            size * params.font.baseScaleRates[index],
+            size * params.font.baseScaleRates[index]
           )
       )
-    : pre.baseScaleRates;
-  const scaleRate_1 = (Math.sin(s.millis() * 0.001) + 1) * 0.3;
-  const scaleRate_2 = (Math.cos(s.millis() * 0.003) + 1) * 0.3;
+    : pre.baseScales;
+  const scale_1vs2and3 = (Math.sin(s.millis() * 0.001) + 1) * 0.3;
+  const scale_2vs3 = (Math.cos(s.millis() * 0.003) + 1) * 0.3;
   const scales = (() => {
-    const restRate = 1 - scaleRate_1;
+    const restRate = 1 - scale_1vs2and3;
     const scaleRates = [
-      scaleRate_1,
-      restRate * scaleRate_2,
-      restRate * (1 - scaleRate_2),
+      scale_1vs2and3,
+      restRate * scale_2vs3,
+      restRate * (1 - scale_2vs3),
     ];
-    return baseScaleRates.map((baseScale, index) =>
+    return baseScales.map((baseScale, index) =>
       p5.Vector.mult(baseScale, [scaleRates[index], 1])
     );
   })();
-  const textWidths: number[] = [...str].map(
+  const textWidths: number[] = [...params.font.str].map(
     (font, index) => s.textWidth(font) * scales[index].x
   );
   const poses = textWidths.map((_, index, self) =>
@@ -55,11 +53,10 @@ export const get = (
       )
   );
   return {
-    str,
     textWidths,
-    baseScaleRates,
-    scaleRate_1,
-    scaleRate_2,
+    baseScales,
+    scale_1vs2and3,
+    scale_2vs3,
     scales,
     poses,
   };

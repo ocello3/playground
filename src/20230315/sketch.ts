@@ -37,7 +37,7 @@ export const sketch = (s: p5) => {
     // update component
     font = Font.get(params, canvasSize, s, font);
     // draw component
-    draw(font, canvasSize, s);
+    draw(font, params, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
