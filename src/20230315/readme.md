@@ -27,7 +27,11 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
 # History
 ## 2023/3/19
 - create readme
-- `scaleRate_1` and `scaleRate_2` are confusing -> use "scale_1-2and3" and "scale_2-3"
+- `scaleRate_1` and `scaleRate_2` are confusing -> use `scale_1-2and3` and `scale_2-3`
 - change the base font size per each font by "baseScaleRates"
 - create 4 font objects
+- convert wave format to mp3 format using FFmpeg
+- create bash script for FFmpeg and remove mp3 files: https://qiita.com/ruri14/items/819687181787f4ebddf4
+
+
 
