@@ -1,14 +1,16 @@
 import p5 from "p5";
 // import { tools } from "../../util/tools";
 import * as Params from "../params";
+import * as Rate_1 from "./rate_1";
+import * as Rate_2 from "./rate_2";
 
 export type fontType = {
   compartmentOrigin: p5.Vector;
   compartmentScale: number;
   textWidths: number[];
   baseScales: p5.Vector[];
-  scale_1vs2and3: number;
-  scale_2vs3: number;
+  scale_1vs2and3: Rate_1.type;
+  scale_2vs3: Rate_2.type;
   scales: p5.Vector[];
   poses: p5.Vector | p5.Vector[];
 };
@@ -39,14 +41,16 @@ const getFont = (
           )
       )
     : pre.baseScales;
-  const scale_1vs2and3 = (Math.sin(s.millis() * 0.001) + 1) * 0.3;
-  const scale_2vs3 = (Math.cos(s.millis() * 0.003) + 1) * 0.3;
+  const scale_1vs2and3 = isInit ? Rate_1.get() : Rate_1.get(pre.scale_1vs2and3);
+  const scale_2vs3 = isInit
+    ? Rate_2.get(scale_1vs2and3.status)
+    : Rate_2.get(scale_1vs2and3.status, pre.scale_2vs3);
   const scales = (() => {
-    const restRate = 1 - scale_1vs2and3;
+    const restRate = 1 - scale_1vs2and3.rate;
     const scaleRates = [
-      scale_1vs2and3,
-      restRate * scale_2vs3,
-      restRate * (1 - scale_2vs3),
+      scale_1vs2and3.rate,
+      restRate * scale_2vs3.rate,
+      restRate * (1 - scale_2vs3.rate),
     ];
     return baseScales.map((baseScale, index) =>
       p5.Vector.mult(baseScale, [scaleRates[index], 1])

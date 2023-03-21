@@ -1,6 +1,6 @@
 # Task
 
-- Change the height of the fonts. The first font is enormous and the second and the third fonts are tiny.
+- refactoring the rate calcuration.
 - Update the rate-1 and the rate-2.
   - the first step: play and expand "バ"
   - the second step: play and expand "タン", then shrink "バ"
@@ -34,7 +34,7 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
   - After the duration time has passed, move to "attack_2".
   - The rate is constant.
 - attack_2
-  - After the rate becomes to be the max rate, move to "sustain_2".
+  - After the rate becomes to be the min rate, move to "sustain_2".
   - Decrease the rate.
 - sustain_2
   - After the duration time has passed, move to "release".
@@ -48,10 +48,10 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
 - init
   - When the status of "scale_1vs2and3" is "init"
 - waiting
-  - When the status of "scale_1vs2and3" is "waiting" or "attack-1" or "sustain_2"
+  - When the status of "scale_1vs2and3" is "waiting" or "attack_1" or "sustain_2"
   - The rate is constant.
 - attack
-  - When the status of "scale_1vs2and3" is "attack"
+  - When the status of "scale_1vs2and3" is "attack_2"
   - Increase the rate
 - release
   - When the status of "scale_1vs2and3" is "release"
@@ -85,3 +85,8 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
 
 - create timeline
 - considered to use the Envelope class of Tone and convert animation frame rate by Draw class, but it looks unavailable.
+
+## 2023/3/22
+
+- create rate_1 and rate_2
+- need to re-check relatiionshipt between scale_1vs2and3/scale_2vs3 and scales
