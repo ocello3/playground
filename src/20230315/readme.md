@@ -43,6 +43,20 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
   - After the rate becomes to be the base rate, move to "init".
   - Decrease the rate.
 
+## scale_2vs3
+
+- init
+  - When the status of "scale_1vs2and3" is "init"
+- waiting
+  - When the status of "scale_1vs2and3" is "waiting" or "attack-1" or "sustain_2"
+  - The rate is constant.
+- attack
+  - When the status of "scale_1vs2and3" is "attack"
+  - Increase the rate
+- release
+  - When the status of "scale_1vs2and3" is "release"
+  - Decrease the rate until it becomes to be the base rate
+
 ## Sound
 
 ### background
