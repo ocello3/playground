@@ -31,7 +31,7 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: font }, 10);
+    if (s.frameCount % 5 === 0) debug({ debug: false }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component

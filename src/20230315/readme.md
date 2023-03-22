@@ -46,13 +46,14 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
 ## scale_2vs3
 
 - init
-  - When the status of "scale_1vs2and3" is "init"
+  - Init parameters, i.e. duration, maxRate, and minRate.
+  - Move to "waiting" status in the next frame.
 - waiting
   - When the status of "scale_1vs2and3" is "waiting" or "attack_1" or "sustain_2"
   - The rate is constant.
 - attack
-  - When the status of "scale_1vs2and3" is "attack_2"
-  - Increase the rate
+  - After the rate becomes to be the max rate, move to "release".
+  - Increase the rate.
 - release
   - When the status of "scale_1vs2and3" is "release" or the rate is above the targetRate
   - Decrease the rate until it becomes to be the base rate
