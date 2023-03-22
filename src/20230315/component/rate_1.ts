@@ -80,7 +80,7 @@ export const get = (pre?: type): type => {
       ? {
           attack_1: 0.1,
           attack_2: 0.2,
-          release: 0.005,
+          release: 0.03,
         }
       : pre.coefficient;
   const elapsedTime = (() => {

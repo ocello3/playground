@@ -33,11 +33,8 @@ export const get = (status_1: Rate_1.statusType, pre?: type): type => {
       }
     }
     if (pre.status === "attack") {
-      if (status_1 === "attack_2" && pre.rate < pre.targetRate.max) {
-        return "attack";
-      } else {
-        return "release";
-      }
+      if (pre.rate < pre.targetRate.max) return "attack";
+      return "release";
     }
     if (pre.status === "release") {
       if (status_1 === "init") return "init";
@@ -55,8 +52,8 @@ export const get = (status_1: Rate_1.statusType, pre?: type): type => {
   const coefficient =
     isInit || status === "init"
       ? {
-          attack: 0.1,
-          release: 0.01,
+          attack: 0.04,
+          release: 0.04,
         }
       : pre.coefficient;
   const rate = (() => {
