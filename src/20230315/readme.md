@@ -54,7 +54,7 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
   - When the status of "scale_1vs2and3" is "attack_2"
   - Increase the rate
 - release
-  - When the status of "scale_1vs2and3" is "release"
+  - When the status of "scale_1vs2and3" is "release" or the rate is above the targetRate
   - Decrease the rate until it becomes to be the base rate
 
 ## Sound

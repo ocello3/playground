@@ -62,8 +62,8 @@ export const get = (pre?: type): type => {
   const duration =
     isInit || status === "init"
       ? {
-          waiting: 60,
-          sustain_1: 10,
+          waiting: 20,
+          sustain_1: 2,
           sustain_2: 30,
         }
       : pre.duration;
@@ -71,16 +71,16 @@ export const get = (pre?: type): type => {
     isInit || status === "init"
       ? {
           min: 0.1,
-          max: 0.6,
-          base: 0.3,
+          max: 1,
+          base: 0.333,
         }
       : pre.targetRate;
   const coefficient =
     isInit || status === "init"
       ? {
-          attack_1: 0.01,
-          attack_2: 0.005,
-          release: 0.001,
+          attack_1: 0.1,
+          attack_2: 0.2,
+          release: 0.005,
         }
       : pre.coefficient;
   const elapsedTime = (() => {
