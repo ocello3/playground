@@ -32,32 +32,30 @@ export const get = (pre?: type): type => {
   const isInit = pre === undefined;
   const status: statusType = (() => {
     if (isInit) return "init";
-    if (pre.status === "init") return "waiting";
-    if (pre.status === "waiting") {
-      if (pre.elapsedTime > pre.duration.waiting) return "attack_1";
-      return "waiting";
+    switch (pre.status) {
+      case "init":
+        return "waiting";
+      case "waiting":
+        if (pre.elapsedTime > pre.duration.waiting) return "attack_1";
+        return "waiting";
+      case "attack_1":
+        if (pre.rate > pre.targetRate.max) return "sustain_1";
+        return "attack_1";
+      case "sustain_1":
+        if (pre.elapsedTime > pre.duration.sustain_1) return "attack_2";
+        return "sustain_1";
+      case "attack_2":
+        if (pre.rate < pre.targetRate.min) return "sustain_2";
+        return "attack_2";
+      case "sustain_2":
+        if (pre.elapsedTime > pre.duration.sustain_2) return "release";
+        return "sustain_2";
+      case "release":
+        if (pre.rate > pre.targetRate.base) return "init";
+        return "release";
+      default:
+        throw `preRate: ${pre.rate}, preElapsedTime: ${pre.elapsedTime}`;
     }
-    if (pre.status === "attack_1") {
-      if (pre.rate > pre.targetRate.max) return "sustain_1";
-      return "attack_1";
-    }
-    if (pre.status === "sustain_1") {
-      if (pre.elapsedTime > pre.duration.sustain_1) return "attack_2";
-      return "sustain_1";
-    }
-    if (pre.status === "attack_2") {
-      if (pre.rate < pre.targetRate.min) return "sustain_2";
-      return "attack_2";
-    }
-    if (pre.status === "sustain_2") {
-      if (pre.elapsedTime > pre.duration.sustain_2) return "release";
-      return "sustain_2";
-    }
-    if (pre.status === "release") {
-      if (pre.rate > pre.targetRate.base) return "init";
-      return "release";
-    }
-    throw `preRate: ${pre.rate}, preElapsedTime: ${pre.elapsedTime}`;
   })();
   const duration =
     isInit || status === "init"

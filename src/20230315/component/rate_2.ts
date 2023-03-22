@@ -19,28 +19,28 @@ export const get = (status_1: Rate_1.statusType, pre?: type): type => {
   const isInit = pre === undefined;
   const status: statusType = (() => {
     if (isInit) return "init";
-    if (pre.status === "init") return "waiting";
-    if (pre.status === "waiting") {
-      if (
-        status_1 === "waiting" ||
-        status_1 === "attack_1" ||
-        status_1 === "sustain_1" ||
-        status_1 === "sustain_2"
-      ) {
+    switch (pre.status) {
+      case "init":
         return "waiting";
-      } else {
+      case "waiting": {
+        if (
+          status_1 === "waiting" ||
+          status_1 === "attack_1" ||
+          status_1 === "sustain_1" ||
+          status_1 === "sustain_2"
+        )
+          return "waiting";
         return "attack";
       }
+      case "attack":
+        if (pre.rate < pre.targetRate.max) return "attack";
+        return "release";
+      case "release":
+        if (status_1 === "init") return "init";
+        return "release";
+      default:
+        throw `status_1: ${status_1}`;
     }
-    if (pre.status === "attack") {
-      if (pre.rate < pre.targetRate.max) return "attack";
-      return "release";
-    }
-    if (pre.status === "release") {
-      if (status_1 === "init") return "init";
-      return "release";
-    }
-    throw `status_1: ${status_1}`;
   })();
   const targetRate =
     isInit || status === "init"
