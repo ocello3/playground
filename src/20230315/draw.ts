@@ -15,7 +15,7 @@ export const draw = (
   fonts.forEach((font) => {
     s.push();
     s.translate(font.compartmentOrigin.x, font.compartmentOrigin.y);
-    s.scale(font.compartmentScale);
+    s.scale(font.compartmentScale); // 0.5
     if (isArray(font.poses))
       font.poses.forEach((pos, index) => {
         s.push();

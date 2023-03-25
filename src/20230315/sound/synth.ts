@@ -18,11 +18,15 @@ import low_3 from "./temple_low_4.mp3";
 export type type = {
   se: Tone.Sampler;
   batann: Tone.Sampler[];
+  batannPanner: Tone.Panner[];
 };
 
 export const set = async (params: Params.type): Promise<type> => {
   const se = await setSe();
-  const batann = Array.from(Array(params.font.count), (_, index) => {
+  const batannPanner = Array.from(Array(params.font.count), () =>
+    new Tone.Panner().toDestination()
+  );
+  const batann = batannPanner.map((panner, index) => {
     const getUrls = () => {
       if (index === 0) return { A1: knok_0, A2: low_0 };
       if (index === 1) return { A1: knok_1, A2: low_1 };
@@ -32,24 +36,35 @@ export const set = async (params: Params.type): Promise<type> => {
     };
     return new Tone.Sampler({
       urls: getUrls(),
-    }).toDestination();
+    }).connect(panner);
   });
   console.log(batann[0].get());
   return {
     se,
     batann,
+    batannPanner,
   };
 };
 
 export const play = (synth: type, sketchData: SketchData.type) => {
   sketchData.forEach((data, index) => {
-    if (data.trigger_1 === true) {
+    if (data.ba.trigger === true) {
       synth.batann[index].volume.value = 1;
+      synth.batannPanner[index].pan.value = data.ba.pan_start;
       synth.batann[index].triggerAttackRelease("A1", 1);
+      synth.batannPanner[index].pan.rampTo(
+        data.ba.pan_target,
+        data.ba.pan_transition
+      );
     }
-    if (data.trigger_2 === true) {
+    if (data.tan.trigger === true) {
       synth.batann[index].volume.value = 1;
+      synth.batannPanner[index].pan.value = data.tan.pan_start;
       synth.batann[index].triggerAttackRelease("A2", 1);
+      synth.batannPanner[index].pan.rampTo(
+        data.tan.pan_target,
+        data.tan.pan_transition
+      );
     }
   });
   return;
