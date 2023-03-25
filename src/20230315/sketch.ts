@@ -5,6 +5,7 @@ import { debug } from "../util/debug";
 import * as Font from "./component/font";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
+import * as SketchData from "./sound/sketchData";
 import { draw } from "./draw";
 
 export const sketch = (s: p5) => {
@@ -13,11 +14,13 @@ export const sketch = (s: p5) => {
   const params = Params.set();
   let font: Font.type;
   let synth: Synth.type;
+  let sketchData: SketchData.type;
   s.setup = async () => {
-    // set sound
-    synth = await Synth.set();
     // set component
     font = Font.get(params, canvasSize, s);
+    // set sound
+    sketchData = SketchData.get(font);
+    synth = await Synth.set(params);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, false);
@@ -38,6 +41,8 @@ export const sketch = (s: p5) => {
     font = Font.get(params, canvasSize, s, font);
     // draw component
     draw(font, params, canvasSize, s);
-    // synth.playSynth(libData, synthData, synthParams, size);
+    // play synth
+    sketchData = SketchData.get(font);
+    Synth.play(synth, sketchData);
   };
 };

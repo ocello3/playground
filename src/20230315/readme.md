@@ -1,6 +1,6 @@
 # Task
 
-- add sample (sound) for "バ" and "タン"
+- randamize timing for Font
 - find animation for background for long sample (sound)
 - add long sample (sound)
 - Update the rate-1 and the rate-2.
