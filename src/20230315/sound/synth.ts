@@ -19,6 +19,7 @@ export type type = {
   se: Tone.Sampler;
   batann: Tone.Sampler[];
   batannPanner: Tone.Panner[];
+  batannFBDelay: Tone.FeedbackDelay[];
 };
 
 export const set = async (params: Params.type): Promise<type> => {
@@ -26,7 +27,10 @@ export const set = async (params: Params.type): Promise<type> => {
   const batannPanner = Array.from(Array(params.font.count), () =>
     new Tone.Panner().toDestination()
   );
-  const batann = batannPanner.map((panner, index) => {
+  const batannFBDelay = batannPanner.map((panner) =>
+    new Tone.FeedbackDelay("8n", 0.2).connect(panner)
+  );
+  const batann = batannFBDelay.map((fbDelay, index) => {
     const getUrls = () => {
       if (index === 0) return { A1: knok_0, A2: low_0 };
       if (index === 1) return { A1: knok_1, A2: low_1 };
@@ -36,12 +40,13 @@ export const set = async (params: Params.type): Promise<type> => {
     };
     return new Tone.Sampler({
       urls: getUrls(),
-    }).connect(panner);
+    }).connect(fbDelay);
   });
   console.log(batann[0].get());
   return {
     se,
     batann,
+    batannFBDelay,
     batannPanner,
   };
 };
