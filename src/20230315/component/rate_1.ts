@@ -1,3 +1,6 @@
+import * as Params from "../params";
+import { tools } from "../../util/tools";
+
 export type statusType =
   | "init"
   | "waiting"
@@ -29,7 +32,7 @@ export type type = {
   rate: number;
 };
 
-export const get = (pre?: type): type => {
+export const get = (params: Params.type, pre?: type): type => {
   const isInit = pre === undefined;
   const preStatus = isInit ? "init" : pre.status;
   const status: statusType = (() => {
@@ -62,9 +65,27 @@ export const get = (pre?: type): type => {
   const duration =
     isInit || status === "init"
       ? {
-          waiting: 20,
-          sustain_1: 2,
-          sustain_2: 30,
+          waiting: tools.map(
+            Math.random(),
+            0,
+            1,
+            params.font.rate_1.waiting.min,
+            params.font.rate_1.waiting.max
+          ),
+          sustain_1: tools.map(
+            Math.random(),
+            0,
+            1,
+            params.font.rate_1.sustain_1.min,
+            params.font.rate_1.sustain_1.max
+          ),
+          sustain_2: tools.map(
+            Math.random(),
+            0,
+            1,
+            params.font.rate_1.sustain_2.min,
+            params.font.rate_1.sustain_2.max
+          ),
         }
       : pre.duration;
   const targetRate =
@@ -72,7 +93,7 @@ export const get = (pre?: type): type => {
       ? {
           min: 0.1,
           max: 1,
-          base: 0.333,
+          base: params.font.rate_1.base,
         }
       : pre.targetRate;
   const coefficient =

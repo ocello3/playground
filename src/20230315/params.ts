@@ -7,6 +7,14 @@ export const set = () => {
       count: 4,
       str: "バタン",
       baseScaleRates: [0.08, 0.04, 0.05],
+      rate_1: {
+        waiting: { min: 15, max: 25 },
+        sustain_1: { min: 1, max: 3 },
+        sustain_2: { min: 25, max: 35 },
+        min: 0.1,
+        max: 1,
+        base: 0.333,
+      },
     },
     // synth
     maxVolume: -10,

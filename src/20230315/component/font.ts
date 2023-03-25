@@ -41,7 +41,9 @@ const getFont = (
           )
       )
     : pre.baseScales;
-  const rate_1vs2and3 = isInit ? Rate_1.get() : Rate_1.get(pre.rate_1vs2and3);
+  const rate_1vs2and3 = isInit
+    ? Rate_1.get(params)
+    : Rate_1.get(params, pre.rate_1vs2and3);
   const rate_2vs3 = isInit
     ? Rate_2.get(rate_1vs2and3.status)
     : Rate_2.get(rate_1vs2and3.status, pre.rate_2vs3);
