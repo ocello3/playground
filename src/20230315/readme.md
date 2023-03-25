@@ -1,6 +1,8 @@
 # Task
 
-- refactoring the rate calcuration.
+- add sample (sound) for "バ" and "タン"
+- find animation for background for long sample (sound)
+- add long sample (sound)
 - Update the rate-1 and the rate-2.
   - the first step: play and expand "バ"
   - the second step: play and expand "タン", then shrink "バ"

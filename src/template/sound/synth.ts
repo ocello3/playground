@@ -6,7 +6,7 @@ export type type = {
   se: Tone.Sampler;
 };
 
-export const set = async () => {
+export const set = async (): Promise<type> => {
   const se = await setSe();
   console.log(Tone.Destination.get());
   return {

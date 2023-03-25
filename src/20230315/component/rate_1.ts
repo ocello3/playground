@@ -8,6 +8,7 @@ export type statusType =
   | "release";
 
 export type type = {
+  preStatus: statusType;
   status: statusType;
   duration: {
     waiting: number;
@@ -30,6 +31,7 @@ export type type = {
 
 export const get = (pre?: type): type => {
   const isInit = pre === undefined;
+  const preStatus = isInit ? "init" : pre.status;
   const status: statusType = (() => {
     if (isInit) return "init";
     switch (pre.status) {
@@ -96,6 +98,7 @@ export const get = (pre?: type): type => {
     throw `status: ${status}`;
   })();
   return {
+    preStatus,
     status,
     duration,
     targetRate,
