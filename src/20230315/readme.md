@@ -1,7 +1,12 @@
 # Task
 
-- randamize timing for Font
 - find animation for background for long sample (sound)
+  - updated the trigger in params using onload method of Tone.player
+- install font
+- control axial direction by scale rate (multiply 0.2?)
+- increase/decrease to the target rate is monotonically, so consider easing (if possible, swing back motion)
+- control the volume of the samplers
+- consider parameters for panners
 - add long sample (sound)
 - Update the rate-1 and the rate-2.
   - the first step: play and expand "バ"
