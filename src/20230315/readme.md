@@ -98,3 +98,9 @@ Link to sketch: https://ocello3.github.io/playground/?date=20230315
 
 - create rate_1 and rate_2
 - need to re-check relatiionshipt between scale_1vs2and3/scale_2vs3 and scales
+
+## 2023/03/26
+
+- consider how to import mp3 files efficiently, but failed so describe import sentense for all samples
+- added panner and feedbackdelay effects
+- update sketchData
