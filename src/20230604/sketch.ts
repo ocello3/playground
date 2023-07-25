@@ -20,7 +20,7 @@ export const sketch = (s: p5) => {
     lib = Lib.get(params, canvasSize);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
-    const tab = controller.setGui(s, controllers, synth.se, false);
+    const tab = controller.setGui(s, controllers, synth.se, true);
     Params.gui(params, tab);
     s.noLoop();
     // s.frameRate(10);

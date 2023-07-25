@@ -2,6 +2,8 @@ import { TabApi } from "tweakpane";
 
 export const set = () => {
   return {
+    // common
+    count: 4,
     // sketch
     rate: 0.5,
     // synth
