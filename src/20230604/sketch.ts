@@ -36,7 +36,7 @@ export const sketch = (s: p5) => {
     // update component
     lib = Lib.get(params, canvasSize, lib);
     // draw component
-    draw(lib, canvasSize, s);
+    draw(lib, controllers.toneSec, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };

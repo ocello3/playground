@@ -11,6 +11,8 @@ const controllers = {
   scrLk: true,
   frameRate: 0,
   frameCount: 0,
+  toneSecPre: 0,
+  toneSec: 0,
   mute: true,
 };
 type controllerType = typeof controllers;
@@ -20,6 +22,7 @@ const setController = () => controllers;
 const updateController = (s: p5, controllers: controllerType) => {
   controllers.frameRate = s.frameRate();
   controllers.frameCount += 1;
+  controllers.toneSec = controllers.toneSecPre + Tone.Transport.seconds;
 };
 
 const activate = async (
@@ -47,6 +50,7 @@ const inactivate = (
   se.triggerAttackRelease("A2", 0.1);
   setTimeout(() => {
     if (seq === true) Tone.Transport.stop();
+    controllers.toneSecPre = controllers.toneSec;
     Tone.Destination.mute = true;
     controllers.isPlay = false;
     s.noLoop();
@@ -133,6 +137,7 @@ const setGui = (
       }
     });
   tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
+  tab.pages[0].addMonitor(controllers, "toneSec", { interval: 500 });
   ban_scroll();
   tab.pages[0].addInput(controllers, "scrLk").on("change", (event) => {
     if (event.value === true) {
