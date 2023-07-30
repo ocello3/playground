@@ -5,30 +5,42 @@ import * as Params from "../params";
 export type type = {
   se: Tone.Sampler;
   am: Tone.AMSynth;
-  part: Tone.Part;
+  seq: Tone.Sequence;
 };
 
-const setAms = (): Tone.AMSynth => new Tone.AMSynth().toDestination();
+const setAm = (): Tone.AMSynth => {
+  const am = new Tone.AMSynth();
+  am.toDestination();
+  return am;
+};
 
-const setPart = (am: Tone.AMSynth): Tone.Part =>
-  new Tone.Part(
+const setSeq = (am: Tone.AMSynth): Tone.Sequence => {
+  const seq = new Tone.Sequence(
     (time, note) => {
-      am.triggerAttackRelease(note, "8n", time);
+      const adsr = {
+        attack: 0.1,
+        decay: 0.2,
+        sustain: 1.0,
+        release: 0.8,
+      };
+      am.envelope.set(adsr);
+      am.triggerAttackRelease(note, 0.1, time);
     },
-    [
-      [0, "C2"],
-      ["0:2", "C3"],
-      ["0:3:2", "G2"],
-    ]
-  ).start(0);
+    ["C4", "B4", "F#4", "B4"]
+  );
+  seq.loop = true;
+  seq.start(0);
+  Tone.Transport.bpm.value = 72;
+  return seq;
+};
 export const set = async (): Promise<type> => {
   const se = await setSe();
-  const am = setAms();
-  const part = setPart(am);
+  const am = setAm();
+  const seq = setSeq(am);
   return {
     se,
     am,
-    part,
+    seq,
   };
 };
 
