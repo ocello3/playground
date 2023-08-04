@@ -5,7 +5,9 @@ export const set = () => {
     // common
     count: 4,
     // sketch
-    hExpand: 4,
+    hMargin: 0.06,
+    vMargin: 0.04,
+    hExpand: 1,
     // synth
     maxVolume: -10,
     adsr: {

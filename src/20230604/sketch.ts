@@ -2,6 +2,7 @@ import p5 from "p5";
 import { controller } from "../util/controller";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
+import * as InnerFrame from "./component/innerFrame";
 import * as Env from "./component/env";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
@@ -11,13 +12,15 @@ export const sketch = (s: p5) => {
   const canvasSize = tools.setSize("sketch");
   let controllers = controller.setController();
   const params = Params.set();
+  let innerFrame: InnerFrame.type;
   let env: Env.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set sound
     synth = await Synth.set(params);
     // set component
-    env = Env.get(params, canvasSize);
+    innerFrame = InnerFrame.get(params, canvasSize);
+    env = Env.get(params, innerFrame);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, true);
@@ -30,13 +33,13 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: env }, 10);
+    if (s.frameCount % 5 === 0) debug({ lib: innerFrame }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    env = Env.get(params, canvasSize, env);
+    env = Env.get(params, innerFrame);
     // draw component
-    draw(env, canvasSize, s);
+    draw(innerFrame, env, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };
