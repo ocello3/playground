@@ -23,7 +23,7 @@ export const draw = (
     s.push();
     s.noFill();
     s.beginShape();
-    env.points.forEach((point) => s.vertex(point.x, point.y));
+    env.envs[index].points.forEach((point) => s.vertex(point.x, point.y));
     s.endShape();
     s.pop();
     s.pop();

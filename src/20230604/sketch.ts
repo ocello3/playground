@@ -21,7 +21,7 @@ export const sketch = (s: p5) => {
     // set component
     innerFrame = InnerFrame.get(params, canvasSize);
     seq = Seq.get(params);
-    env = Env.get(params, innerFrame);
+    env = Env.get(innerFrame, seq, params);
     // set sound
     synth = await Synth.set(seq, params);
     // set canvas
@@ -40,7 +40,7 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    env = Env.get(params, innerFrame);
+    env = Env.get(innerFrame, seq, params);
     // draw component
     draw(innerFrame, env, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
