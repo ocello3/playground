@@ -16,7 +16,7 @@ const controllers = {
   toneAccSec: 0,
   mute: true,
 };
-type controllerType = typeof controllers;
+export type controllerType = typeof controllers;
 
 const setController = () => controllers;
 

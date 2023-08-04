@@ -8,6 +8,7 @@ export type type = {
     sustain: number;
     release: number;
   }[];
+  adsrLengths: number[];
 };
 
 export const get = (params: Params.type, pre?: type): type => {
@@ -26,8 +27,12 @@ export const get = (params: Params.type, pre?: type): type => {
       release,
     };
   });
+  const adsrLengths = adsrs.map(
+    (adsr) => adsr.attack + adsr.decay + adsr.release
+  );
   return {
     seq,
     adsrs,
+    adsrLengths,
   };
 };

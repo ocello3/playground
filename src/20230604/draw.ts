@@ -1,11 +1,13 @@
 import p5 from "p5";
 import * as InnerFrame from "./component/innerFrame";
 import * as Env from "./component/env";
+import * as ProgressLine from "./component/progressLine";
 import { drawFrame } from "../util/drawFrame";
 
 export const draw = (
   innerFrame: InnerFrame.type,
   env: Env.type,
+  progressLine: ProgressLine.type,
   size: number,
   s: p5
 ) => {
@@ -26,6 +28,12 @@ export const draw = (
     env.envs[index].points.forEach((point) => s.vertex(point.x, point.y));
     s.endShape();
     s.pop();
+    // progressLine
+    if (progressLine.isDraws[index]) {
+      const point = progressLine.points[index];
+      const length = progressLine.lengths[index];
+      s.line(point.x, point.y, point.x, point.y + length);
+    }
     s.pop();
   });
   drawFrame(s, size);

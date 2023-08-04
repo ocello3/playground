@@ -5,6 +5,8 @@ import { debug } from "../util/debug";
 import * as InnerFrame from "./component/innerFrame";
 import * as Seq from "./component/seq";
 import * as Env from "./component/env";
+import * as Progress from "./component/progress";
+import * as ProgressLine from "./component/progressLine";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
@@ -16,12 +18,15 @@ export const sketch = (s: p5) => {
   let innerFrame: InnerFrame.type;
   let seq: Seq.type;
   let env: Env.type;
+  let progress: Progress.type;
+  let progressLine: ProgressLine.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set component
     innerFrame = InnerFrame.get(params, canvasSize);
     seq = Seq.get(params);
     env = Env.get(innerFrame, seq, params);
+    progress = Progress.get(seq, controllers, params);
     // set sound
     synth = await Synth.set(seq, params);
     // set canvas
@@ -36,13 +41,15 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: innerFrame }, 10);
+    if (s.frameCount % 5 === 0) debug({ lib: progress }, 10);
     s.background(255);
     controller.updateController(s, controllers);
     // update component
     env = Env.get(innerFrame, seq, params);
+    progress = Progress.get(seq, controllers, params, progress);
+    progressLine = ProgressLine.get(innerFrame, progress, params);
     // draw component
-    draw(innerFrame, env, canvasSize, s);
+    draw(innerFrame, env, progressLine, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
   };
 };

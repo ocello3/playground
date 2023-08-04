@@ -6,7 +6,6 @@ import * as Params from "../params";
 
 export type type = {
   envs: {
-    totalDuration: number;
     points: p5.Vector[];
   }[];
 };
@@ -21,20 +20,21 @@ export const get = (
   const adjustedSize = size.x * params.hExpand;
   const envs = Array.from(Array(params.count), (_, index) => {
     const adsr = seq.adsrs[index];
-    const totalDuration = adsr.attack + adsr.decay + adsr.release;
     const p0 = new p5.Vector(0, size.y);
-    const p1 = new p5.Vector((adsr.attack / totalDuration) * adjustedSize, 0);
+    const p1 = new p5.Vector(
+      (adsr.attack / seq.adsrLengths[index]) * adjustedSize,
+      0
+    );
     const p2 = new p5.Vector(
-      p1.x + (adsr.decay / totalDuration) * adjustedSize,
+      p1.x + (adsr.decay / seq.adsrLengths[index]) * adjustedSize,
       size.y - size.y * adsr.sustain
     );
     const p3 = new p5.Vector(
-      adjustedSize - adsr.release / totalDuration,
+      adjustedSize - adsr.release / seq.adsrLengths[index],
       size.y
     );
     const p4 = new p5.Vector(adjustedSize, size.y);
     return {
-      totalDuration,
       points: [p0, p1, p2, p3, p4],
     };
   });
