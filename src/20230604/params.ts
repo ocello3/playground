@@ -8,8 +8,10 @@ export const set = () => {
     hMargin: 0.06,
     vMargin: 0.04,
     hExpand: 1,
+    // seq
+    currentSeqId: 0,
     // synth
-    maxVolume: -10,
+    pitch: "B5",
     adsr: {
       attack: 0.1,
       decay: 0.2,
@@ -27,5 +29,8 @@ export const gui = (params: type, tab: TabApi) => {
   sketch.addInput(params, "hExpand", { step: 1, min: 1, max: 10 });
   // synth
   const sound = tab.pages[2];
-  sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  sound.addInput(params.adsr, "attack", { step: 0.01, min: 0.01, max: 1 });
+  sound.addInput(params.adsr, "decay", { step: 0.01, min: 0.01, max: 1 });
+  sound.addInput(params.adsr, "sustain", { step: 0.01, min: 0.01, max: 1 });
+  sound.addInput(params.adsr, "release", { step: 0.01, min: 0.01, max: 1 });
 };

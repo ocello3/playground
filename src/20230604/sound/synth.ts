@@ -1,11 +1,12 @@
 import * as Tone from "tone";
 import { setSe } from "../../util/controller";
 import * as Params from "../params";
+import * as Seq from "../component/seq";
 
 export type type = {
   se: Tone.Sampler;
   am: Tone.AMSynth;
-  seq: Tone.Sequence;
+  toneSeq: Tone.Sequence;
 };
 
 const setAm = (): Tone.AMSynth => {
@@ -14,38 +15,32 @@ const setAm = (): Tone.AMSynth => {
   return am;
 };
 
-const setADSR = (note: string, params: Params.type): void => {
-  switch (note) {
-    case "C4":
-      params.adsr.attack = 0.1;
-      break;
-    default:
-      params.adsr.attack *= 0.5;
-  }
-};
-
-const setSeq = (am: Tone.AMSynth, params: Params.type): Tone.Sequence => {
-  const seq = new Tone.Sequence(
-    (time, note) => {
-      setADSR(note, params);
-      am.envelope.set(params.adsr);
-      am.triggerAttackRelease("C5", 0.1, time);
-    },
-    ["C4", "B4", "F#4", "B4"]
-  );
-  seq.loop = true;
-  seq.start(0);
+const setToneSeq = (
+  am: Tone.AMSynth,
+  seq: Seq.type,
+  params: Params.type
+): Tone.Sequence => {
+  const toneSeq = new Tone.Sequence((time, note) => {
+    params.currentSeqId = seq.seq.indexOf(note);
+    am.envelope.set(seq.adsrs[params.currentSeqId]);
+    am.triggerAttackRelease("C5", 0.1, time);
+  }, seq.seq);
+  toneSeq.loop = true;
+  toneSeq.start(0);
   Tone.Transport.bpm.value = 42;
-  return seq;
+  return toneSeq;
 };
-export const set = async (params: Params.type): Promise<type> => {
+export const set = async (
+  seq: Seq.type,
+  params: Params.type
+): Promise<type> => {
   const se = await setSe();
   const am = setAm();
-  const seq = setSeq(am, params);
+  const toneSeq = setToneSeq(am, seq, params);
   return {
     se,
     am,
-    seq,
+    toneSeq,
   };
 };
 

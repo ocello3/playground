@@ -3,6 +3,7 @@ import { controller } from "../util/controller";
 import { tools } from "../util/tools";
 import { debug } from "../util/debug";
 import * as InnerFrame from "./component/innerFrame";
+import * as Seq from "./component/seq";
 import * as Env from "./component/env";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
@@ -13,14 +14,16 @@ export const sketch = (s: p5) => {
   let controllers = controller.setController();
   const params = Params.set();
   let innerFrame: InnerFrame.type;
+  let seq: Seq.type;
   let env: Env.type;
   let synth: Synth.type;
   s.setup = async () => {
-    // set sound
-    synth = await Synth.set(params);
     // set component
     innerFrame = InnerFrame.get(params, canvasSize);
+    seq = Seq.get(params);
     env = Env.get(params, innerFrame);
+    // set sound
+    synth = await Synth.set(seq, params);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, true);
