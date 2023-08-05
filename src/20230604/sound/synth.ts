@@ -26,8 +26,8 @@ const setToneSeq = (
     am.triggerAttackRelease("C5", 0.1, time);
   }, seq.seq);
   toneSeq.loop = true;
+  Tone.Transport.bpm.value = params.bpm / 2;
   toneSeq.start(0);
-  Tone.Transport.bpm.value = 42;
   return toneSeq;
 };
 export const set = async (

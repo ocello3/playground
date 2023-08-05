@@ -23,8 +23,7 @@ export const get = (
     return pre.timeStamp;
   })();
   const elapsedTime = controller.toneSec - timeStamp;
-  const adsrLength = seq.adsrLengths[params.currentSeqId];
-  const progress = elapsedTime / adsrLength;
+  const progress = elapsedTime / seq.adsrLength;
   const preSeqId = params.currentSeqId;
   return {
     timeStamp,

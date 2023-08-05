@@ -21,16 +21,13 @@ export const get = (
   const envs = Array.from(Array(params.count), (_, index) => {
     const adsr = seq.adsrs[index];
     const p0 = new p5.Vector(0, size.y);
-    const p1 = new p5.Vector(
-      (adsr.attack / seq.adsrLengths[index]) * adjustedSize,
-      0
-    );
+    const p1 = new p5.Vector((adsr.attack / seq.adsrLength) * adjustedSize, 0);
     const p2 = new p5.Vector(
-      p1.x + (adsr.decay / seq.adsrLengths[index]) * adjustedSize,
+      p1.x + (adsr.decay / seq.adsrLength) * adjustedSize,
       size.y - size.y * adsr.sustain
     );
     const p3 = new p5.Vector(
-      adjustedSize - adsr.release / seq.adsrLengths[index],
+      adjustedSize - adsr.release / seq.adsrLength,
       size.y
     );
     const p4 = new p5.Vector(adjustedSize, size.y);

@@ -41,10 +41,19 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
-    if (s.frameCount % 5 === 0) debug({ lib: progress }, 10);
+    if (s.frameCount % 5 === 0)
+      debug(
+        {
+          progress,
+          adsrLengths: seq.adsrLength,
+          seq: seq.seq,
+        },
+        10
+      );
     s.background(255);
     controller.updateController(s, controllers);
     // update component
+    seq = Seq.get(params);
     env = Env.get(innerFrame, seq, params);
     progress = Progress.get(seq, controllers, params, progress);
     progressLine = ProgressLine.get(innerFrame, progress, params);

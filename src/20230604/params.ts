@@ -3,20 +3,20 @@ import { TabApi } from "tweakpane";
 export const set = () => {
   return {
     // common
-    count: 4,
+    count: 3,
     // sketch
     hMargin: 0.06,
     vMargin: 0.04,
     hExpand: 1,
     // seq
+    bpm: 60,
     currentSeqId: 0,
     // synth
     pitch: "B5",
     adsr: {
-      attack: 0.1,
+      attack: 0.4,
       decay: 0.2,
       sustain: 0.5,
-      release: 2.8,
     },
   };
 };
@@ -32,5 +32,4 @@ export const gui = (params: type, tab: TabApi) => {
   sound.addInput(params.adsr, "attack", { step: 0.01, min: 0.01, max: 1 });
   sound.addInput(params.adsr, "decay", { step: 0.01, min: 0.01, max: 1 });
   sound.addInput(params.adsr, "sustain", { step: 0.01, min: 0.01, max: 1 });
-  sound.addInput(params.adsr, "release", { step: 0.01, min: 0.01, max: 1 });
 };

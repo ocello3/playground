@@ -2,24 +2,23 @@ import * as Params from "../params";
 
 export type type = {
   seq: string[];
+  adsrLength: number;
   adsrs: {
     attack: number;
     decay: number;
     sustain: number;
     release: number;
   }[];
-  adsrLengths: number[];
 };
 
-export const get = (params: Params.type, pre?: type): type => {
-  const isInit = pre === undefined;
-  if (!isInit) return pre;
+export const get = (params: Params.type): type => {
+  const adsrLength = 60 / params.bpm;
   const seq = Array.from(Array(params.count), (_, index) => `C${index}`);
   const adsrs = seq.map((_, index) => {
-    const attack = params.adsr.attack * Math.pow(0.5, index);
+    const attack = params.adsr.attack * Math.pow(0.3, index);
     const decay = params.adsr.decay;
     const sustain = params.adsr.sustain;
-    const release = params.adsr.release;
+    const release = adsrLength - (attack + decay);
     return {
       attack,
       decay,
@@ -27,12 +26,9 @@ export const get = (params: Params.type, pre?: type): type => {
       release,
     };
   });
-  const adsrLengths = adsrs.map(
-    (adsr) => adsr.attack + adsr.decay + adsr.release
-  );
   return {
     seq,
     adsrs,
-    adsrLengths,
+    adsrLength,
   };
 };
