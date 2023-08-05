@@ -8,6 +8,7 @@ export const set = () => {
     hMargin: 0.06,
     vMargin: 0.04,
     hExpand: 1,
+    hRect: 0.3,
     // seq
     bpm: 60,
     currentSeqId: 0,

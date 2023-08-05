@@ -11,29 +11,39 @@ export const draw = (
   size: number,
   s: p5
 ) => {
-  innerFrame.coordinates.forEach((coordinate, index) => {
+  innerFrame.coordinates.forEach((coordinate, arrayIndex) => {
     s.push();
     s.translate(coordinate.x, coordinate.y);
     s.stroke(1);
     // inside frames
     s.push();
     s.noFill();
-    const size = innerFrame.sizes[index];
+    const size = innerFrame.sizes[arrayIndex];
     s.rect(0, 0, size.x, size.y);
     s.pop();
     // ADSR
     s.push();
     s.noFill();
     s.beginShape();
-    env.envs[index].points.forEach((point) => s.vertex(point.x, point.y));
+    env.envs[arrayIndex].points.forEach((point) => s.vertex(point.x, point.y));
     s.endShape();
     s.pop();
     // progressLine
-    if (progressLine.isDraws[index]) {
-      const point = progressLine.points[index];
-      const length = progressLine.lengths[index];
-      s.line(point.x, point.y, point.x, point.y + length);
-    }
+    s.push();
+    const pointArray = progressLine.pointArrays[arrayIndex];
+    const alphaArray = progressLine.alphaArrays[arrayIndex];
+    pointArray.forEach((point, pointIndex) => {
+      s.push();
+      s.fill(0, alphaArray[pointIndex] / (arrayIndex + 1));
+      s.rect(
+        point.x,
+        point.y,
+        progressLine.rectSizes[arrayIndex].x,
+        progressLine.rectSizes[arrayIndex].y
+      );
+      s.pop();
+    });
+    s.pop();
     s.pop();
   });
   drawFrame(s, size);
