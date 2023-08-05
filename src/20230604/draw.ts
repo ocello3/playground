@@ -34,7 +34,7 @@ export const draw = (
     const alphaArray = progressLine.alphaArrays[arrayIndex];
     pointArray.forEach((point, pointIndex) => {
       s.push();
-      s.fill(0, alphaArray[pointIndex] / (arrayIndex + 1));
+      s.fill(0, alphaArray[pointIndex]);
       s.rect(
         point.x,
         point.y,

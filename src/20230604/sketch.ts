@@ -34,7 +34,7 @@ export const sketch = (s: p5) => {
     const tab = controller.setGui(s, controllers, synth.se, true);
     Params.gui(params, tab);
     s.noLoop();
-    // s.frameRate(10);
+    // s.frameRate(20);
   };
   s.draw = () => {
     if (synth === undefined) {
@@ -44,7 +44,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          alphaArrays: progressLine.alphaArrays,
+          currentRectId: progressLine.currentRectId,
         },
         10
       );
