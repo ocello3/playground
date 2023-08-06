@@ -4,7 +4,7 @@ import * as Tone from "tone";
 export const set = () => {
   return {
     // common
-    count: 3,
+    count: 4,
     // sketch
     hMargin: 0.06,
     vMargin: 0.04,

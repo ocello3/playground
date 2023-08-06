@@ -18,12 +18,14 @@ export const get = (params: Params.type): type => {
     const attack = params.adsr.attack * Math.pow(0.3, index);
     const decay = params.adsr.decay;
     const sustain = params.adsr.sustain;
-    const release = params.adsr.release; // 合計が1音の間隔を超えるときの調整が必要
+    const release = params.adsr.release;
+    const shortenRate = adsrLength / (attack + decay + release);
+    const correctedShortenRate = shortenRate < 1 ? shortenRate : 1;
     return {
-      attack,
-      decay,
-      sustain,
-      release,
+      attack: attack * correctedShortenRate,
+      decay: decay * correctedShortenRate,
+      sustain: sustain * correctedShortenRate,
+      release: release * correctedShortenRate,
     };
   });
   return {
