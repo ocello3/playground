@@ -44,14 +44,14 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          params: params,
+          seq,
         },
         10
       );
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    seq = Seq.get(params);
+    seq = Seq.get(params, seq);
     env = Env.get(innerFrame, seq, params, env);
     progress = Progress.get(seq, controllers, params, progress);
     progressLine = ProgressLine.get(

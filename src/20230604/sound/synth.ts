@@ -31,8 +31,9 @@ const setToneSeq = (
     Tone.Draw.schedule(() => {
       params.currentSeqId = seq.seq.indexOf(note);
     }, time);
-    am.envelope.set(seq.adsrs[params.currentSeqId]);
     am.triggerAttackRelease("C5", 0.1, time);
+    am.envelope.set(params.currentAdsr);
+    console.log(am.get());
   }, seq.seq);
   toneSeq.loop = true;
   Tone.Transport.bpm.value = params.bpm / 2;
