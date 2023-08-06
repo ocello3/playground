@@ -1,7 +1,9 @@
 import p5 from "p5";
+import * as Tone from "tone";
 import * as InnerFrame from "./innerFrame";
 import * as Progress from "./progress";
 import * as Params from "../params";
+import { tools } from "../../util/tools";
 
 export type type = {
   isDraws: boolean[];
@@ -19,6 +21,7 @@ export const get = (
   innerFrame: InnerFrame.type,
   progress: Progress.type,
   params: Params.type,
+  meter: Tone.Meter,
   pre?: type
 ): type => {
   const isInit = pre === undefined;
@@ -58,6 +61,11 @@ export const get = (
   const isReset = isInit
     ? false
     : params.currentSeqId === 0 && pre.preSeqId === params.count - 1;
+  const currentAlpha = tools.constrain(
+    tools.map(meter.getValue() as number, -200, 0, 0, 255),
+    0,
+    255
+  );
   const alphaArrays =
     isInit || isReset
       ? pointArrays.map((pointArray) => pointArray.map(() => 0))
@@ -68,7 +76,7 @@ export const get = (
                 pre.currentRectId.rectIndex < rectIndex &&
                 rectIndex <= currentRectId.rectIndex
               )
-                return 155; // update alpha
+                return currentAlpha; // update alpha
               return preAlpha;
             });
           return preAlphaArray;

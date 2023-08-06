@@ -6,6 +6,7 @@ import * as Seq from "../component/seq";
 export type type = {
   se: Tone.Sampler;
   am: Tone.AMSynth;
+  meter: Tone.Meter;
   toneSeq: Tone.Sequence;
 };
 
@@ -15,13 +16,21 @@ const setAm = (): Tone.AMSynth => {
   return am;
 };
 
+const setMeter = (am: Tone.AMSynth): Tone.Meter => {
+  const meter = new Tone.Meter();
+  am.connect(meter);
+  return meter;
+};
+
 const setToneSeq = (
   am: Tone.AMSynth,
   seq: Seq.type,
   params: Params.type
 ): Tone.Sequence => {
   const toneSeq = new Tone.Sequence((time, note) => {
-    params.currentSeqId = seq.seq.indexOf(note);
+    Tone.Draw.schedule(() => {
+      params.currentSeqId = seq.seq.indexOf(note);
+    }, time);
     am.envelope.set(seq.adsrs[params.currentSeqId]);
     am.triggerAttackRelease("C5", 0.1, time);
   }, seq.seq);
@@ -30,16 +39,19 @@ const setToneSeq = (
   toneSeq.start(0);
   return toneSeq;
 };
+
 export const set = async (
   seq: Seq.type,
   params: Params.type
 ): Promise<type> => {
   const se = await setSe();
   const am = setAm();
+  const meter = setMeter(am);
   const toneSeq = setToneSeq(am, seq, params);
   return {
     se,
     am,
+    meter,
     toneSeq,
   };
 };

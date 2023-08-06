@@ -44,9 +44,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          env: env.envs[0],
-          seq: seq.adsrs[0],
-          seqLength: seq.adsrLength,
+          meter: synth.meter.getValue(),
         },
         10
       );
@@ -56,7 +54,13 @@ export const sketch = (s: p5) => {
     seq = Seq.get(params);
     env = Env.get(innerFrame, seq, params, env);
     progress = Progress.get(seq, controllers, params, progress);
-    progressLine = ProgressLine.get(innerFrame, progress, params, progressLine);
+    progressLine = ProgressLine.get(
+      innerFrame,
+      progress,
+      params,
+      synth.meter,
+      progressLine
+    );
     // draw component
     draw(innerFrame, env, progressLine, canvasSize, s);
     // synth.playSynth(libData, synthData, synthParams, size);
