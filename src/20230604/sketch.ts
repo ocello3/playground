@@ -44,7 +44,9 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          currentRectId: progressLine.currentRectId,
+          env: env.envs[0],
+          seq: seq.adsrs[0],
+          seqLength: seq.adsrLength,
         },
         10
       );

@@ -10,14 +10,15 @@ export const set = () => {
     hExpand: 1,
     hRect: 0.01,
     // seq
-    bpm: 60,
+    bpm: 40,
     currentSeqId: 0,
     // synth
     pitch: "B5",
     adsr: {
-      attack: 0.4,
-      decay: 0.2,
-      sustain: 0.5,
+      attack: 0.2,
+      decay: 0.1,
+      sustain: 0.3,
+      release: 0.3,
     },
   };
 };
@@ -33,4 +34,5 @@ export const gui = (params: type, tab: TabApi) => {
   sound.addInput(params.adsr, "attack", { step: 0.01, min: 0.01, max: 1 });
   sound.addInput(params.adsr, "decay", { step: 0.01, min: 0.01, max: 1 });
   sound.addInput(params.adsr, "sustain", { step: 0.01, min: 0.01, max: 1 });
+  sound.addInput(params.adsr, "release", { step: 0.01, min: 0.01, max: 1 });
 };

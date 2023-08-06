@@ -30,6 +30,7 @@ export const draw = (
     s.pop();
     // progressLine
     s.push();
+    s.noStroke();
     const pointArray = progressLine.pointArrays[arrayIndex];
     const alphaArray = progressLine.alphaArrays[arrayIndex];
     pointArray.forEach((point, pointIndex) => {

@@ -61,7 +61,7 @@ export const get = (
       if (isDraws[arrayIndex])
         return pointArray.map((_, rectIndex) => {
           if (
-            pre.currentRectId.rectIndex <= rectIndex &&
+            pre.currentRectId.rectIndex < rectIndex &&
             rectIndex <= currentRectId.rectIndex
           )
             return 155; // update alpha

@@ -18,7 +18,7 @@ export const get = (params: Params.type): type => {
     const attack = params.adsr.attack * Math.pow(0.3, index);
     const decay = params.adsr.decay;
     const sustain = params.adsr.sustain;
-    const release = adsrLength - (attack + decay);
+    const release = params.adsr.release; // 合計が1音の間隔を超えるときの調整が必要
     return {
       attack,
       decay,

@@ -20,19 +20,22 @@ export const get = (
   const adjustedSize = size.x * params.hExpand;
   const envs = Array.from(Array(params.count), (_, index) => {
     const adsr = seq.adsrs[index];
-    const p0 = new p5.Vector(0, size.y);
-    const p1 = new p5.Vector((adsr.attack / seq.adsrLength) * adjustedSize, 0);
-    const p2 = new p5.Vector(
-      p1.x + (adsr.decay / seq.adsrLength) * adjustedSize,
+    const startPos = new p5.Vector(0, size.y);
+    const attackedPos = new p5.Vector(
+      (adsr.attack / seq.adsrLength) * adjustedSize,
+      0
+    );
+    const decayedPos = new p5.Vector(
+      attackedPos.x + (adsr.decay / seq.adsrLength) * adjustedSize,
       size.y - size.y * adsr.sustain
     );
-    const p3 = new p5.Vector(
-      adjustedSize - adsr.release / seq.adsrLength,
-      size.y
+    const sustainedPos = new p5.Vector(
+      adjustedSize - (adsr.release / seq.adsrLength) * adjustedSize,
+      size.y - size.y * adsr.sustain
     );
-    const p4 = new p5.Vector(adjustedSize, size.y);
+    const endPos = new p5.Vector(adjustedSize, size.y);
     return {
-      points: [p0, p1, p2, p3, p4],
+      points: [startPos, attackedPos, decayedPos, sustainedPos, endPos],
     };
   });
   return { envs };
