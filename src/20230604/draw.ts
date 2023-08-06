@@ -16,11 +16,13 @@ export const draw = (
     s.translate(coordinate.x, coordinate.y);
     s.stroke(1);
     // inside frames
+    /*
     s.push();
     s.noFill();
     const size = innerFrame.sizes[arrayIndex];
     s.rect(0, 0, size.x, size.y);
     s.pop();
+		*/
     // ADSR
     s.push();
     s.noFill();

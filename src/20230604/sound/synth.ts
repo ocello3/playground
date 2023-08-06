@@ -56,8 +56,10 @@ export const set = async (
   };
 };
 
-export const play = (synth: type, params: Params.type) => {
-  console.log(synth.se.get());
-  console.log(params);
+/*
+export const play = (synth: type, params: Params.type, seq: Seq.type) => {
+  if (params.isAdsrUpdate === true)
+    synth.am.envelope.set(seq.adsrs[params.currentSeqId]);
   return;
 };
+*/

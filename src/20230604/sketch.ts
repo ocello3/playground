@@ -44,7 +44,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          meter: synth.meter.getValue(),
+          params: params,
         },
         10
       );
@@ -63,6 +63,6 @@ export const sketch = (s: p5) => {
     );
     // draw component
     draw(innerFrame, env, progressLine, canvasSize, s);
-    // synth.playSynth(libData, synthData, synthParams, size);
+    // Synth.play(synth, params, seq);
   };
 };
