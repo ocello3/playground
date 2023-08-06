@@ -25,7 +25,12 @@ export const draw = (
     s.push();
     s.noFill();
     s.beginShape();
-    env.envs[arrayIndex].points.forEach((point) => s.vertex(point.x, point.y));
+    const envPos = env.envs[arrayIndex];
+    s.vertex(envPos.startPos.x, envPos.startPos.y);
+    s.vertex(envPos.attackedPos.x, envPos.attackedPos.y);
+    s.vertex(envPos.decayedPos.x, envPos.decayedPos.y);
+    s.vertex(envPos.sustainedPos.x, envPos.sustainedPos.y);
+    s.vertex(envPos.endPos.x, envPos.endPos.y);
     s.endShape();
     s.pop();
     // progressLine

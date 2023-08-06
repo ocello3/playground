@@ -54,7 +54,7 @@ export const sketch = (s: p5) => {
     controller.updateController(s, controllers);
     // update component
     seq = Seq.get(params);
-    env = Env.get(innerFrame, seq, params);
+    env = Env.get(innerFrame, seq, params, env);
     progress = Progress.get(seq, controllers, params, progress);
     progressLine = ProgressLine.get(innerFrame, progress, params, progressLine);
     // draw component
