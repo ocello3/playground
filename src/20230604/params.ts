@@ -16,10 +16,16 @@ export const set = () => {
     // synth
     pitch: "B5",
     adsr: {
-      attack: 0.2,
-      decay: 0.1,
-      sustain: 0.3,
-      release: 0.3,
+      attack: 0.4,
+      decay: 0.2,
+      sustain: 0.6,
+      release: 0.7,
+    },
+    mod: {
+      attack: 0.5,
+      decay: 0.5,
+      sustain: 0.5,
+      release: 0.5,
     },
     currentAdsr: {
       attack: 0.2,
