@@ -29,11 +29,21 @@ const setToneSeq = (
 ): Tone.Sequence => {
   const toneSeq = new Tone.Sequence((time, note) => {
     Tone.Draw.schedule(() => {
-      params.currentSeqId = seq.seq.indexOf(note);
+      // const index = seq.seq.indexOf(note);
+      const inc = 1;
+      const newIndex = params.currentSeqId + inc;
+      const index =
+        newIndex > params.count - 1 || params.currentSeqId < 0 ? 0 : newIndex;
+      params.currentSeqId = index;
+
+      console.log(
+        `note: ${note}, index: ${params.currentSeqId}, actualAttack: ${
+          am.get().envelope.attack
+        }`
+      );
     }, time);
     am.triggerAttackRelease("C5", 0.1, time);
     am.envelope.set(params.currentAdsr);
-    console.log(am.get());
   }, seq.seq);
   toneSeq.loop = true;
   Tone.Transport.bpm.value = params.bpm / 2;

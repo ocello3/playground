@@ -16,15 +16,16 @@ export const get = (
   pre?: type
 ) => {
   const isInit = pre === undefined;
+  const currentSeqId = params.currentSeqId === -1 ? 0 : params.currentSeqId;
   const timeStamp = (() => {
     if (isInit) return 0;
-    const isIdChanged = params.currentSeqId !== pre?.preSeqId;
+    const isIdChanged = currentSeqId !== pre?.preSeqId;
     if (isIdChanged) return controller.toneSec;
     return pre.timeStamp;
   })();
   const elapsedTime = controller.toneSec - timeStamp;
   const progress = elapsedTime / seq.adsrLength;
-  const preSeqId = params.currentSeqId;
+  const preSeqId = currentSeqId;
   return {
     timeStamp,
     elapsedTime,

@@ -11,11 +11,11 @@ export const set = () => {
     hExpand: 1,
     rectWidth: 0.01,
     // seq
-    bpm: 40,
-    currentSeqId: 0,
+    bpm: 32,
+    currentSeqId: -1,
     // synth
-    pitch: "B5",
-    adsr: {
+    pitch: "B4",
+    base: {
       attack: 0.4,
       decay: 0.2,
       sustain: 0.6,
@@ -48,8 +48,52 @@ export const gui = (params: type, tab: TabApi) => {
   sound
     .addInput(params, "bpm", { step: 1, min: 20, max: 200 })
     .on("change", (env) => (Tone.Transport.bpm.value = env.value / 2));
-  sound.addInput(params.adsr, "attack", { step: 0.01, min: 0.01, max: 1 });
-  sound.addInput(params.adsr, "decay", { step: 0.01, min: 0.01, max: 1 });
-  sound.addInput(params.adsr, "sustain", { step: 0.01, min: 0.01, max: 1 });
-  sound.addInput(params.adsr, "release", { step: 0.01, min: 0.01, max: 1 });
+  sound.addInput(params.base, "attack", {
+    label: "base_a",
+    step: 0.01,
+    min: 0.01,
+    max: 1,
+  });
+  sound.addInput(params.base, "decay", {
+    label: "base_d",
+    step: 0.01,
+    min: 0.01,
+    max: 1,
+  });
+  sound.addInput(params.base, "sustain", {
+    label: "base_s",
+    step: 0.01,
+    min: 0.01,
+    max: 1,
+  });
+  sound.addInput(params.base, "release", {
+    label: "base_r",
+    step: 0.01,
+    min: 0.01,
+    max: 1,
+  });
+  sound.addInput(params.mod, "attack", {
+    label: "mod_a",
+    step: 0.1,
+    min: 0.1,
+    max: 2,
+  });
+  sound.addInput(params.mod, "decay", {
+    label: "mod_d",
+    step: 0.1,
+    min: 0.1,
+    max: 2,
+  });
+  sound.addInput(params.mod, "sustain", {
+    label: "mod_s",
+    step: 0.1,
+    min: 0.1,
+    max: 2,
+  });
+  sound.addInput(params.mod, "release", {
+    label: "mod_r",
+    step: 0.1,
+    min: 0.1,
+    max: 2,
+  });
 };

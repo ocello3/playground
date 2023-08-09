@@ -25,9 +25,10 @@ export const get = (
   pre?: type
 ): type => {
   const isInit = pre === undefined;
+  const currentSeqId = params.currentSeqId === -1 ? 0 : params.currentSeqId;
   const isDraws = Array.from(
     Array(params.count),
-    (_, index) => index === params.currentSeqId
+    (_, index) => index === currentSeqId
   );
   const rectSizes = isInit
     ? innerFrame.sizes.map((size, arrayIndex) => {
@@ -60,7 +61,7 @@ export const get = (
   })();
   const isReset = isInit
     ? false
-    : params.currentSeqId === 0 && pre.preSeqId === params.count - 1;
+    : currentSeqId === 0 && pre.preSeqId === params.count - 1;
   const currentAlpha = tools.constrain(
     tools.map(meter.getValue() as number, -200, 0, 0, 255),
     0,
@@ -81,7 +82,7 @@ export const get = (
             });
           return preAlphaArray;
         });
-  const preSeqId = params.currentSeqId;
+  const preSeqId = currentSeqId;
   return {
     isDraws,
     pointArrays,
