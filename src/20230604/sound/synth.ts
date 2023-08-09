@@ -42,7 +42,7 @@ const setToneSeq = (
         }`
       );
     }, time);
-    am.triggerAttackRelease("C5", 0.1, time);
+    am.triggerAttackRelease("C5", "16n", time);
     am.envelope.set(params.currentAdsr);
   }, seq.seq);
   toneSeq.loop = true;

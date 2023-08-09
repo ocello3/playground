@@ -63,7 +63,7 @@ export const get = (
     ? false
     : currentSeqId === 0 && pre.preSeqId === params.count - 1;
   const currentAlpha = tools.constrain(
-    tools.map(meter.getValue() as number, -200, 0, 0, 255),
+    tools.map(meter.getValue() as number, -150, 0, 0, 255),
     0,
     255
   );
