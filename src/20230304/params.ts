@@ -91,17 +91,17 @@ export const gui = (params: type, tab: TabApi) => {
   // sketch
   const sketch = tab.pages[1];
   const circle = sketch.addFolder({ title: "circle" });
-  circle.addInput(params.circle, "baseRadiusRate", {
+  circle.addBinding(params.circle, "baseRadiusRate", {
     step: 0.1,
     min: 0.1,
     max: 1.0,
   });
-  circle.addInput(params.circle, "trackArrayResolution", {
+  circle.addBinding(params.circle, "trackArrayResolution", {
     step: 1,
     min: 1,
     max: 100,
   });
   // synth
   // const sound = tab.pages[2];
-  // sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  // sound.addBinding(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };

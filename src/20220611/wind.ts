@@ -23,7 +23,7 @@ type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addInput(params, "gravityRate", { step: 0.5, min: 1, max: 5 });
+  _tab.addBinding(params, "gravityRate", { step: 0.5, min: 1, max: 5 });
 };
 
 const setData = (params: paramsType, size: number) => {

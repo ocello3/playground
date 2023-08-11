@@ -28,5 +28,5 @@ export const gui = (params: type, tab: TabApi) => {
   // const sketch = tab.pages[1];
   // synth
   const sound = tab.pages[2];
-  sound.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  sound.addBinding(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };

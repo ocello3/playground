@@ -35,55 +35,70 @@ export type type = typeof obj;
 export const gui = (params: type, tab: TabApi) => {
   // sketch
   const sketch = tab.pages[1];
-  sketch.addInput(params, "hExpand", { step: 1, min: 1, max: 10 });
+  sketch.addBinding(params, "hExpand", { step: 1, min: 1, max: 10 });
   // synth
   const sound = tab.pages[2];
   sound
-    .addInput(params, "bpm", { step: 1, min: 20, max: 200 })
+    .addBinding(params, "bpm", { step: 1, min: 20, max: 200 })
     .on("change", (env) => (Tone.Transport.bpm.value = env.value / 2));
-  sound.addInput(params.base, "attack", {
+  sound.addBinding(params, "pitch", {
+    view: "list",
+    label: "pitch",
+    options: [
+      { text: "B0", value: "B0" },
+      { text: "B1", value: "B1" },
+      { text: "B2", value: "B2" },
+      { text: "B3", value: "B3" },
+      { text: "B4", value: "B4" },
+      { text: "B5", value: "B5" },
+      { text: "B6", value: "B6" },
+      { text: "B7", value: "B7" },
+    ],
+    value: "B4",
+  });
+  sound.addBinding(params.base, "attack", {
     label: "base_a",
     step: 0.01,
     min: 0.01,
     max: 1,
   });
-  sound.addInput(params.base, "decay", {
+  sound.addBinding(params.base, "decay", {
     label: "base_d",
     step: 0.01,
     min: 0.01,
     max: 1,
   });
-  sound.addInput(params.base, "sustain", {
+  sound.addBinding(params.base, "sustain", {
     label: "base_s",
     step: 0.01,
     min: 0.01,
     max: 1,
   });
-  sound.addInput(params.base, "release", {
+  sound.addBinding(params.base, "release", {
     label: "base_r",
     step: 0.01,
     min: 0.01,
     max: 1,
   });
-  sound.addInput(params.mod, "attack", {
+  sound.addBinding(params.mod, "attack", {
     label: "mod_a",
     step: 0.1,
     min: 0.1,
     max: 2,
   });
-  sound.addInput(params.mod, "decay", {
+  sound.addBinding(params.mod, "decay", {
     label: "mod_d",
     step: 0.1,
     min: 0.1,
     max: 2,
   });
-  sound.addInput(params.mod, "sustain", {
+  sound.addBinding(params.mod, "sustain", {
     label: "mod_s",
     step: 0.1,
     min: 0.1,
     max: 2,
   });
-  sound.addInput(params.mod, "release", {
+  sound.addBinding(params.mod, "release", {
     label: "mod_r",
     step: 0.1,
     min: 0.1,

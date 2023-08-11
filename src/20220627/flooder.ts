@@ -22,12 +22,12 @@ export type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addInput(params, "surfaceYPosRate", { step: 0.1, min: 0.2, max: 0.8 });
-  _tab.addInput(params, "g", { step: 0.1, min: 0.2, max: 1.2 });
-  _tab.addInput(params, "mMin", { step: 1, min: 5, max: 20 });
-  _tab.addInput(params, "mMax", { step: 1, min: 50, max: 150 });
-  _tab.addInput(params, "initPosMaxRate", { step: 0.1, min: 0.1, max: 1.5 });
-  _tab.addInput(params, "cd", { step: 0.1, min: 0.5, max: 4.0 });
+  _tab.addBinding(params, "surfaceYPosRate", { step: 0.1, min: 0.2, max: 0.8 });
+  _tab.addBinding(params, "g", { step: 0.1, min: 0.2, max: 1.2 });
+  _tab.addBinding(params, "mMin", { step: 1, min: 5, max: 20 });
+  _tab.addBinding(params, "mMax", { step: 1, min: 50, max: 150 });
+  _tab.addBinding(params, "initPosMaxRate", { step: 0.1, min: 0.1, max: 1.5 });
+  _tab.addBinding(params, "cd", { step: 0.1, min: 0.5, max: 4.0 });
 };
 
 export const setData = (params: paramsType, size: number) => {

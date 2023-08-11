@@ -21,7 +21,7 @@ type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[2];
-  _tab.addInput(params, "maxVolume", { step: 1, min: -60, max: 0 });
+  _tab.addBinding(params, "maxVolume", { step: 1, min: -60, max: 0 });
 };
 
 const setTapSampler = () => {

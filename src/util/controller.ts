@@ -138,17 +138,26 @@ const setGui = (
         document.getElementById("indicator")!.innerHTML = "playing";
       }
     });
-  tab.pages[0].addMonitor(controllers, "frameRate", { interval: 500 });
-  tab.pages[0].addMonitor(controllers, "toneSec", { interval: 500 });
-  tab.pages[0].addMonitor(controllers, "toneAccSec", { interval: 500 });
+  tab.pages[0].addBinding(controllers, "frameRate", {
+    readonly: true,
+    interval: 500,
+  });
+  tab.pages[0].addBinding(controllers, "toneSec", {
+    readonly: true,
+    interval: 500,
+  });
+  tab.pages[0].addBinding(controllers, "toneAccSec", {
+    readonly: true,
+    interval: 500,
+  });
   ban_scroll();
-  tab.pages[0].addInput(controllers, "scrLk").on("change", (event) => {
+  tab.pages[0].addBinding(controllers, "scrLk").on("change", (event) => {
     if (event.value === true) {
       ban_scroll();
     }
     if (event.value === false) go_scroll();
   });
-  tab.pages[0].addInput(controllers, "mute").on("change", (event) => {
+  tab.pages[0].addBinding(controllers, "mute").on("change", (event) => {
     if (s.isLooping()) Tone.Destination.mute = event.value;
   });
   return tab;

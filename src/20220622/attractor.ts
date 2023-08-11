@@ -23,9 +23,9 @@ type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addInput(params, "originMRate", { step: 0.01, min: 0.01, max: 0.1 });
-  _tab.addInput(params, "num", { step: 1, min: 2, max: 15 });
-  _tab.addMonitor(params, "status");
+  _tab.addBinding(params, "originMRate", { step: 0.01, min: 0.01, max: 0.1 });
+  _tab.addBinding(params, "num", { step: 1, min: 2, max: 15 });
+  _tab.addBinding(params, "status", { readonly: true });
   const resetBtn = _tab.addButton({
     title: "orbit",
     label: "reset",

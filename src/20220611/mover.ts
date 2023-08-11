@@ -27,8 +27,11 @@ export type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addInput(params, "windF", { min: 0, max: 10 });
-  _tab.addInput(params, "bufferRate", { min: params.bufferRateMin, max: 1.1 });
+  _tab.addBinding(params, "windF", { min: 0, max: 10 });
+  _tab.addBinding(params, "bufferRate", {
+    min: params.bufferRateMin,
+    max: 1.1,
+  });
 };
 
 const setData = (params: paramsType, size: number) => {

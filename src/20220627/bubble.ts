@@ -20,12 +20,16 @@ type paramsType = typeof thisParams;
 
 const setGui = (params: paramsType, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addSeparator();
-  _tab.addInput(params, "ampCf", { step: 0.1, min: 0.1, max: 1.0 });
-  _tab.addInput(params, "phaseVel", { step: 0.01, min: 0.01, max: 0.1 });
-  _tab.addInput(params, "cycleRate", { step: 0.001, min: 0.001, max: 0.01 });
-  _tab.addInput(params, "intervalRate", { step: 0.001, min: 0.001, max: 0.01 });
-  _tab.addInput(params, "ampRate", { min: 0.00005, max: 0.001 });
+  _tab.addBlade({ view: "separator" });
+  _tab.addBinding(params, "ampCf", { step: 0.1, min: 0.1, max: 1.0 });
+  _tab.addBinding(params, "phaseVel", { step: 0.01, min: 0.01, max: 0.1 });
+  _tab.addBinding(params, "cycleRate", { step: 0.001, min: 0.001, max: 0.01 });
+  _tab.addBinding(params, "intervalRate", {
+    step: 0.001,
+    min: 0.001,
+    max: 0.01,
+  });
+  _tab.addBinding(params, "ampRate", { min: 0.00005, max: 0.001 });
 };
 
 const setData = (flooderData: flooderDataType) => {

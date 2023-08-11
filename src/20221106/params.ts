@@ -45,5 +45,5 @@ export type type = typeof obj;
 
 export const gui = (params: type, tab: TabApi) => {
   const _tab = tab.pages[1];
-  _tab.addInput(params, "marginRate", { step: 0.1, min: 0.1, max: 1.0 });
+  _tab.addBinding(params, "marginRate", { step: 0.1, min: 0.1, max: 1.0 });
 };

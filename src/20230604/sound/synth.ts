@@ -41,7 +41,7 @@ const setToneSeq = (
         }`
       );
     }, time);
-    am.triggerAttackRelease("C5", "32n", time);
+    am.triggerAttackRelease(params.pitch, "32n", time);
   }, seq.seq);
   toneSeq.loop = true;
   Tone.Transport.bpm.value = params.bpm / 2;

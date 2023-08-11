@@ -42,29 +42,29 @@ export const gui = (params: type, tab: TabApi) => {
   const sketch = tab.pages[1];
   const euclid = sketch.addFolder({ title: "euclid" });
   euclid
-    .addInput(params.euclid, "dividend", { step: 1, min: 2, max: 1000 })
+    .addBinding(params.euclid, "dividend", { step: 1, min: 2, max: 1000 })
     .on("change", () => (params.isUpdate = true));
   euclid
-    .addInput(params.euclid, "divisor", { step: 1, min: 2, max: 1000 })
+    .addBinding(params.euclid, "divisor", { step: 1, min: 2, max: 1000 })
     .on("change", () => (params.isUpdate = true));
-  euclid.addInput(params.euclid, "thr", { step: 1, min: 2, max: 20 });
-  euclid.addMonitor(params, "isUpdate");
+  euclid.addBinding(params.euclid, "thr", { step: 1, min: 2, max: 20 });
+  euclid.addBinding(params, "isUpdate", { readonly: true });
   const rect = sketch.addFolder({ title: "rect" });
-  rect.addInput(params.rect, "h_min", { step: 1, min: 0, max: 255 });
-  rect.addInput(params.rect, "h_max", { step: 1, min: 0, max: 255 });
-  rect.addInput(params.rect, "s_min", { step: 1, min: 0, max: 255 });
-  rect.addInput(params.rect, "s_max", { step: 1, min: 0, max: 255 });
-  rect.addInput(params.rect, "b_min", { step: 1, min: 0, max: 255 });
-  rect.addInput(params.rect, "b_max", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "h_min", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "h_max", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "s_min", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "s_max", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "b_min", { step: 1, min: 0, max: 255 });
+  rect.addBinding(params.rect, "b_max", { step: 1, min: 0, max: 255 });
   // synth
   const sound = tab.pages[2];
   const synth = sound.addFolder({ title: "synth" });
-  synth.addInput(params.synth, "baseFreq", { step: 1, min: 100, max: 2000 });
-  synth.addInput(params.synth, "volume_min", { step: 1, min: -60, max: -20 });
-  synth.addInput(params.synth, "volume_max", { step: 1, min: -20, max: -5 });
+  synth.addBinding(params.synth, "baseFreq", { step: 1, min: 100, max: 2000 });
+  synth.addBinding(params.synth, "volume_min", { step: 1, min: -60, max: -20 });
+  synth.addBinding(params.synth, "volume_max", { step: 1, min: -20, max: -5 });
   const env = sound.addFolder({ title: "env" });
-  env.addInput(params.env, "attack", { min: 0.1, max: 0.9 });
-  env.addInput(params.env, "decay", { min: 0.1, max: 0.9 });
-  env.addInput(params.env, "sustain", { min: 0.1, max: 0.9 });
-  env.addInput(params.env, "release", { min: 0.1, max: 0.9 });
+  env.addBinding(params.env, "attack", { min: 0.1, max: 0.9 });
+  env.addBinding(params.env, "decay", { min: 0.1, max: 0.9 });
+  env.addBinding(params.env, "sustain", { min: 0.1, max: 0.9 });
+  env.addBinding(params.env, "release", { min: 0.1, max: 0.9 });
 };

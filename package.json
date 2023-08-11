@@ -12,18 +12,18 @@
     "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
-    "@tweakpane/core": "^1.1.6",
-    "@types/node": "^18.15.10",
-    "@types/p5": "^1.5.0",
-    "gh-pages": "^5.0.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.2.1",
-    "vitest": "^0.29.7"
+    "@tweakpane/core": "^2.0.0",
+    "@types/node": "^20.4.9",
+    "@types/p5": "^1.6.2",
+    "gh-pages": "^6.0.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.1"
   },
   "dependencies": {
     "node-stdlib-browser": "^1.2.0",
-    "p5": "^1.6.0",
+    "p5": "^1.7.0",
     "tone": "^14.7.77",
-    "tweakpane": "^3.1.7"
+    "tweakpane": "^4.0.0"
   }
 }
