@@ -35,15 +35,13 @@ const setToneSeq = (
       const index =
         newIndex > params.count - 1 || params.currentSeqId < 0 ? 0 : newIndex;
       params.currentSeqId = index;
-
       console.log(
         `note: ${note}, index: ${params.currentSeqId}, actualAttack: ${
           am.get().envelope.attack
         }`
       );
     }, time);
-    am.triggerAttackRelease("C5", "16n", time);
-    am.envelope.set(params.currentAdsr);
+    am.triggerAttackRelease("C5", "32n", time);
   }, seq.seq);
   toneSeq.loop = true;
   Tone.Transport.bpm.value = params.bpm / 2;

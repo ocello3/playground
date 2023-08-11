@@ -12,6 +12,8 @@ export const draw = (
   s: p5
 ) => {
   innerFrame.coordinates.forEach((coordinate, arrayIndex) => {
+    const width = innerFrame.sizes[arrayIndex].x;
+    const height = innerFrame.sizes[arrayIndex].y;
     s.push();
     s.translate(coordinate.x, coordinate.y);
     s.stroke(1);
@@ -25,7 +27,8 @@ export const draw = (
 		*/
     // ADSR
     s.push();
-    s.noFill();
+    s.noStroke();
+    s.fill(150, 120);
     s.beginShape();
     const envPos = env.envs[arrayIndex];
     s.vertex(envPos.startPos.x, envPos.startPos.y);
@@ -39,18 +42,26 @@ export const draw = (
     s.push();
     s.noStroke();
     const pointArray = progressLine.pointArrays[arrayIndex];
-    const alphaArray = progressLine.alphaArrays[arrayIndex];
+    const heightArray = progressLine.heightArrays[arrayIndex];
     pointArray.forEach((point, pointIndex) => {
       s.push();
-      s.fill(0, alphaArray[pointIndex]);
+      s.fill(50, 150);
+      const heightDiff = height - heightArray[pointIndex];
       s.rect(
         point.x,
-        point.y,
+        point.y + heightDiff,
         progressLine.rectSizes[arrayIndex].x,
-        progressLine.rectSizes[arrayIndex].y
+        progressLine.rectSizes[arrayIndex].y - heightDiff
       );
       s.pop();
     });
+    s.pop();
+    // bottom line
+    s.push();
+    s.stroke(70, 150);
+    s.strokeWeight(size * 0.005);
+    s.strokeCap(s.ROUND);
+    s.line(0, height, width, height);
     s.pop();
     s.pop();
   });

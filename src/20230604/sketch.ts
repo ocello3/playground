@@ -24,7 +24,7 @@ export const sketch = (s: p5) => {
   s.setup = async () => {
     // set component
     innerFrame = InnerFrame.get(params, canvasSize);
-    seq = Seq.get(params);
+    seq = Seq.get(progress, params);
     env = Env.get(innerFrame, seq, params);
     progress = Progress.get(seq, controllers, params);
     // set sound
@@ -51,7 +51,7 @@ export const sketch = (s: p5) => {
     s.background(255);
     controller.updateController(s, controllers);
     // update component
-    seq = Seq.get(params, synth);
+    seq = Seq.get(progress, params, synth);
     env = Env.get(innerFrame, seq, params, env);
     progress = Progress.get(seq, controllers, params, progress);
     progressLine = ProgressLine.get(

@@ -9,7 +9,7 @@ export const set = () => {
     hMargin: 0.06,
     vMargin: 0.04,
     hExpand: 1,
-    rectWidth: 0.01,
+    rectWidth: 0.015,
     // seq
     bpm: 32,
     currentSeqId: -1,
@@ -27,13 +27,6 @@ export const set = () => {
       sustain: 0.5,
       release: 0.5,
     },
-    currentAdsr: {
-      attack: 0.2,
-      decay: 0.1,
-      sustain: 0.3,
-      release: 0.3,
-    },
-    isAdsrUpdate: false,
   };
 };
 const obj = set();

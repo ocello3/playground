@@ -12,7 +12,7 @@ export type type = {
     rectIndex: number;
   };
   pointArrays: p5.Vector[][];
-  alphaArrays: number[][];
+  heightArrays: number[][];
   rectSizes: p5.Vector[];
   preSeqId: number;
 };
@@ -62,22 +62,24 @@ export const get = (
   const isReset = isInit
     ? false
     : currentSeqId === 0 && pre.preSeqId === params.count - 1;
-  const currentAlpha = tools.constrain(
-    tools.map(meter.getValue() as number, -150, 0, 0, 255),
+  const currentHeight = tools.map(
+    meter.getValue() as number,
+    -200,
     0,
-    255
+    0,
+    innerFrame.sizes[0].y
   );
-  const alphaArrays =
+  const heightArrays =
     isInit || isReset
       ? pointArrays.map((pointArray) => pointArray.map(() => 0))
-      : pre.alphaArrays.map((preAlphaArray, arrayIndex) => {
+      : pre.heightArrays.map((preAlphaArray, arrayIndex) => {
           if (isDraws[arrayIndex])
             return preAlphaArray.map((preAlpha, rectIndex) => {
               if (
                 pre.currentRectId.rectIndex < rectIndex &&
                 rectIndex <= currentRectId.rectIndex
               )
-                return currentAlpha; // update alpha
+                return currentHeight; // update height
               return preAlpha;
             });
           return preAlphaArray;
@@ -87,7 +89,7 @@ export const get = (
     isDraws,
     pointArrays,
     currentRectId,
-    alphaArrays,
+    heightArrays,
     rectSizes,
     preSeqId,
   };
