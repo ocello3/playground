@@ -10,6 +10,7 @@ export const set = () => {
     vMargin: 0.04,
     hExpand: 1,
     rectWidth: 0.015,
+    fontSize: 0.03,
     // seq
     bpm: 32,
     currentSeqId: -1,

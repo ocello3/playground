@@ -24,7 +24,10 @@ const getLatestDate = async (): Promise<string> => {
   const hasDate = searchParams.has("date");
   console.log(paramsString);
   const date = hasDate ? searchParams.get("date") : latestDate;
-  await import(/* @vite-ignore */ `./${date}/sketch.ts`).then((res) => {
+  // await import(/* @vite-ignore */ `./${date}/sketch.ts`).then((res) => {
+  //   new p5(res.sketch, document.getElementById("sketch")!);
+  // });
+  await import(`./${date}/sketch.ts`).then((res) => {
     new p5(res.sketch, document.getElementById("sketch")!);
   });
 })();

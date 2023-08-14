@@ -7,6 +7,7 @@ import * as Seq from "./component/seq";
 import * as Env from "./component/env";
 import * as Progress from "./component/progress";
 import * as ProgressLine from "./component/progressLine";
+import * as Text from "./component/text";
 import * as Params from "./params";
 import * as Synth from "./sound/synth";
 import { draw } from "./draw";
@@ -20,6 +21,7 @@ export const sketch = (s: p5) => {
   let env: Env.type;
   let progress: Progress.type;
   let progressLine: ProgressLine.type;
+  let text: Text.type;
   let synth: Synth.type;
   s.setup = async () => {
     // set component
@@ -27,12 +29,15 @@ export const sketch = (s: p5) => {
     seq = Seq.get(progress, params);
     env = Env.get(innerFrame, seq, params);
     progress = Progress.get(seq, controllers, params);
+    text = Text.get(innerFrame, seq, env, params);
     // set sound
     synth = await Synth.set(seq, params);
     // set canvas
     s.createCanvas(canvasSize, canvasSize);
     const tab = controller.setGui(s, controllers, synth.se, true);
     Params.gui(params, tab);
+    s.textSize(params.fontSize * canvasSize);
+    s.textStyle(s.NORMAL);
     s.noLoop();
     // s.frameRate(20);
   };
@@ -61,8 +66,9 @@ export const sketch = (s: p5) => {
       synth.meter,
       progressLine
     );
+    text = Text.get(innerFrame, seq, env, params);
     // draw component
-    draw(innerFrame, env, progressLine, canvasSize, s);
+    draw(innerFrame, env, progressLine, text, canvasSize, s);
     // Synth.play(synth, params, seq);
   };
 };

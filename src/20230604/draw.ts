@@ -2,12 +2,14 @@ import p5 from "p5";
 import * as InnerFrame from "./component/innerFrame";
 import * as Env from "./component/env";
 import * as ProgressLine from "./component/progressLine";
+import * as Text from "./component/text";
 import { drawFrame } from "../util/drawFrame";
 
 export const draw = (
   innerFrame: InnerFrame.type,
   env: Env.type,
   progressLine: ProgressLine.type,
+  text: Text.type,
   size: number,
   s: p5
 ) => {
@@ -63,7 +65,35 @@ export const draw = (
     s.strokeCap(s.ROUND);
     s.line(0, height, width, height);
     s.pop();
+    // texts
+    s.push();
+    s.noStroke();
+    const adsrText = text.adsrs[arrayIndex];
+    s.textAlign(s.LEFT, s.TOP);
+    s.text(adsrText.attack.text, adsrText.attack.pos.x, adsrText.attack.pos.y);
+    s.textAlign(s.LEFT, s.BOTTOM);
+    s.text(adsrText.decay.text, adsrText.decay.pos.x, adsrText.decay.pos.y);
+    s.text(
+      adsrText.sustain.text,
+      adsrText.sustain.pos.x,
+      adsrText.sustain.pos.y
+    );
+    s.textAlign(s.RIGHT, s.TOP);
+    s.text(
+      adsrText.release.text,
+      adsrText.release.pos.x,
+      adsrText.release.pos.y
+    );
+    s.pop();
     s.pop();
   });
+  s.push();
+  s.textAlign(s.RIGHT, s.TOP);
+  s.text(
+    text.general.totalLength.text,
+    text.general.totalLength.pos.x,
+    text.general.totalLength.pos.y
+  );
+  s.pop();
   drawFrame(s, size);
 };

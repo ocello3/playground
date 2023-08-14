@@ -1,5 +1,4 @@
 import p5 from "p5";
-// import { tools } from "../../util/tools";
 import * as InnerFrame from "./innerFrame";
 import * as Seq from "./seq";
 import * as Params from "../params";
