@@ -21,6 +21,7 @@ export const set = () => {
       decay: 0.2,
       sustain: 0.6,
       release: 0.7,
+      harmonicity: 1,
     },
     mod: {
       attack: 0.5,
@@ -80,6 +81,12 @@ export const gui = (params: type, tab: TabApi) => {
     step: 0.01,
     min: 0.01,
     max: 1,
+  });
+  sound.addBinding(params.base, "harmonicity", {
+    label: "base_h",
+    step: 0.01,
+    min: 0.01,
+    max: 2,
   });
   sound.addBinding(params.mod, "attack", {
     label: "mod_a",

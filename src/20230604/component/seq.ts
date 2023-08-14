@@ -44,6 +44,7 @@ export const get = (
   const nextId = id + 1 > params.count - 1 ? 0 : id + 1;
   if (!isInit && progress.isIdChanged) {
     synth.am.envelope.set(adsrs[nextId]);
+    synth.am.harmonicity.value = params.base.harmonicity;
     console.log("setADSR");
   }
   return {
