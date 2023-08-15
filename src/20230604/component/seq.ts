@@ -12,6 +12,9 @@ export type type = {
     sustain: number;
     release: number;
   }[];
+  amParams: {
+    harmonicity: number;
+  }[];
 };
 
 export const get = (
@@ -39,17 +42,26 @@ export const get = (
       release: tools.constrain(release * correctedShortenRate, 0, 2),
     };
   });
+  const amParams = seq.map((_, index) => {
+    const harmonicity =
+      params.base.harmonicity * Math.pow(params.mod.harmonicity, index);
+    const constrainedHarmonicity = tools.constrain(harmonicity, 0.01, 2);
+    return {
+      harmonicity: constrainedHarmonicity,
+    };
+  });
   // update synth directly
   const id = params.currentSeqId === -1 ? 0 : params.currentSeqId;
   const nextId = id + 1 > params.count - 1 ? 0 : id + 1;
   if (!isInit && progress.isIdChanged) {
     synth.am.envelope.set(adsrs[nextId]);
-    synth.am.harmonicity.value = params.base.harmonicity;
+    synth.am.harmonicity.value = amParams[nextId].harmonicity;
     console.log("setADSR");
   }
   return {
     seq,
     adsrs,
+    amParams,
     adsrLength,
   };
 };

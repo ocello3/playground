@@ -28,6 +28,7 @@ export const set = () => {
       decay: 0.5,
       sustain: 0.5,
       release: 0.5,
+      harmonicity: 1,
     },
   };
 };
@@ -88,6 +89,19 @@ export const gui = (params: type, tab: TabApi) => {
     min: 0.01,
     max: 2,
   });
+  sound
+    .addButton({
+      title: "reset",
+      label: "mod",
+    })
+    .on("click", () => {
+      params.mod.attack = 1;
+      params.mod.decay = 1;
+      params.mod.sustain = 1;
+      params.mod.release = 1;
+      params.mod.harmonicity = 1;
+      sound.refresh();
+    });
   sound.addBinding(params.mod, "attack", {
     label: "mod_a",
     step: 0.1,
@@ -108,6 +122,12 @@ export const gui = (params: type, tab: TabApi) => {
   });
   sound.addBinding(params.mod, "release", {
     label: "mod_r",
+    step: 0.1,
+    min: 0.1,
+    max: 2,
+  });
+  sound.addBinding(params.mod, "harmonicity", {
+    label: "mod_h",
     step: 0.1,
     min: 0.1,
     max: 2,
