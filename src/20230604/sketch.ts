@@ -46,6 +46,7 @@ export const sketch = (s: p5) => {
       s.noLoop();
       return;
     }
+    /*
     if (s.frameCount % 5 === 0)
       debug(
         {
@@ -53,6 +54,7 @@ export const sketch = (s: p5) => {
         },
         10
       );
+			*/
     s.background(255);
     controller.updateController(s, controllers);
     // update component
@@ -66,7 +68,7 @@ export const sketch = (s: p5) => {
       synth.meter,
       progressLine
     );
-    text = Text.get(innerFrame, seq, env, params);
+    text = Text.get(innerFrame, seq, env, params, text);
     // draw component
     draw(innerFrame, env, progressLine, text, canvasSize, s);
     // Synth.play(synth, params, seq);

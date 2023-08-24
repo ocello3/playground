@@ -27,7 +27,7 @@ const setToneSeq = (
   seq: Seq.type,
   params: Params.type
 ): Tone.Sequence => {
-  const toneSeq = new Tone.Sequence((time, note) => {
+  const toneSeq = new Tone.Sequence((time) => {
     Tone.Draw.schedule(() => {
       // const index = seq.seq.indexOf(note);
       const inc = 1;
@@ -35,11 +35,6 @@ const setToneSeq = (
       const index =
         newIndex > params.count - 1 || params.currentSeqId < 0 ? 0 : newIndex;
       params.currentSeqId = index;
-      console.log(
-        `note: ${note}, index: ${params.currentSeqId}, actualAttack: ${
-          am.get().envelope.attack
-        }`
-      );
     }, time);
     am.triggerAttackRelease(params.pitch, "32n", time);
   }, seq.seq);

@@ -16,6 +16,9 @@ export type type = {
     sustain: textType;
     release: textType;
   }[];
+  amParams: {
+    harmonicity: textType;
+  }[];
   general: {
     totalLength: textType;
   };
@@ -25,8 +28,10 @@ export const get = (
   innerFrame: InnerFrame.type,
   seq: Seq.type,
   env: Env.type,
-  params: Params.type
+  params: Params.type,
+  pre?: type
 ): type => {
+  const isInit = pre === undefined;
   const adsrs = env.envs.map((env, index) => {
     const adsr = seq.adsrs[index];
     const attack = (() => {
@@ -82,6 +87,19 @@ export const get = (
       release,
     };
   });
+  const amParams = seq.amParams.map((amParam, index) => {
+    const value = Math.round(amParam.harmonicity * 100) * 0.01;
+    const text = `H: ${value.toString().slice(0, 4)}`;
+    const pos = isInit
+      ? new p5.Vector(0, innerFrame.sizes[index].y)
+      : pre.amParams[index].harmonicity.pos;
+    return {
+      harmonicity: {
+        text,
+        pos,
+      },
+    };
+  });
   const totalLength = (() => {
     const value = Math.round(seq.adsrLength * 100) * 0.01;
     const text = `totalLength: ${value.toString().slice(0, 4)}`;
@@ -99,6 +117,7 @@ export const get = (
   };
   return {
     adsrs,
+    amParams,
     general,
   };
 };

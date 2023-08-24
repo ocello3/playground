@@ -65,7 +65,7 @@ export const draw = (
     s.strokeCap(s.ROUND);
     s.line(0, height, width, height);
     s.pop();
-    // texts
+    // texts for adsrs
     s.push();
     s.noStroke();
     const adsrText = text.adsrs[arrayIndex];
@@ -84,6 +84,12 @@ export const draw = (
       adsrText.release.pos.x,
       adsrText.release.pos.y
     );
+    // texts for harmonicity
+    const harmonicityText = text.amParams[arrayIndex].harmonicity;
+    s.textAlign(s.LEFT, s.BOTTOM);
+    s.translate(harmonicityText.pos.x, harmonicityText.pos.y);
+    s.rotate(Math.PI * -0.5);
+    s.text(harmonicityText.text, 0, 0);
     s.pop();
     s.pop();
   });

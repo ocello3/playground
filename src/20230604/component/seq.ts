@@ -56,7 +56,6 @@ export const get = (
   if (!isInit && progress.isIdChanged) {
     synth.am.envelope.set(adsrs[nextId]);
     synth.am.harmonicity.value = amParams[nextId].harmonicity;
-    console.log("setADSR");
   }
   return {
     seq,
