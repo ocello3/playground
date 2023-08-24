@@ -1,7 +1,7 @@
 import p5 from "p5";
 import { controller } from "../util/controller";
 import { tools } from "../util/tools";
-import { debug } from "../util/debug";
+// import { debug } from "../util/debug";
 import * as InnerFrame from "./component/innerFrame";
 import * as Seq from "./component/seq";
 import * as Env from "./component/env";
