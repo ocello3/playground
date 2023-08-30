@@ -65,10 +65,44 @@ const getIntersection = (
   return p2;
 };
 
+const setRequestPointLock = (s: p5) => {
+  if (
+    s.key === "0" ||
+    s.key === "1" ||
+    s.key === "2" ||
+    s.key === "3" ||
+    s.key === "4" ||
+    s.key === "5" ||
+    s.key === "6" ||
+    s.key === "7" ||
+    s.key === "8" ||
+    s.key === "9"
+  )
+    s.requestPointerLock();
+};
+
+const setExitPointerLock = (s: p5) => {
+  if (
+    s.key === "0" ||
+    s.key === "1" ||
+    s.key === "2" ||
+    s.key === "3" ||
+    s.key === "4" ||
+    s.key === "5" ||
+    s.key === "6" ||
+    s.key === "7" ||
+    s.key === "8" ||
+    s.key === "9"
+  )
+    s.exitPointerLock();
+};
+
 export const tools = {
   map,
   constrain,
   setColor,
   setSize,
   getIntersection,
+  setRequestPointLock,
+  setExitPointerLock,
 };
