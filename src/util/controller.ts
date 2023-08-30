@@ -115,29 +115,33 @@ const setGui = (
   const tab = pane.addTab({
     pages: [{ title: "default" }, { title: "sketch" }, { title: "sound" }],
   });
+  const play = () => {
+    const isInit = controllers.isInit;
+    const isPlay = s.isLooping();
+    const isPause =
+      !controllers.isInit && !s.isLooping() && !controllers.isPlay;
+    if (isInit) {
+      console.log(`activate`);
+      activate(s, controllers, se, seq);
+      document.getElementById("indicator")!.innerHTML = "playing";
+    }
+    if (isPlay) {
+      console.log(`inactivate`);
+      inactivate(s, controllers, se, seq);
+      document.getElementById("indicator")!.innerHTML = "...waiting";
+    }
+    if (isPause) {
+      console.log(`reactivate`);
+      reactivate(s, controllers, se, seq);
+      document.getElementById("indicator")!.innerHTML = "playing";
+    }
+  };
+  document.addEventListener("keydown", (ev) => {
+    if (ev.code === "Space") play();
+  });
   tab.pages[0]
     .addButton({ title: "on/off", label: "play" })
-    .on("click", async () => {
-      const isInit = controllers.isInit;
-      const isPlay = s.isLooping();
-      const isPause =
-        !controllers.isInit && !s.isLooping() && !controllers.isPlay;
-      if (isInit) {
-        console.log(`activate`);
-        activate(s, controllers, se, seq);
-        document.getElementById("indicator")!.innerHTML = "playing";
-      }
-      if (isPlay) {
-        console.log(`inactivate`);
-        inactivate(s, controllers, se, seq);
-        document.getElementById("indicator")!.innerHTML = "...waiting";
-      }
-      if (isPause) {
-        console.log(`reactivate`);
-        reactivate(s, controllers, se, seq);
-        document.getElementById("indicator")!.innerHTML = "playing";
-      }
-    });
+    .on("click", async () => play());
   tab.pages[0].addBinding(controllers, "frameRate", {
     readonly: true,
     interval: 500,

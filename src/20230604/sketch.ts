@@ -50,7 +50,7 @@ export const sketch = (s: p5) => {
     if (s.frameCount % 5 === 0)
       debug(
         {
-          currentSeqId: params.currentSeqId,
+          controller: controllers,
         },
         10
       );
